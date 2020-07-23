@@ -1,0 +1,21 @@
+{
+  "editor.autoIndent": "advanced",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": false,
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true,
+    "source.fixAll.tslint": true
+  },
+  // VETUR
+  "vetur.validation.template": true,
+  // TYPESCRIPT
+  "typescript.tsdk": "node_modules/typescript/lib", //  Use the project's ts version
+  // PRETTIER
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // ESLINT
+  "eslint.enable": true,
+  "eslint.alwaysShowStatus": true,
+  "eslint.validate": ["vue", "typescript", "javascript"],
+  "eslint.packageManager": "yarn"
+}
