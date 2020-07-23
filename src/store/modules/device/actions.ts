@@ -1,9 +1,4 @@
-import {
-  state,
-  IDeviceState,
-  DeviceConnectionState,
-  IBusRequestConfig,
-} from "./state";
+import { state, IDeviceState, DeviceConnectionState } from "./state";
 import {
   SysExCommand,
   IDeviceComponentCounts,
@@ -13,14 +8,31 @@ import {
   IBlockSettingDefinition,
   Block,
 } from "../../../definitions";
-import {
-  sendMessage,
-  connectDeviceStoreToInput,
-} from "./device-promise-qeueue";
+import { sendMessage, handleSysExResponse } from "./device-promise-qeueue";
+import { Input, Output } from "webmidi";
+import { midiStore } from "../midi";
 // Actions
 
 const setInfo = (data: Partial<IDeviceState>): void => {
   Object.assign(state, data);
+};
+
+export const connectDeviceStoreToInput = async (
+  inputId: string
+): Promise<any> => {
+  await midiStore.actions.loadMidi();
+  const { input, output } = await midiStore.actions.findInputOutput(inputId);
+
+  state.inputId = inputId;
+  state.input = input as Input;
+  state.output = output as Output;
+
+  state.input.removeListener("sysex"); // make sure we don't duplicate listeners
+  state.input.addListener("sysex", "all", handleSysExResponse);
+
+  state.connectionState = DeviceConnectionState.Open;
+  await handshake();
+  state.connectionPromise = (null as unknown) as Promise<any>;
 };
 
 const connectDevice = async (inputId: string): Promise<void> => {
@@ -34,12 +46,10 @@ const connectDevice = async (inputId: string): Promise<void> => {
     return state.connectionPromise;
   }
 
+  // All subsequent connect attempts should receive the same promise as response
   state.connectionPromise = connectDeviceStoreToInput(inputId);
 
-  return state.connectionPromise.then(async () => {
-    await handshake();
-    await loadDeviceInfo();
-  });
+  return state.connectionPromise;
 };
 
 const handshake = async (): Promise<any> => {
@@ -128,8 +138,9 @@ export const setComponentSectionValue = async (
 
 export interface IDeviceActions {
   setInfo: (data: Partial<IDeviceState>) => void;
-  sendMessage: (config: IBusRequestConfig) => Promise<void>;
+  // sendMessage: (config: IBusRequestConfig) => Promise<void>;
   connectDevice: (inputId: string) => Promise<void>;
+  loadDeviceInfo: () => Promise<void>;
   getComponentSettings: (
     definition: Dictionary<IBlockDefinition>,
     block: Block,
@@ -145,8 +156,9 @@ export interface IDeviceActions {
 
 export const deviceStoreActions: IDeviceActions = {
   setInfo,
-  sendMessage,
+  // sendMessage,
   connectDevice,
+  loadDeviceInfo,
   getComponentSettings,
   setComponentSectionValue,
 };

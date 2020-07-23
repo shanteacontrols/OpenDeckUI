@@ -3,7 +3,10 @@
     <p>Connecting to WebMidi device</p>
   </div>
 
-  <router-view v-else-if="isConnected"></router-view>
+  <div v-else-if="isConnected">
+    <router-view></router-view>
+    <DeviceActivity />
+  </div>
 
   <div v-else class="lg:text-center">
     <p>No WebMidi device found</p>
@@ -18,10 +21,7 @@
 import { defineComponent, onMounted } from "vue";
 import router from "../../router";
 import { deviceStoreMapped } from "../../store";
-
-import SvgIcon from "../elements/SvgIcon.vue";
-import DeviceHeader from "./DeviceHeader.vue";
-import DeviceNav from "./DeviceNav.vue";
+import DeviceActivity from "./DeviceActivity.vue";
 
 export default defineComponent({
   name: "Device",
@@ -30,6 +30,7 @@ export default defineComponent({
       await deviceStoreMapped.connectDevice(
         router.currentRoute.value.params.inputId as string
       );
+      await deviceStoreMapped.loadDeviceInfo();
     });
 
     return {
@@ -37,9 +38,7 @@ export default defineComponent({
     };
   },
   components: {
-    SvgIcon,
-    DeviceHeader,
-    DeviceNav,
+    DeviceActivity,
   },
 });
 </script>

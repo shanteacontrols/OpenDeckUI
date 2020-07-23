@@ -10,7 +10,7 @@ export const convertToHex = (value: number | number[]): string | string[] => {
 
 // Byte conversion
 
-export const convertDataValuesToSingleByte = (values: Uint8Array): number[] => {
+export const convertDataValuesToSingleByte = (values: number[]): number[] => {
   const convertedValues: number[] = [];
 
   for (let index = 0; index < values.length / 2; index++) {
