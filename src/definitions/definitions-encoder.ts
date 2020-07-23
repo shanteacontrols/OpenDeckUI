@@ -63,7 +63,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     type: DefinitionType.ComponentValue,
     section: 4,
     component: FormInputComponent.Input,
-    min: 0,
+    min: 1,
     max: 10,
     label: "MIDI channel",
     helpText: "Denotes the MIDI CC number for each encoder.",
