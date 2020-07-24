@@ -1,4 +1,4 @@
-export enum errorCodes {
+export enum ErrorCode {
   STATUS = 2,
   HANDSHAKE = 3,
   WISH = 4,

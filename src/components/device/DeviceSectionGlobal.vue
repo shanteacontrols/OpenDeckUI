@@ -38,11 +38,13 @@
             @modified="onValueChange"
           />
           <FormField
+            v-if="form.dinMidiState"
             :value="form.runningStatus"
             :field-definition="GlobalDefinitions.RunningStatus"
             @modified="onValueChange"
           />
           <FormField
+            v-if="form.dinMidiState"
             :value="form.midiMergeEnable"
             :field-definition="GlobalDefinitions.MidiMergeEnable"
             @modified="onValueChange"

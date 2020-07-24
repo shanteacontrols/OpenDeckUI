@@ -1,8 +1,10 @@
 <template>
   <div class="section w-full" :class="`${section}`">
-    <Heading v-if="title" preset="section-title" :class="`${sectionTitle}`">
-      {{ title }}
-    </Heading>
+    <slot name="title">
+      <Heading v-if="title" preset="section-title">
+        {{ title }}
+      </Heading>
+    </slot>
 
     <div class="section-content" :class="`${sectionContent}`">
       <slot name="default"></slot>

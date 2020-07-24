@@ -1,68 +1,151 @@
 <template>
-  <Section title="Activity">
-    <div class="pb-8 grid gap-6 grid-cols-1 md:grid-cols-2 md:gap-10">
-      <div class="">
-        <div class="mb-2">
-          <strong>Requests</strong>
-          <button
-            class="ml-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs py-1 px-2 rounded-full focus:outline-none focus:shadow-outline"
-            @click="purgeFinishedRequests"
-          >
-            X
-          </button>
-        </div>
-        <div class="mb-4 text-sm max-h-screen overflow-y-auto">
-          <template v-for="(request, idx) in requestStack">
-            <DeviceActivityRequest :key="idx" :request="request" />
-          </template>
-        </div>
-      </div>
-      <div class="">
-        <div class="mb-2">
-          <strong>Info messages</strong>
-          <button
-            class="ml-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs py-1 px-2 rounded-full focus:outline-none focus:shadow-outline"
-            @click="purgeInfoMessages"
-          >
-            x
-          </button>
-        </div>
-        <div class="mb-4 text-sm max-h-screen overflow-y-auto">
-          <DeviceActivityInfoMessage
-            v-for="(message, idx) in activityStack"
-            :key="idx"
-            :idx="idx"
-            :message="message"
-          />
-        </div>
-      </div>
-    </div>
+  <Section class="border-t border-gray-800">
+    <template #title>
+      <Heading preset="section-title">
+        Activity
+        <span class="ml-2 text-sm">
+          {{ filteredLog.length }}
+        </span>
+        <button
+          class="ml-6 text-sm py-1 px-2 rounded-full focus:outline-none focus:shadow-outline"
+          :class="{
+            'bg-gray-700 text-gray-300 hover:bg-gray-600 ': filteredLog.length,
+            'bg-gray-800 text-gray-500 ': !filteredLog.length,
+          }"
+          @click="clear"
+        >
+          Clear
+        </button>
+
+        <button
+          v-for="(type, idx) in LogType"
+          :key="idx"
+          class="float-right ml-2 text-sm py-1 px-2 rounded-full focus:outline-none focus:shadow-outline"
+          :class="{
+            'bg-gray-600 text-gray-300 hover:bg-gray-800 hover:text-gray-600': logTypeFilter.includes(
+              type
+            ),
+            'bg-gray-800 text-gray-600 hover:bg-gray-600 hover:text-gray-300': !logTypeFilter.includes(
+              type
+            ),
+          }"
+          @click="() => toggleFilterType(type)"
+        >
+          {{ type }}
+        </button>
+      </Heading>
+    </template>
+
+    <table v-if="filteredLog.length" class="w-full mb-2" colspan="2">
+      <thead class="text-sm text-left border-b border-gray-900">
+        <tr>
+          <th class="p-2 text-right">h:m:s</th>
+          <th class="p-2">ms</th>
+          <th class="p-2">Event</th>
+          <th class="p-2">Body</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="(logEntry, idx) in filteredLog"
+          :key="idx"
+          class="px-2 py-1 text-sm border-b border-gray-900 last:border-b-0 odd:bg-gray-900"
+        >
+          <td class="pr-2 text-right">
+            {{ formatDate(logEntry.time) }}
+          </td>
+          <td>
+            {{ logEntry.time.getMilliseconds() }}
+          </td>
+          <td>
+            {{ logEntry.type }}
+            <span v-if="logEntry.type === LogType.Request">
+              {{ logEntry.id }}
+            </span>
+          </td>
+          <td>
+            <div v-if="logEntry.type === LogType.Error">
+              {{ logEntry }}
+            </div>
+            <DeviceActivityRequest
+              v-if="logEntry.type === LogType.Request"
+              :request="requestStack[logEntry.id]"
+            />
+            <DeviceActivityInfoMessage
+              v-if="logEntry.type === LogType.Info"
+              :log-entry="logEntry"
+            />
+            <DeviceActivityMidi
+              v-if="logEntry.type === LogType.Midi"
+              :log-entry="logEntry"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </Section>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive, computed } from "vue";
 import {
   purgeFinishedRequests,
-  purgeInfoMessages,
   requestStack,
-  activityStack,
 } from "../../../store/modules/device/device-promise-qeueue";
+import {
+  activityLog,
+  LogType,
+} from "../../../store/modules/device/activity-log";
+import { Block } from "../../../definitions";
+import { formatDate } from "../../../util";
 import DeviceActivityRequest from "./DeviceActivityRequest.vue";
 import DeviceActivityInfoMessage from "./DeviceActivityInfoMessage.vue";
+import DeviceActivityMidi from "./DeviceActivityMidi.vue";
 
 export default defineComponent({
   name: "DeviceActivity",
   setup() {
+    const logTypeFilter = reactive<Array<LogType>>([
+      LogType.Midi,
+      LogType.Request,
+      LogType.Error,
+      LogType.Info,
+    ]);
+
+    const toggleFilterType = (type: LogType) => {
+      const pos = logTypeFilter.indexOf(type);
+      console.log(logTypeFilter, type, pos);
+      if (pos !== -1) {
+        logTypeFilter.splice(pos, 1);
+      } else {
+        logTypeFilter.push(type);
+      }
+    };
+
+    const filteredLog = computed(() =>
+      activityLog.stack.value.filter((log) => logTypeFilter.includes(log.type))
+    );
+
+    const clear = () => {
+      activityLog.clear();
+      purgeFinishedRequests();
+    };
+
     return {
-      purgeFinishedRequests,
-      purgeInfoMessages,
+      clear,
       requestStack,
-      activityStack,
+      filteredLog,
+      activityLog,
+      Block,
+      formatDate,
+      LogType,
+      logTypeFilter,
+      toggleFilterType,
     };
   },
   components: {
     DeviceActivityRequest,
+    DeviceActivityMidi,
     DeviceActivityInfoMessage,
   },
 });

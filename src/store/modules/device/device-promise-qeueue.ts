@@ -15,10 +15,11 @@ import {
   SysExCommand,
   IRequestDefinition,
 } from "../../../definitions";
+import { activityLog } from "./activity-log";
 
 const componentInfoMessageId = 73;
 
-enum RequestState {
+export enum RequestState {
   Pending = "pending",
   Sent = "sent",
   Error = "error",
@@ -35,6 +36,8 @@ export interface IRequestInProcess {
   payload: number[];
   handler: (data: any) => void;
   responseCount: number;
+  responseData?: number[];
+  parsed?: number[] | number | string;
   errorMessage?: string;
   expectedResponseCount: number;
   time: {
@@ -42,12 +45,6 @@ export interface IRequestInProcess {
     started: Date;
     finished: Date;
   };
-}
-
-export interface IInfoMessage {
-  received: Date;
-  block: number;
-  index: number;
 }
 
 interface IRequestProcessor {
@@ -61,14 +58,17 @@ export const requestProcessor: IRequestProcessor = {
 };
 
 export const requestStack = ref({} as Record<number, IRequestInProcess>);
-export const activityStack = ref([] as Array<IInfoMessage>);
 
 const addRequestToProcessor = (
-  request: Omit<IRequestInProcess, "id" | "state" | "responseCount" | "time">
+  request: Omit<
+    IRequestInProcess,
+    "id" | "state" | "responseCount" | "responseData" | "time"
+  >
 ) => {
   const id = requestProcessor.maxRequestId++;
   if (requestStack.value[id]) {
-    throw new Error(`Request ID already used ${id}`);
+    activityLog.addError({ message: `Request ID already used: ${id}` });
+    return;
   }
 
   const requestToStore = {
@@ -84,16 +84,11 @@ const addRequestToProcessor = (
   };
 
   requestStack.value[id] = requestToStore;
-
-  logger.log("NEW REQUEST STORED", id);
+  activityLog.addRequest(id);
 
   if (!requestProcessor.activeRequestId.value) {
     startRequest(id);
   }
-};
-
-export const purgeInfoMessages = (): void => {
-  activityStack.value = [];
 };
 
 export const purgeFinishedRequests = (): void => {
@@ -107,44 +102,51 @@ export const purgeFinishedRequests = (): void => {
 };
 
 const startRequest = (id: number) => {
-  logger.log("STARTING REQUEST", id);
-
   const request = requestStack.value[id];
   if (!request) {
-    throw new Error(`Missing request ${id}`);
+    activityLog.addError({ message: `Request data missing for ${id}` });
+    return;
   }
 
   if (requestProcessor.activeRequestId.value) {
-    throw new Error(
-      `Another request is still being processed ${id} vs ${requestProcessor.activeRequestId.value}`
-    );
+    activityLog.addError({
+      message: `Cannot start request ${id}, ${requestProcessor.activeRequestId.value} is already active`,
+    });
+    return;
   }
 
   requestProcessor.activeRequestId.value = id;
   request.state = RequestState.Sent;
   request.time.started = new Date();
+
   state.output.sendSysex(openDeckManufacturerId, request.payload);
 };
 
 const getActiveRequest = () => {
   const id = requestProcessor.activeRequestId.value;
   if (!id) {
-    logger.error(`No active request found`);
+    activityLog.addError({ message: `No active request found` });
     return;
   }
 
   const request = requestStack.value[id];
   if (!request) {
-    logger.error(`Active request data missing for ${id}`);
+    activityLog.addError({ message: `Active request data missing for ${id}` });
   }
 
   return request;
 };
 
-const onRequestDone = (id: number, status: number) => {
+const onRequestDone = (
+  id: number,
+  status: number,
+  responseData: number[],
+  parsed: number | number[] | string
+) => {
   const request = requestStack.value[id];
   if (!request) {
-    throw new Error(`Missing request ${id}`);
+    activityLog.addError({ message: `CANNOT FIND REQUEST ID:  ${id}` });
+    return;
   }
 
   // Check response status
@@ -153,17 +155,13 @@ const onRequestDone = (id: number, status: number) => {
     request.promiseReject();
 
     const errorDefinition = getErrorDefinition(status);
-
     request.errorMessage = errorDefinition.description;
-
-    logger.error(
-      `REQUEST ${id} ERROR: ${errorDefinition.key} - ${errorDefinition.description}`
-    );
     // @TODO: show alert/modal with error details
   } else {
     request.state = RequestState.Done;
+    request.responseData = responseData;
+    request.parsed = parsed;
     request.promiseResolve();
-    logger.log("REQUEST DONE", id);
   }
 
   request.time.finished = new Date();
@@ -176,16 +174,6 @@ const onRequestDone = (id: number, status: number) => {
 };
 
 const parseEventData = (eventData: Uint8Array) => {
-  // 0 START
-  // 1 M_ID_0
-  // 2 M_ID_1
-  // 3 M_ID_2
-  // 4 MESSAGE_STATUS
-  // 5 MESSAGE_PART
-  // 6 SPECIAL_MESSAGE_ID
-  // 7 BLOCK
-  // 8 INDEX
-  // 9 END
   const response = Array.from(eventData);
 
   return {
@@ -195,25 +183,25 @@ const parseEventData = (eventData: Uint8Array) => {
   };
 };
 
-export const handleSysExResponse = (event: InputEventBase<"sysex">): void => {
-  const { status, messagePart, data } = parseEventData(event.data);
+export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
+  const { status, data } = parseEventData(event.data);
 
-  // Handle componentInfo messages separately
   if (data[0] === componentInfoMessageId) {
-    activityStack.value.push({
-      received: new Date(),
-      block: data[1],
-      index: data[2],
-    });
-    logger.log("COMPONENT INFO: BLOCK", data[1], "INDEX", data[2]);
+    // @TODO: componentInfo messages should trigger a blink on ui element
+    // activityLog.addInfo({
+    //   block: data[1],
+    //   index: data[2],
+    //   payload: data,
+    // });
     return;
   }
 
-  logger.log("SYSEX RESPONSE RECEIVED", status, messagePart, data);
-
   const request = getActiveRequest();
-  if (!request) {
-    logger.log("RESPONSE NOT MATCHED TO A REQUEST");
+  if (!request || request.state !== RequestState.Sent) {
+    activityLog.addError({
+      message: "RESPONSE NOT MATCHED TO A REQUEST",
+      payload: data,
+    });
     return;
   }
 
@@ -233,13 +221,13 @@ export const handleSysExResponse = (event: InputEventBase<"sysex">): void => {
       : data;
 
   // For multipart responses, we call handler multiple times
-  const dataToReturn = definition.parser
+  const parsed = definition.parser
     ? definition.parser(responseData)
-    : responseData;
-  handler(dataToReturn);
+    : undefined;
+  handler(parsed || responseData);
 
   if (receivedAllExpectedResponses) {
-    onRequestDone(request.id, status);
+    onRequestDone(request.id, status, responseData, parsed);
     return;
   }
 

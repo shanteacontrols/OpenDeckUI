@@ -96,8 +96,8 @@ export enum SysExCommand {
   DisableProcessing = "DisableProcessing",
   EnableProcessing = "EnableProcessing",
   // Configuration
-  GetComponentConfig = "GetComponentConfig",
-  SetComponentConfig = "SetComponentConfig",
+  GetValue = "GetValue",
+  SetValue = "SetValue",
 }
 
 export const requestDefinitions: Dictionary<IRequestDefinition> = {
@@ -184,7 +184,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
 
   // Configuration requests
 
-  [SysExCommand.GetComponentConfig]: {
+  [SysExCommand.GetValue]: {
     type: RequestType.Configuration,
     // predefinedBytes: {
     //   messageStatus: MessageStatus.Request,
@@ -206,7 +206,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
       config.index,
     ],
   },
-  [SysExCommand.SetComponentConfig]: {
+  [SysExCommand.SetValue]: {
     type: RequestType.Configuration,
     // predefinedBytes: {
     //   messageStatus: MessageStatus.Request,

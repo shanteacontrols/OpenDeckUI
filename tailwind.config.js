@@ -8,6 +8,7 @@ module.exports = {
     cursor: ["responsive", "disabled"],
     fill: ["responsive", "hover", "focus"],
     borderWidth: ["responsive", "last", "hover", "focus"],
+    backgroundColor: ["responsive", "hover", "focus", "odd"],
   },
   plugins: [require("@tailwindcss/custom-forms")],
 };

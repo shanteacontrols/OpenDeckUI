@@ -7,5 +7,4 @@ export * from "./definitions-led";
 export * from "./definitions-display";
 export * from "./definitions-commands";
 export * from "./definitions-errors";
-export * from "./definitions";
 export * from "./theme";

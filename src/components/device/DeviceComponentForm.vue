@@ -1,10 +1,6 @@
 <template>
   <form novalidate @submit.prevent="">
-    <Heading
-      preset="section-title"
-      class="flex w-full"
-      :class="`${sectionTitle}`"
-    >
+    <Heading preset="section-title" class="flex w-full">
       <router-link class="mr-6" :to="{ name: routeName }">
         <h2>{{ componentName }}s</h2>
       </router-link>
@@ -56,7 +52,6 @@ import { defineComponent, reactive, toRefs, ref, onMounted, watch } from "vue";
 import { IBlockDefinition, DefinitionType } from "../../definitions";
 import Chevron from "../icons/Chevron.vue";
 import { deviceStoreMapped } from "../../store";
-import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
   name: "DeviceComponentForm",
@@ -147,7 +142,6 @@ export default defineComponent({
 
     return {
       ...deviceStoreMapped,
-      ...defaultTheme,
       form: {
         ...toRefs(form),
       },

@@ -8,9 +8,11 @@ import {
   IBlockSettingDefinition,
   Block,
 } from "../../../definitions";
-import { sendMessage, handleSysExResponse } from "./device-promise-qeueue";
+import { sendMessage, handleSysExEvent } from "./device-promise-qeueue";
+import { attachMidiEventHandlers } from "./midi-event-handlers";
 import { Input, Output } from "webmidi";
 import { midiStore } from "../midi";
+
 // Actions
 
 const setInfo = (data: Partial<IDeviceState>): void => {
@@ -28,7 +30,8 @@ export const connectDeviceStoreToInput = async (
   state.output = output as Output;
 
   state.input.removeListener("sysex"); // make sure we don't duplicate listeners
-  state.input.addListener("sysex", "all", handleSysExResponse);
+  state.input.addListener("sysex", "all", handleSysExEvent);
+  attachMidiEventHandlers(state.input);
 
   state.connectionState = DeviceConnectionState.Open;
   await prepareConnectionInfo();
@@ -106,7 +109,7 @@ export const getComponentSettings = async (
         settings[definition.key] = result[0];
       };
       return sendMessage({
-        command: SysExCommand.GetComponentConfig,
+        command: SysExCommand.GetValue,
         handler,
         config,
       });
@@ -117,19 +120,19 @@ export const getComponentSettings = async (
   return settings;
 };
 
-export interface IGetComponentConfigOptions {
+export interface IGetValueOptions {
   block: number;
   section: number;
   index: number;
 }
 
 export const setComponentSectionValue = async (
-  config: IGetComponentConfigOptions,
+  config: IGetValueOptions,
   value: number,
   handler: (val: any) => void
 ): Promise<any> =>
   await sendMessage({
-    command: SysExCommand.SetComponentConfig,
+    command: SysExCommand.SetValue,
     handler,
     config: {
       ...config,
@@ -141,7 +144,6 @@ export const setComponentSectionValue = async (
 
 export interface IDeviceActions {
   setInfo: (data: Partial<IDeviceState>) => void;
-  // sendMessage: (config: IBusRequestConfig) => Promise<void>;
   connectDevice: (inputId: string) => Promise<void>;
   loadDeviceInfo: () => Promise<void>;
   getComponentSettings: (
@@ -151,7 +153,7 @@ export interface IDeviceActions {
     customIndex?: number
   ) => Promise<any>;
   setComponentSectionValue: (
-    config: IGetComponentConfigOptions,
+    config: IGetValueOptions,
     value: number,
     handler: () => void
   ) => Promise<any>;
@@ -159,7 +161,6 @@ export interface IDeviceActions {
 
 export const deviceStoreActions: IDeviceActions = {
   setInfo,
-  // sendMessage,
   connectDevice,
   loadDeviceInfo,
   getComponentSettings,

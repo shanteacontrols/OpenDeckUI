@@ -38,10 +38,9 @@ export const formatDate = (date?: Date): string => {
     return "";
   }
 
-  const hours = date.getHours();
-  const mins = padZeros(date.getMinutes());
-  const seconds = padZeros(date.getSeconds());
-  const amPm = hours < 12 ? "AM" : "PM";
+  const h = date.getHours();
+  const m = padZeros(date.getMinutes());
+  const s = padZeros(date.getSeconds());
 
-  return `${padZeros(hours)}:${mins}:${seconds} ${amPm}`;
+  return `${padZeros(h)}:${m}:${s}`;
 };

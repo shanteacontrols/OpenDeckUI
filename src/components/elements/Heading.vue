@@ -1,11 +1,12 @@
 <template>
-  <component :is="element">
+  <component :is="element" :class="className">
     <slot name="default"></slot>
   </component>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { defaultTheme } from "./../../definitions";
 
 interface IPreset {
   element: string;
@@ -15,7 +16,7 @@ interface IPreset {
 const presets: Dictionary<IPreset> = {
   "section-title": {
     element: "h3",
-    className: "",
+    className: defaultTheme.sectionTitle,
   },
 };
 
