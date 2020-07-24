@@ -8,9 +8,16 @@ export enum DeviceConnectionState {
   Open = "open",
 }
 
+export interface IRequestConfig {
+  block: number;
+  index: number;
+  section: number;
+  value?: number | number[];
+}
+
 export interface IBusRequestConfig {
   command: SysExCommand;
-  config?: any;
+  config?: IRequestConfig;
   handler: (data: any) => void;
 }
 

@@ -1,6 +1,11 @@
 import { Ref, ref } from "vue";
 import { InputEventBase } from "webmidi";
-import { state, DeviceConnectionState, IBusRequestConfig } from "./state";
+import {
+  state,
+  DeviceConnectionState,
+  IBusRequestConfig,
+  IRequestConfig,
+} from "./state";
 import { logger, convertDataValuesToSingleByte } from "../../../util";
 import {
   RequestType,
@@ -11,6 +16,8 @@ import {
   IRequestDefinition,
 } from "../../../definitions";
 
+const componentInfoMessageId = 73;
+
 enum RequestState {
   Pending = "pending",
   Sent = "sent",
@@ -18,55 +25,65 @@ enum RequestState {
   Done = "done",
 }
 
-// interface IRequestData {
-//   messageStatus: MessageStatus;
-//   messagePart: number; // @TODO: calculate on the fly
-//   wish: Wish;
-//   amount: Amount;
-//   block?: Block;
-//   section?: number;
-//   index?: number;
-//   value?: number[];
-// }
-
 export interface IRequestInProcess {
   id: number;
   state: RequestState;
   command: SysExCommand;
   promiseResolve: () => void;
   promiseReject: () => void;
-  // data?: IRequestData;
+  config?: IRequestConfig;
   payload: number[];
   handler: (data: any) => void;
   responseCount: number;
-  responseStatus?: number;
+  errorMessage?: string;
   expectedResponseCount: number;
+  time: {
+    created: Date;
+    started: Date;
+    finished: Date;
+  };
+}
+
+export interface IInfoMessage {
+  received: Date;
+  block: number;
+  index: number;
 }
 
 interface IRequestProcessor {
   activeRequestId: Ref<number>;
   maxRequestId: number;
-  requestMap: Map<number, IRequestInProcess>;
 }
 
 export const requestProcessor: IRequestProcessor = {
   activeRequestId: ref((null as unknown) as number),
   maxRequestId: 1, // Must be over 0 to avoid conflicts with boolean checks
-  requestMap: new Map(),
 };
 
-const addRequestToProcessor = (request: Partial<IRequestInProcess>) => {
+export const requestStack = ref({} as Record<number, IRequestInProcess>);
+export const activityStack = ref([] as Array<IInfoMessage>);
+
+const addRequestToProcessor = (
+  request: Omit<IRequestInProcess, "id" | "state" | "responseCount" | "time">
+) => {
   const id = requestProcessor.maxRequestId++;
-  if (requestProcessor.requestMap.has(id)) {
+  if (requestStack.value[id]) {
     throw new Error(`Request ID already used ${id}`);
   }
 
-  requestProcessor.requestMap.set(id, {
+  const requestToStore = {
     ...request,
     id,
     state: RequestState.Pending,
     responseCount: 0,
-  } as IRequestInProcess);
+    time: {
+      created: new Date(),
+      started: (null as unknown) as Date,
+      finished: (null as unknown) as Date,
+    },
+  };
+
+  requestStack.value[id] = requestToStore;
 
   logger.log("NEW REQUEST STORED", id);
 
@@ -75,20 +92,24 @@ const addRequestToProcessor = (request: Partial<IRequestInProcess>) => {
   }
 };
 
+export const purgeInfoMessages = (): void => {
+  activityStack.value = [];
+};
+
 export const purgeFinishedRequests = (): void => {
-  requestProcessor.requestMap.forEach(
-    (request: IRequestInProcess, id: number) => {
-      if (request.state === RequestState.Done) {
-        requestProcessor.requestMap.delete(id);
-      }
+  Object.keys(requestStack.value).forEach((key: string) => {
+    const id = Number(key);
+    const request: IRequestInProcess = requestStack.value[id];
+    if ([RequestState.Done, RequestState.Error].includes(request.state)) {
+      delete requestStack.value[id];
     }
-  );
+  });
 };
 
 const startRequest = (id: number) => {
   logger.log("STARTING REQUEST", id);
 
-  const request = requestProcessor.requestMap.get(id);
+  const request = requestStack.value[id];
   if (!request) {
     throw new Error(`Missing request ${id}`);
   }
@@ -101,34 +122,30 @@ const startRequest = (id: number) => {
 
   requestProcessor.activeRequestId.value = id;
   request.state = RequestState.Sent;
+  request.time.started = new Date();
   state.output.sendSysex(openDeckManufacturerId, request.payload);
 };
 
 const getActiveRequest = () => {
-  if (!requestProcessor.activeRequestId.value) {
-    throw new Error(`No active request found`);
+  const id = requestProcessor.activeRequestId.value;
+  if (!id) {
+    logger.error(`No active request found`);
+    return;
   }
 
-  const request = requestProcessor.requestMap.get(
-    requestProcessor.activeRequestId.value
-  );
-
+  const request = requestStack.value[id];
   if (!request) {
-    throw new Error(
-      `Active request data missing for ${requestProcessor.activeRequestId.value}`
-    );
+    logger.error(`Active request data missing for ${id}`);
   }
 
   return request;
 };
 
 const onRequestDone = (id: number, status: number) => {
-  const request = requestProcessor.requestMap.get(id);
+  const request = requestStack.value[id];
   if (!request) {
     throw new Error(`Missing request ${id}`);
   }
-
-  request.responseStatus = status;
 
   // Check response status
   if (status > 1) {
@@ -136,6 +153,9 @@ const onRequestDone = (id: number, status: number) => {
     request.promiseReject();
 
     const errorDefinition = getErrorDefinition(status);
+
+    request.errorMessage = errorDefinition.description;
+
     logger.error(
       `REQUEST ${id} ERROR: ${errorDefinition.key} - ${errorDefinition.description}`
     );
@@ -146,10 +166,11 @@ const onRequestDone = (id: number, status: number) => {
     logger.log("REQUEST DONE", id);
   }
 
+  request.time.finished = new Date();
   requestProcessor.activeRequestId.value = (null as unknown) as number;
 
   const nextId = id + 1;
-  if (requestProcessor.requestMap.has(nextId)) {
+  if (requestStack.value[nextId]) {
     startRequest(nextId);
   }
 };
@@ -175,17 +196,27 @@ const parseEventData = (eventData: Uint8Array) => {
 };
 
 export const handleSysExResponse = (event: InputEventBase<"sysex">): void => {
-  const { status, data } = parseEventData(event.data);
+  const { status, messagePart, data } = parseEventData(event.data);
 
   // Handle componentInfo messages separately
-  if (data[0] === 73) {
-    logger.log("COMPONENT INFO: SECTION", data[1], "INDEX", data[2]);
+  if (data[0] === componentInfoMessageId) {
+    activityStack.value.push({
+      received: new Date(),
+      block: data[1],
+      index: data[2],
+    });
+    logger.log("COMPONENT INFO: BLOCK", data[1], "INDEX", data[2]);
     return;
   }
 
-  logger.log("SYSEX RESPONSE RECEIVED", status, data);
+  logger.log("SYSEX RESPONSE RECEIVED", status, messagePart, data);
 
   const request = getActiveRequest();
+  if (!request) {
+    logger.log("RESPONSE NOT MATCHED TO A REQUEST");
+    return;
+  }
+
   const { handler, command, expectedResponseCount } = request;
   const definition = requestDefinitions[command];
 
@@ -217,7 +248,7 @@ export const handleSysExResponse = (event: InputEventBase<"sysex">): void => {
 
 const prepareRequestPayload = (
   definition: IRequestDefinition,
-  config?: IBusRequestConfig
+  config?: IRequestConfig
 ) => {
   if ([RequestType.Custom, RequestType.Predefined].includes(definition.type)) {
     if (!definition.specialRequestId) {
@@ -238,23 +269,23 @@ const prepareRequestPayload = (
 
 export const sendMessage = async (params: IBusRequestConfig): Promise<any> => {
   const { command, handler, config } = params;
+  const definition = requestDefinitions[command];
 
-  // Only allow handshake req to go through while connecting
-  // Handshake needs to be done before we can consider state connected
-  if (command !== SysExCommand.Handshake && state.connectionPromise) {
+  // Delay any data requests until connection info messages exchanged
+  if (!definition.isConnectionInfoRequest && state.connectionPromise) {
     await state.connectionPromise;
   } else if (state.connectionState !== DeviceConnectionState.Open) {
     throw new Error("INVALID CONNECTION STATE, NOT OPEN, BUT NOT CONNECTING");
   }
 
   return new Promise((resolve, reject) => {
-    const definition = requestDefinitions[command];
     const payload = prepareRequestPayload(definition, config);
 
     addRequestToProcessor({
       command,
       payload,
       handler,
+      config,
       promiseResolve: resolve,
       promiseReject: reject,
       expectedResponseCount: 1,

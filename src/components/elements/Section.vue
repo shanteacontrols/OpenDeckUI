@@ -1,5 +1,5 @@
 <template>
-  <div class="section w-ful" :class="`${section}`">
+  <div class="section w-full" :class="`${section}`">
     <Heading v-if="title" preset="section-title" :class="`${sectionTitle}`">
       {{ title }}
     </Heading>

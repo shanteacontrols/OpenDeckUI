@@ -31,8 +31,11 @@ export const connectDeviceStoreToInput = async (
   state.input.addListener("sysex", "all", handleSysExResponse);
 
   state.connectionState = DeviceConnectionState.Open;
-  await handshake();
+  await prepareConnectionInfo();
   state.connectionPromise = (null as unknown) as Promise<any>;
+
+  // These requests won't run until connection promise is finished
+  await loadDeviceInfo();
 };
 
 const connectDevice = async (inputId: string): Promise<void> => {
@@ -52,14 +55,11 @@ const connectDevice = async (inputId: string): Promise<void> => {
   return state.connectionPromise;
 };
 
-const handshake = async (): Promise<any> => {
+const prepareConnectionInfo = async (): Promise<any> => {
   await sendMessage({
     command: SysExCommand.Handshake,
     handler: () => ({}),
   });
-};
-
-const loadDeviceInfo = async (): Promise<any> => {
   await sendMessage({
     command: SysExCommand.GetValueSize,
     handler: (valueSize: number) => setInfo({ valueSize }),
@@ -73,6 +73,9 @@ const loadDeviceInfo = async (): Promise<any> => {
     command: SysExCommand.GetFirmwareVersion,
     handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
   });
+};
+
+const loadDeviceInfo = async (): Promise<any> => {
   await sendMessage({
     command: SysExCommand.GetHardwareUid,
     handler: (boardName: string) => setInfo({ boardName }),

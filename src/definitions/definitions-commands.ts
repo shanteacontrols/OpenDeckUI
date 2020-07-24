@@ -59,12 +59,14 @@ const Boards = [
 export interface IRequestDefinition {
   type: RequestType;
   specialRequestId?: number;
-  predefinedBytes?: {
-    messageStatus: MessageStatus;
-    messagePart: 0; // @TODO: calculate on the fly
-    wish: Wish;
-    amount: Amount;
-  };
+  // Flag for priority messages needed for preparing data communication
+  isConnectionInfoRequest?: boolean;
+  // predefinedBytes?: {
+  //   messageStatus: MessageStatus;
+  //   messagePart: 0; // @TODO: calculate on the fly
+  //   wish: Wish;
+  //   amount: Amount;
+  // };
   getPayload?: (config?: any) => number[];
   parser?: (response: number[]) => any;
 }
@@ -104,14 +106,17 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [SysExCommand.Handshake]: {
     type: RequestType.Predefined,
     specialRequestId: 1,
+    isConnectionInfoRequest: true,
   },
   [SysExCommand.GetValueSize]: {
     type: RequestType.Predefined,
+    isConnectionInfoRequest: true,
     specialRequestId: 2,
     parser: (response: number[]): number => response[0],
   },
   [SysExCommand.GetValuesPerMessage]: {
     type: RequestType.Predefined,
+    isConnectionInfoRequest: true,
     specialRequestId: 3,
     parser: (response: number[]): number[] => response,
   },
@@ -121,6 +126,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [SysExCommand.GetFirmwareVersion]: {
     type: RequestType.Custom,
     specialRequestId: 86, // Hex: 56
+    isConnectionInfoRequest: true,
     parser: (response: number[]): string =>
       "v" + response[0] + "." + response[1] + "." + response[2],
   },
@@ -134,6 +140,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   },
   [SysExCommand.GetFirmwareVersionAndHardwareUid]: {
     type: RequestType.Custom,
+    isConnectionInfoRequest: true,
     specialRequestId: 67, // Hex: 43
   },
   [SysExCommand.GetNumberOfSupportedComponents]: {
@@ -179,12 +186,12 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
 
   [SysExCommand.GetComponentConfig]: {
     type: RequestType.Configuration,
-    predefinedBytes: {
-      messageStatus: MessageStatus.Request,
-      messagePart: 0, // @TODO: calculate on the fly
-      wish: Wish.Get,
-      amount: Amount.Single,
-    },
+    // predefinedBytes: {
+    //   messageStatus: MessageStatus.Request,
+    //   messagePart: 0, // @TODO: calculate on the fly
+    //   wish: Wish.Get,
+    //   amount: Amount.Single,
+    // },
     getPayload: (config: {
       block: number;
       section: number;
@@ -201,12 +208,12 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   },
   [SysExCommand.SetComponentConfig]: {
     type: RequestType.Configuration,
-    predefinedBytes: {
-      messageStatus: MessageStatus.Request,
-      messagePart: 0, // @TODO: calculate on the fly
-      wish: Wish.Set,
-      amount: Amount.Single,
-    },
+    // predefinedBytes: {
+    //   messageStatus: MessageStatus.Request,
+    //   messagePart: 0, // @TODO: calculate on the fly
+    //   wish: Wish.Set,
+    //   amount: Amount.Single,
+    // },
     getPayload: (config: {
       block: number;
       section: number;
