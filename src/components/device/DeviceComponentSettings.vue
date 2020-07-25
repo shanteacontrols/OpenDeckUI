@@ -1,6 +1,6 @@
 <template>
   <form class="" novalidate @submit.prevent="">
-    <slot :form="form" :onValueChange="onValueChange"></slot>
+    <slot :form="form" :onSettingChange="onSettingChange"></slot>
   </form>
 </template>
 
@@ -11,6 +11,7 @@ import { deviceStore } from "../../store";
 import { defaultTheme } from "./../../definitions";
 
 import Chevron from "../icons/Chevron.vue";
+import { logger } from "../../util";
 
 export default defineComponent({
   name: "DeviceComponentSettings",
@@ -33,7 +34,7 @@ export default defineComponent({
     // @TODO: show spinner while loading
     const loading = ref(true);
 
-    onMounted(async () => {
+    const loadData = async () => {
       loading.value = true;
       const componentConfig = await deviceStore.actions.getComponentSettings(
         props.componentDefinition,
@@ -43,9 +44,13 @@ export default defineComponent({
       Object.assign(form, componentConfig);
       // prevent initial value change from writing to device
       setTimeout(() => (loading.value = false), 100);
+    };
+
+    onMounted(async () => {
+      return loadData();
     });
 
-    const onValueChange = ({
+    const onSettingChange = ({
       key,
       value,
       section,
@@ -65,15 +70,21 @@ export default defineComponent({
         form[key] = value;
         loading.value = false;
       };
-      return deviceStore.actions.setComponentSectionValue(
-        {
-          block: props.componentBlock,
-          section,
-          index: settingIndex,
-        },
-        value,
-        onSuccess
-      );
+      return deviceStore.actions
+        .setComponentSectionValue(
+          {
+            block: props.componentBlock,
+            section,
+            index: settingIndex,
+          },
+          value,
+          onSuccess
+        )
+        .catch((error) => {
+          logger.error("ERROR WHILE SAVING SETTING DATA", error);
+          // Try reloading the form to reinit without failed fields
+          return loadData();
+        });
     };
 
     return {
@@ -82,7 +93,7 @@ export default defineComponent({
         ...toRefs(form),
       },
       loading,
-      onValueChange,
+      onSettingChange,
     };
   },
   components: {

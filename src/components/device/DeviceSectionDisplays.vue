@@ -5,7 +5,7 @@
     :component-definition="DisplayDefinitions"
     :default-data="defaultDisplayData"
   >
-    <template #default="{ form, onValueChange }">
+    <template #default="{ form, onSettingChange }">
       <Section title="Displays" class="w-full xl:w-1/3">
         <div
           class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2 xl:grid-cols-1"
@@ -13,22 +13,22 @@
           <FormField
             :value="form.enableDisplay"
             :field-definition="DisplayDefinitions.EnableDisplay"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.displayController"
             :field-definition="DisplayDefinitions.DisplayController"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.displayResolution"
             :field-definition="DisplayDefinitions.DisplayResolution"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.i2CAddress"
             :field-definition="DisplayDefinitions.I2CAddress"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
         </div>
       </Section>
@@ -39,27 +39,27 @@
           <FormField
             :value="form.welcomeMessage"
             :field-definition="DisplayDefinitions.WelcomeMessage"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.showVersionsOnStartup"
             :field-definition="DisplayDefinitions.ShowVersionsOnStartup"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.alternateMidiNoteDisplay"
             :field-definition="DisplayDefinitions.AlternateMidiNoteDisplay"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.midiEventRetentionTime"
             :field-definition="DisplayDefinitions.MidiEventRetentionTime"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.octaveNormalizationValue"
             :field-definition="DisplayDefinitions.OctaveNormalizationValue"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
         </div>
       </Section>

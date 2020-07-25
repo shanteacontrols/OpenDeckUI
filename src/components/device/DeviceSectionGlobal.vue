@@ -5,7 +5,7 @@
     :component-definition="GlobalDefinitions"
     :default-data="defaultGlobalData"
   >
-    <template #default="{ form, onValueChange }">
+    <template #default="{ form, onSettingChange }">
       <Section title="Global Presets" class="w-full xl:w-1/3">
         <div
           class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2 xl:grid-cols-1"
@@ -13,12 +13,12 @@
           <FormField
             :value="form.preservePresetState"
             :field-definition="GlobalDefinitions.PreservePresetState"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.activePreset"
             :field-definition="GlobalDefinitions.ActivePreset"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
         </div>
       </Section>
@@ -30,29 +30,30 @@
           <FormField
             :value="form.standardNoteOff"
             :field-definition="GlobalDefinitions.StandardNoteOff"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
             :value="form.dinMidiState"
             :field-definition="GlobalDefinitions.DinMidiState"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
-            v-if="form.dinMidiState"
-            :value="form.runningStatus"
-            :field-definition="GlobalDefinitions.RunningStatus"
-            @modified="onValueChange"
-          />
-          <FormField
-            v-if="form.dinMidiState"
+            v-if="!!form.dinMidiState"
             :value="form.midiMergeEnable"
             :field-definition="GlobalDefinitions.MidiMergeEnable"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
           <FormField
+            v-if="!!form.dinMidiState"
+            :value="form.runningStatus"
+            :field-definition="GlobalDefinitions.RunningStatus"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="!!form.midiMergeEnable"
             :value="form.midiMergeType"
             :field-definition="GlobalDefinitions.MidiMergeType"
-            @modified="onValueChange"
+            @modified="onSettingChange"
           />
         </div>
       </Section>

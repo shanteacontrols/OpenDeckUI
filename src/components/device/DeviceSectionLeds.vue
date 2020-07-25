@@ -6,7 +6,7 @@
       :component-definition="LedSectionDefinitions"
       :default-data="defaultLedSettingsData"
     >
-      <template #default="{ form, onValueChange }">
+      <template #default="{ form, onSettingChange }">
         <Section title="LEDs" class="border-b border-gray-900">
           <div
             class="w-full grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xl:gap-10"
@@ -14,17 +14,17 @@
             <FormField
               :value="form.blinkWithMidiClock"
               :field-definition="LedSectionDefinitions.BlinkWithMidiClock"
-              @modified="onValueChange"
+              @modified="onSettingChange"
             />
             <FormField
               :value="form.fadeSpeed"
               :field-definition="LedSectionDefinitions.FadeSpeed"
-              @modified="onValueChange"
+              @modified="onSettingChange"
             />
             <FormField
               :value="form.startupAnimation"
               :field-definition="LedSectionDefinitions.StartupAnimation"
-              @modified="onValueChange"
+              @modified="onSettingChange"
             />
           </div>
         </Section>
