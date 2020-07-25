@@ -6,11 +6,11 @@
     <router-link
       v-for="link in links"
       :key="link.name"
-      class="relative block clearfix py-3 lg:w-full lg:text-center xl:text-left hover:text-gray-300 font-bold cursor-pointer"
+      class="relative block clearfix py-3 lg:w-full lg:text-center xl:text-left text-gray-500 font-bold cursor-pointer"
       :to="{ name: link.name, params: { inputId } }"
       :class="{
         'border-transparent': !link.active,
-        'text-gray-300': link.active,
+        'text-yellow-500': link.active,
       }"
     >
       <span class="mx-2 lg:mb-1 lg:block xl:mx-2 xl:inline-block relative">

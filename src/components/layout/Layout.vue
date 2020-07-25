@@ -35,13 +35,15 @@
     </div>
 
     <div class="w-full bg-gray-900 md:flex self-end">
-      <nav class="w-full md:w-1/3 lg:max-w-xs order-2 md:order-1">
+      <nav
+        class="w-full md:w-1/3 flex-grow lg:max-w-xs order-2 md:order-1 pb-4"
+      >
         <div :class="`${box}`">
           <slot name="primary-footer"></slot>
         </div>
       </nav>
       <nav
-        class="w-full md:w-2/3 flex-1 order-1 md:order-2"
+        class="w-full md:w-2/3 flex-grow flex-1 order-1 md:order-2 pb-4"
         :class="{
           'xl:bg-black ': !hideSidebar,
         }"

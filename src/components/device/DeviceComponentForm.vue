@@ -11,32 +11,33 @@
           {{ componentIndex }}
         </strong>
       </h3>
+      <div class="hidden md:block md:flex-grow text-right">
+        <router-link
+          v-if="componentIndex > 0"
+          class="ml-6"
+          :class="{
+            'cursor-pointer': componentIndex > 0,
+            'text-yellow-700': componentIndex === 0,
+          }"
+          :to="{ params: { inputId, componentIndex: componentIndex - 1 } }"
+        >
+          <Chevron type="left" class="inline fill-current h-6 w-6" />
+          <small>previous</small>
+        </router-link>
 
-      <router-link
-        v-if="componentIndex > 0"
-        class="ml-2"
-        :class="{
-          'text-gray-600 hover:text-gray-400 cursor-pointer':
-            componentIndex > 0,
-          'text-gray-700': componentIndex === 0,
-        }"
-        :to="{ params: { inputId, componentIndex: componentIndex - 1 } }"
-      >
-        <Chevron type="left" class="fill-current h-6 w-6" />
-      </router-link>
-
-      <router-link
-        v-if="componentIndex < componentCount"
-        :class="{
-          'text-gray-600 hover:text-gray-400 cursor-pointer':
-            componentIndex < componentCount,
-          'text-gray-700': componentIndex === componentCount,
-          'ml-8': componentIndex === 0,
-        }"
-        :to="{ params: { inputId, componentIndex: componentIndex + 1 } }"
-      >
-        <Chevron type="right" class="fill-current h-6 w-6" />
-      </router-link>
+        <router-link
+          v-if="componentIndex < componentCount - 1"
+          class="ml-6"
+          :class="{
+            'cursor-pointer': componentIndex < componentCount,
+            'text-yellow-700': componentIndex === componentCount - 1,
+          }"
+          :to="{ params: { inputId, componentIndex: componentIndex + 1 } }"
+        >
+          <small>next</small>
+          <Chevron type="right" class="inline fill-current h-6 w-6" />
+        </router-link>
+      </div>
     </Heading>
 
     <slot

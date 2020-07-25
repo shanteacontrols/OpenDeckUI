@@ -21,3 +21,11 @@
   background-color: gray;
   border-radius: 20px;
 }
+
+a {
+  color: theme('colors.yellow.500');
+}
+
+a:hover {
+  color: theme('colors.yellow.300');
+}

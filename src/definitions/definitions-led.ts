@@ -9,7 +9,7 @@ export const defaultLedSettingsData: Dictionary<number> = {
 
 export const defaultLedComponentData: Dictionary<number> = {
   ledColorTesting: (null as unknown) as number,
-  ledBlinkTesting: (null as unknown) as number,
+  // ledBlinkTesting: (null as unknown) as number,
   activationId: (null as unknown) as number,
   rgbEnable: (null as unknown) as number,
   controlType: (null as unknown) as number,
@@ -48,7 +48,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
       { value: 9, text: "On - speed 9" },
       { value: 10, text: "On - speed 10" },
     ],
-    label: "Enable fade speed",
+    label: "Fade speed",
     helpText: `Speed at which LEDs transition between on and off state. Default value is 0, which means fading is disabled by default.`,
     block: Block.Led,
   },
@@ -82,15 +82,15 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: ``,
     block: Block.Led,
   },
-  LedBlinkTesting: {
-    key: "ledBlinkTesting",
-    type: DefinitionType.ComponentValue,
-    section: 1,
-    component: FormInputComponent.Toggle,
-    label: "LED blink testing",
-    helpText: ``,
-    block: Block.Led,
-  },
+  // LedBlinkTesting: {
+  //   key: "ledBlinkTesting",
+  //   type: DefinitionType.ComponentValue,
+  //   section: 1,
+  //   component: FormInputComponent.Toggle,
+  //   label: "LED blink testing",
+  //   helpText: ``,
+  //   block: Block.Led,
+  // },
   ActivationId: {
     key: "activationId",
     type: DefinitionType.ComponentValue,

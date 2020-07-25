@@ -17,21 +17,6 @@ D<template>
           Clear
         </button>
 
-        <!-- <button
-          v-for="(type, idx) in LogType"
-          :key="idx"
-          class="float-right ml-2 text-sm py-1 px-2 rounded-full focus:outline-none focus:shadow-outline"
-          :class="{
-            'bg-gray-600 text-gray-300 hover:bg-gray-800 hover:text-gray-600': logTypeFilter.includes(
-              type
-            ),
-            'bg-gray-800 text-gray-600 hover:bg-gray-600 hover:text-gray-300': !logTypeFilter.includes(
-              type
-            ),
-          }"
-        >
-            {{ type }}
-        </button> -->
         <FormToggle
           v-for="(type, idx) in LogType"
           :key="idx"

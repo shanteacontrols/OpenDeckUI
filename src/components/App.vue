@@ -61,15 +61,13 @@
       <ul class="list-reset items-center text-xs pt-3">
         <li>
           <a
-            class="inline-block text-gray-600 no-underline hover:text-gray-900 hover:underline py-1"
+            class="inline-block py-1"
             href="https://github.com/paradajz/OpenDeck"
             >OpenDeck GitHub repository</a
           >
         </li>
         <li>
-          <a
-            class="inline-block text-gray-600 no-underline hover:text-gray-900 hover:underline py-1"
-            href="https://shanteacontrols.com/"
+          <a class="inline-block py-1" href="https://shanteacontrols.com/"
             >Shantea controls</a
           >
         </li>

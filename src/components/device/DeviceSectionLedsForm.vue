@@ -18,11 +18,11 @@
             :field-definition="LedSectionDefinitions.LedColorTesting"
             @modified="onValueChange"
           />
-          <FormField
+          <!-- <FormField
             :value="form.ledBlinkTesting"
             :field-definition="LedSectionDefinitions.LedBlinkTesting"
             @modified="onValueChange"
-          />
+          /> -->
           <FormField
             :value="form.activationId"
             :field-definition="LedSectionDefinitions.ActivationId"

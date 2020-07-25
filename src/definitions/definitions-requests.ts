@@ -13,46 +13,57 @@ const Boards = [
   {
     name: "Arduino Leonardo",
     id: [24, 58, 76, 24],
+    oldId: [],
   },
   {
     name: "Arduino Mega",
     id: [9, 16, 0, 18],
+    oldId: [],
   },
   {
     name: "Arduino Pro Micro",
     id: [27, 107, 33, 98],
+    oldId: [],
   },
   {
     name: "Arduino Uno",
     id: [105, 67, 14, 63],
+    oldId: [],
   },
   {
     name: "Teensy++ 2.0",
     id: [112, 11, 64, 30],
+    oldId: [],
   },
   {
     name: "DubFocus",
     id: [57, 92, 109, 93],
+    oldId: [],
   },
   {
     name: "Bergamot",
     id: [48, 106, 107, 21],
+    oldId: [],
   },
   {
     name: "STM32F4 Discovery",
     id: [43, 19, 68, 122],
+    oldId: [],
   },
   {
     name: "Jamiel",
     id: [125, 12, 108, 80],
+    oldId: [],
   },
   {
     name: "Jose",
     id: [3, 109, 68, 30],
+    oldId: [],
   },
   {
     name: "Cardamom",
     id: [99, 82, 54, 48],
+    oldId: [],
   },
 ];
 
@@ -134,7 +145,10 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Custom,
     specialRequestId: 66, // Hex: 42
     parser: (value: number[]): string => {
-      const board = Boards.find((b: any) => arrayEqual(b.id, value));
+      const board = Boards.find(
+        (b: any) =>
+          arrayEqual(b.id, value) || (b.oldId && arrayEqual(b.oldId, value))
+      );
       return board ? board.name : "UNKNOWN BOARD";
     },
   },

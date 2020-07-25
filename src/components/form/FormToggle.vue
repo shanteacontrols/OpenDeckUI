@@ -8,16 +8,16 @@
         :checked="isChecked"
         class="toggle-checkbox absolute block w-6 h-6 rounded-full border-4 appearance-none cursor-pointer"
         :class="{
-          'right-0 border-green-400 bg-white': isChecked,
-          'border-gray-700 bg-gray-300': !isChecked,
+          'right-0 border-yellow-500 bg-yellow-500': isChecked,
+          'border-gray-700 hover:border-yellow-500 bg-gray-800': !isChecked,
         }"
         @change="toggle"
       />
       <span
-        class="toggle-label block overflow-hidden h-6 p-1 px-2 text-xs font-bold leading-4 rounded-full cursor-pointer"
+        class="toggle-label block border-2 border-gray-700 overflow-hidden h-6 px-3 text-xs font-bold leading-5 rounded-full cursor-pointer"
         :class="{
-          'bg-green-400 text-green-100 hover:text-white pr-8': isChecked,
-          'bg-gray-700 text-gray-500 hover:text-gray-300 pl-8': !isChecked,
+          'bg-gray-800 text-yellow-500 hover:text-gray-500 pr-8': isChecked,
+          'bg-gray-800 text-gray-500 hover:text-yellow-500 pl-8': !isChecked,
         }"
       >
         <slot></slot>

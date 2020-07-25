@@ -1,5 +1,5 @@
 export * from "./definitions-device";
-export * from "./definitions-commands";
+export * from "./definitions-requests";
 export * from "./definitions-errors";
 
 export * from "./definitions-global";
