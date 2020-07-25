@@ -13,12 +13,12 @@
       </h3>
 
       <router-link
-        v-if="componentIndex > 1"
+        v-if="componentIndex > 0"
         class="ml-2"
         :class="{
           'text-gray-600 hover:text-gray-400 cursor-pointer':
-            componentIndex > 1,
-          'text-gray-700': componentIndex === 1,
+            componentIndex > 0,
+          'text-gray-700': componentIndex === 0,
         }"
         :to="{ params: { inputId, componentIndex: componentIndex - 1 } }"
       >
@@ -31,7 +31,7 @@
           'text-gray-600 hover:text-gray-400 cursor-pointer':
             componentIndex < componentCount,
           'text-gray-700': componentIndex === componentCount,
-          'ml-8': componentIndex === 1,
+          'ml-8': componentIndex === 0,
         }"
         :to="{ params: { inputId, componentIndex: componentIndex + 1 } }"
       >

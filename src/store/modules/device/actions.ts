@@ -93,32 +93,37 @@ const loadDeviceInfo = async (): Promise<any> => {
 export const getComponentSettings = async (
   componentDefinition: Dictionary<IBlockDefinition>,
   block: number,
-  filterType: DefinitionType,
-  customIndex?: number
+  definitionType: DefinitionType,
+  componentIndex?: number
 ): Promise<any> => {
   const settings = {} as any;
 
-  const definitionsArray = convertDefinitionsToArray(
-    componentDefinition
-  ).filter(
-    (def) =>
-      !midiStore.state.disableUiControls.includes({
-        block,
-        key: def.key,
-      })
-  );
+  const filterByType = (definition: IBlockDefinition) =>
+    definition.type === definitionType;
+  const removeDisabled = (def: IBlockDefinition) =>
+    !midiStore.state.disableUiControls.includes({
+      block,
+      key: def.key,
+    });
 
-  const tasks = definitionsArray
-    .filter((definition) => definition.type === filterType)
+  const tasks = convertDefinitionsToArray(componentDefinition)
+    .filter(filterByType)
+    .filter(removeDisabled)
     .map((definition) => {
-      const adjustedIndex = customIndex ? customIndex : null;
       const index =
-        adjustedIndex || (definition as IBlockSettingDefinition).settingIndex;
-      const config = { block, section: definition.section, index };
+        typeof componentIndex === "number"
+          ? componentIndex
+          : (definition as IBlockSettingDefinition).settingIndex;
+      const config = {
+        block,
+        section: definition.section,
+        index,
+      };
 
       const handler = (result: number[]) => {
         settings[definition.key] = result[0];
       };
+
       return sendMessage({
         command: SysExCommand.GetValue,
         handler,
@@ -162,7 +167,7 @@ export interface IDeviceActions {
   getComponentSettings: (
     definition: Dictionary<IBlockDefinition>,
     block: Block,
-    filterType: DefinitionType,
+    definitionType: DefinitionType,
     customIndex?: number
   ) => Promise<any>;
   setComponentSectionValue: (

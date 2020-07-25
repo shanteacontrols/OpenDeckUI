@@ -11,11 +11,11 @@
           name: routeName,
           params: {
             inputId,
-            componentIndex,
+            componentIndex: componentIndex - 1,
           },
         }"
       >
-        <span class="text-xl font-bold">{{ componentIndex }}</span>
+        <span class="text-xl font-bold">{{ componentIndex - 1 }}</span>
       </router-link>
     </div>
   </Section>
