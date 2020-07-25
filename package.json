@@ -4,12 +4,12 @@
   "scripts": {
     "dev": "vite --port 3002",
     "build": "vite build",
+    "lint": "eslint -c .eslintrc.js --ext .ts ./src",
     "format": "prettier --write 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
     "@tailwindcss/ui": "^0.3.0",
     "body-scroll-lock": "^3.0.3",
-    "validatorjs": "^3.18.1",
     "vue": "^3.0.0-beta.20",
     "vue-router": "^4.0.0-beta.2",
     "webmidi": "^2.5.1"
