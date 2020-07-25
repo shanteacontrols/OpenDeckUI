@@ -1,5 +1,5 @@
 <template>
-  <Layout>
+  <Layout :hide-sidebar="isHomePage">
     <template #primary-header>
       <router-link :to="{ name: 'home' }" class="font-bold">
         OpenDeck UI

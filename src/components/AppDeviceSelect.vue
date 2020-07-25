@@ -1,13 +1,13 @@
 <template>
-  <Section class="h-screen" title="Please select a device">
+  <Section class="" title="Please select a device">
     <!-- Aviailable devices -->
-    <div class="mx-auto max-w-sm pt-24 text-left">
+    <div class="mx-auto max-w-sm mt-24 mb-32 text-left">
       <h3 v-if="!inputs.length" class="p-4 text-xl text-center">
         No devices found
       </h3>
       <div
         v-else
-        class="text-gray-700 bg-gray-300 rounded-lg text-left capitalize font-medium shadow-lg"
+        class="text-gray-700 bg-gray-300 rounded text-left capitalize font-medium shadow-lg"
       >
         <router-link
           v-for="(input, idx) in inputs"
@@ -15,8 +15,8 @@
           :to="{ name: 'device', params: { inputId: input.id } }"
           class="block p-4 hover:bg-white hover:text-gray-800 cursor-pointer"
           :class="{
-            'rounded-t-lg': idx === 0,
-            'rounded-b-lg': idx === inputs.length - 1,
+            'rounded-t': idx === 0,
+            'rounded-b': idx === inputs.length - 1,
             'border-gray-400 border-b': idx < inputs.length - 1,
           }"
         >

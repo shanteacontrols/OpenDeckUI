@@ -22,8 +22,10 @@ const connectionWatcher = async (): Promise<void> => {
   setTimeout(() => connectionWatcher(), 4000);
 };
 
+const filterByName = (input: Input) => input.name.startsWith("OpenDeck");
+
 const assignInputs = () => {
-  state.inputs = WebMidi.inputs;
+  state.inputs = WebMidi.inputs.filter(filterByName);
   state.outputs = WebMidi.outputs;
 };
 
