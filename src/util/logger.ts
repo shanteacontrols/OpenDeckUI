@@ -13,7 +13,10 @@ const error = (message: string, error?: Error): void => {
     return;
   }
 
-  console.error(message, error);
+  console.error(message);
+  if (error) {
+    console.error(error);
+  }
 };
 
 export const logger = {
