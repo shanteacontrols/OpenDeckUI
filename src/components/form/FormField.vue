@@ -28,7 +28,7 @@
 
     <div
       v-if="helpText"
-      class="text-xs leading-5"
+      class="text-sm leading-5"
       :class="{
         'text-gray-700': isDisabled,
         'text-gray-500': !isDisabled,
