@@ -52,6 +52,7 @@ import { defineComponent, reactive, toRefs, ref, onMounted, watch } from "vue";
 import { IBlockDefinition, DefinitionType } from "../../definitions";
 import Chevron from "../icons/Chevron.vue";
 import { deviceStoreMapped } from "../../store";
+import { logger } from "../../util";
 
 export default defineComponent({
   name: "DeviceComponentForm",
@@ -88,11 +89,9 @@ export default defineComponent({
   setup(props) {
     const loading = ref(true);
     const form = reactive(props.defaultData);
-    // const index1 = computed(() => router.currentRoute.value.params.index);
-    // const index = ref(Number(router.currentRoute.value.params.index));
     const componentIndex = toRefs(props).componentIndex;
 
-    const changed = async () => {
+    const loadData = async () => {
       loading.value = true;
       Object.assign(form, props.defaultData);
 
@@ -107,8 +106,8 @@ export default defineComponent({
       setTimeout(() => (loading.value = false), 100);
     };
 
-    onMounted(() => changed());
-    watch([componentIndex], () => changed());
+    onMounted(() => loadData());
+    watch([componentIndex], () => loadData());
 
     const onValueChange = ({
       key,
@@ -129,15 +128,21 @@ export default defineComponent({
         loading.value = false;
       };
 
-      return deviceStoreMapped.setComponentSectionValue(
-        {
-          block: props.componentBlock,
-          section,
-          index: componentIndex.value,
-        },
-        value,
-        onSuccess
-      );
+      return deviceStoreMapped
+        .setComponentSectionValue(
+          {
+            block: props.componentBlock,
+            section,
+            index: componentIndex.value,
+          },
+          value,
+          onSuccess
+        )
+        .catch((error) => {
+          logger.error("ERROR WHILE SAVING COMPONENT VALUE DATA", error);
+          // Try reloading the form to reinit without failed fields
+          return loadData();
+        });
     };
 
     return {

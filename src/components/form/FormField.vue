@@ -1,30 +1,46 @@
 <template>
   <div class="form-field">
-    <label class="block mb-2 text-sm text-gray-400 font-bold">
+    <label
+      class="block mb-2 text-sm font-bold"
+      :class="{
+        'text-gray-600': isDisabled,
+        'text-gray-400': !isDisabled,
+      }"
+    >
       {{ label }}
     </label>
-    <div class="mb-2">
-      <component
-        :is="fieldComponent"
-        :value="input"
-        v-bind="componentProps"
-        :class="{
-          'border-red-500 text-red-500': errors.length,
-        }"
-        @changed="onValueChange"
-      />
+    <div v-if="!isDisabled">
+      <div class="mb-2">
+        <component
+          :is="fieldComponent"
+          :value="input"
+          v-bind="componentProps"
+          :class="{
+            'border-red-500 text-red-500': errors.length,
+          }"
+          @changed="onValueChange"
+        />
+      </div>
     </div>
+    <p v-else class="text-red-500 text-sm mb-2">Not supported by hardware</p>
 
     <FormErrorDisplay class="text-red-500" :errors="errors" />
 
-    <div v-if="helpText" class="text-xs leading-5 text-gray-500">
+    <div
+      v-if="helpText"
+      class="text-xs leading-5"
+      :class="{
+        'text-gray-700': isDisabled,
+        'text-gray-500': !isDisabled,
+      }"
+    >
       {{ helpText }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs } from "vue";
+import { defineComponent, toRefs, computed } from "vue";
 import {
   FormInputComponent,
   IBlockDefinition,
@@ -41,6 +57,7 @@ import FormSelect from "./FormSelect.vue";
 import FormToggle from "./FormToggle.vue";
 import FormInput from "./FormInput.vue";
 import FormErrorDisplay from "./FormErrorDisplay.vue";
+import { midiStoreMapped } from "../../store";
 
 const getValidatorForDefinition = (definition: IBlockDefinition) => {
   const validators = [required()] as any[];
@@ -90,26 +107,31 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const { key, section, label, helpText } = props.fieldDefinition;
+    const { block, key, section, label, helpText } = props.fieldDefinition;
 
     const settingIndex = (props.fieldDefinition as IBlockSettingDefinition)
       .settingIndex;
 
+    const isDisabled = computed(() =>
+      midiStoreMapped.isControlDisabled(block, key)
+    );
+
     const valueRef = toRefs(props).value;
     const validators = getValidatorForDefinition(props.fieldDefinition);
+    const valueChangeHandler = (value: any) => {
+      if (Number(value) !== valueRef.value) {
+        emit("modified", {
+          key,
+          value: Number(value),
+          section,
+          settingIndex, // defined for settings only
+        });
+      }
+    };
     const { input, errors, onValueChange } = useInputValidator(
       valueRef,
       validators,
-      (value) => {
-        if (Number(value) !== valueRef.value) {
-          emit("modified", {
-            key,
-            value: Number(value),
-            section,
-            settingIndex, // defined for settings only
-          });
-        }
-      }
+      valueChangeHandler
     );
 
     const componentProps = {
@@ -133,6 +155,8 @@ export default defineComponent({
       input,
       errors,
       onValueChange,
+      isDisabled,
+      ...midiStoreMapped,
     };
   },
   components: {

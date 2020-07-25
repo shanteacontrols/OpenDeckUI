@@ -16,7 +16,9 @@ import {
   IRequestDefinition,
   ErrorCode,
 } from "../../../definitions";
+import { findDefinitionByRequestConfig } from "../../../definitions/definition-map";
 import { activityLog } from "../activity-log";
+import { midiStore } from "../midi";
 
 const componentInfoMessageId = 73;
 
@@ -149,7 +151,7 @@ const getActiveRequest = () => {
 
 const onRequestDone = (
   id: number,
-  status: number,
+  responseCode: number,
   responseData: number[],
   parsed: number | number[] | string
 ) => {
@@ -163,11 +165,32 @@ const onRequestDone = (
   }
 
   // Check response status
-  if (status > 1) {
+  if (responseCode > 1) {
     request.state = RequestState.Error;
-    const errorDefinition = getErrorDefinition(status);
+    const errorDefinition = getErrorDefinition(responseCode);
     request.errorMessage = errorDefinition.description;
     request.promiseReject(errorDefinition.code);
+
+    activityLog.actions.addError({
+      message: errorDefinition.description,
+      errorCode: errorDefinition.code,
+      requestId: id,
+    });
+
+    if (responseCode === ErrorCode.NOT_SUPPORTED) {
+      if (!request.config) {
+        return;
+      }
+
+      const definition = findDefinitionByRequestConfig(request.config);
+      if (!definition) {
+        return;
+      }
+
+      // Disable this control in UI
+      midiStore.actions.disableControl(request.config.block, definition.key);
+    }
+
     // @TODO: show alert/modal with error details
   } else {
     request.state = RequestState.Done;
