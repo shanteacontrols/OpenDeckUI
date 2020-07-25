@@ -17,7 +17,7 @@ D<template>
           Clear
         </button>
 
-        <button
+        <!-- <button
           v-for="(type, idx) in LogType"
           :key="idx"
           class="float-right ml-2 text-sm py-1 px-2 rounded-full focus:outline-none focus:shadow-outline"
@@ -29,10 +29,18 @@ D<template>
               type
             ),
           }"
-          @click="() => toggleFilterType(type)"
+        >
+            {{ type }}
+        </button> -->
+        <FormToggle
+          v-for="(type, idx) in LogType"
+          :key="idx"
+          class="float-right ml-2"
+          :value="logTypeFilter.includes(type)"
+          @changed="() => toggleFilterType(type)"
         >
           {{ type }}
-        </button>
+        </FormToggle>
       </Heading>
     </template>
 
@@ -120,6 +128,7 @@ import DeviceActivityError from "./DeviceActivityError.vue";
 import DeviceActivityInfoMessage from "./DeviceActivityInfoMessage.vue";
 import DeviceActivityMidi from "./DeviceActivityMidi.vue";
 import DeviceActivityRequest from "./DeviceActivityRequest.vue";
+import FormToggle from "../../form/FormToggle.vue";
 
 export default defineComponent({
   name: "DeviceActivity",
@@ -168,6 +177,7 @@ export default defineComponent({
     DeviceActivityInfoMessage,
     DeviceActivityMidi,
     DeviceActivityRequest,
+    FormToggle,
   },
 });
 </script>

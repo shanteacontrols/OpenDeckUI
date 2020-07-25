@@ -1,7 +1,7 @@
 <template>
   <div>
     <label
-      class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in"
+      class="relative inline-block w-auto align-middle select-none transition duration-200 ease-in"
     >
       <input
         type="checkbox"
@@ -14,12 +14,14 @@
         @change="toggle"
       />
       <span
-        class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"
+        class="toggle-label block overflow-hidden h-6 p-1 px-2 text-xs font-bold leading-4 rounded-full cursor-pointer"
         :class="{
-          'bg-green-400': isChecked,
-          'bg-gray-700': !isChecked,
+          'bg-green-400 text-green-100 hover:text-white pr-8': isChecked,
+          'bg-gray-700 text-gray-500 hover:text-gray-300 pl-8': !isChecked,
         }"
-      ></span>
+      >
+        <slot></slot>
+      </span>
     </label>
   </div>
 </template>
@@ -30,14 +32,10 @@ import { defineComponent, computed } from "vue";
 export default defineComponent({
   name: "FormToggle",
   props: {
-    value: Number,
-    label: {
-      required: true,
-      type: String,
-    },
+    value: [Boolean, Number],
   },
   setup(props, { emit }) {
-    const isChecked = computed(() => props.value === 1);
+    const isChecked = computed(() => !!props.value);
 
     // Note: we are working with 0 and 1 not Bool
     const toggle = () => emit("changed", isChecked.value ? 0 : 1);
