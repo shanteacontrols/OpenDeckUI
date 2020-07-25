@@ -37,28 +37,31 @@ D<template>
     </template>
 
     <table v-if="filteredLog.length" class="w-full mb-2" colspan="2">
-      <thead class="text-sm text-left border-b border-gray-900">
-        <tr>
-          <th class="p-2 text-right">h:m:s</th>
-          <th class="p-2">ms</th>
-          <th class="p-2">Event</th>
-          <th class="p-2">Body</th>
+      <thead class="flex text-sm text-left w-full border-b border-gray-900">
+        <tr class="flex w-full">
+          <th class="p-2 w-1/12 text-right">h:m:s</th>
+          <th class="p-2 w-1/12">ms</th>
+          <th class="p-2 w-2/12">Event</th>
+          <th class="p-2 w-8/12">Body</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody
+        class="flex flex-col overflow-y-scroll w-full"
+        style="height: 50vh;"
+      >
         <tr
           v-for="(logEntry, idx) in filteredLog"
           :key="idx"
-          class="px-2 py-1 text-sm border-b border-gray-900 last:border-b-0 odd:bg-gray-900"
+          class="flex w-full text-sm border-b border-gray-900 last:border-b-0 odd:bg-gray-900"
           :class="{ 'text-red-500': logEntry.type === LogType.Error }"
         >
-          <td class="pr-2 text-right">
+          <td class="p-2 w-1/12 text-right">
             {{ formatDate(logEntry.time) }}
           </td>
-          <td>
+          <td class="p-2 w-1/12">
             {{ logEntry.time.getMilliseconds() }}
           </td>
-          <td>
+          <td class="p-2 w-2/12">
             <template
               v-if="logEntry.type === LogType.Request || logEntry.requestId"
             >
@@ -75,7 +78,7 @@ D<template>
               MIDI
             </span>
           </td>
-          <td>
+          <td class="w-8/12">
             <DeviceActivityError
               v-if="logEntry.type === LogType.Error"
               :log-entry="logEntry"
@@ -138,9 +141,9 @@ export default defineComponent({
     };
 
     const filteredLog = computed(() =>
-      activityLogMapped.stack.value.filter((log: ILogEntry) =>
-        logTypeFilter.includes(log.type)
-      )
+      activityLogMapped.stack.value
+        .filter((log: ILogEntry) => logTypeFilter.includes(log.type))
+        .reverse()
     );
 
     const clear = () => {
