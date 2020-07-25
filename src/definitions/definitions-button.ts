@@ -1,4 +1,5 @@
 import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
+import { Block } from "./definitions-device";
 
 export const defaultButtonData: Dictionary<number> = {
   midiType: (null as unknown) as number,
@@ -10,6 +11,7 @@ export const defaultButtonData: Dictionary<number> = {
 
 export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
   MidiType: {
+    block: Block.Button,
     key: "midiType",
     type: DefinitionType.ComponentValue,
     section: 0,
@@ -59,6 +61,7 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
       is Note. If Program Change message is selected, button will send
       program change event on successive presses (momentary/latching modes
       are ignored`,
+    block: Block.Button,
   },
   // @TODO: remove this field?
   MidiId: {
@@ -70,6 +73,7 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "MIDI ID",
     helpText: "Denotes note/program change MIDI number",
+    block: Block.Button,
   },
   OnVelocity: {
     key: "onVelocity",
@@ -80,6 +84,7 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "On velocity",
     helpText: "Velocity button sends when it's pressed.",
+    block: Block.Button,
   },
   MidiChannel: {
     key: "midiChannel",
@@ -90,5 +95,6 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Input,
     label: "MIDI channel",
     helpText: "MIDI channel for current component.",
+    block: Block.Button,
   },
 };

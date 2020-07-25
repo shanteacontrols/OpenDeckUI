@@ -1,4 +1,5 @@
 import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
+import { Block } from "./definitions-device";
 
 export const defaultAnalogData: Dictionary<number> = {
   enabled: (null as unknown) as number,
@@ -15,6 +16,7 @@ export const defaultAnalogData: Dictionary<number> = {
 
 export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
   Enabled: {
+    block: Block.Analog,
     key: "enabled",
     type: DefinitionType.ComponentValue,
     section: 0,
@@ -29,6 +31,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Toggle,
     label: "Invert direction",
     helpText: ``,
+    block: Block.Analog,
   },
   MidiType: {
     key: "midiType",
@@ -47,6 +50,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     ],
     label: "Type",
     helpText: ``,
+    block: Block.Analog,
   },
   MidiIdLSB: {
     key: "midiIdLSB",
@@ -57,6 +61,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "MIDI ID LSB",
     helpText: "MIDI LSB channel for current component",
+    block: Block.Analog,
   },
   MidiIdMSB: {
     key: "midiIdMSB",
@@ -67,6 +72,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "MIDI ID MSB",
     helpText: "MIDI MSB channel for current component",
+    block: Block.Analog,
   },
   LowerCCLimitLSB: {
     key: "lowerCCLimitLSB",
@@ -77,6 +83,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "Lower CC limit / LSB",
     helpText: "",
+    block: Block.Analog,
   },
   LowerCCLimitMSB: {
     key: "lowerCCLimitMSB",
@@ -87,6 +94,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "Lower CC limit / MSB",
     helpText: "",
+    block: Block.Analog,
   },
   UpperCCLimitLSB: {
     key: "upperCCLimitLSB",
@@ -97,6 +105,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "Upper CC limit / LSB",
     helpText: "",
+    block: Block.Analog,
   },
   UpperCCLimitMSB: {
     key: "upperCCLimitMSB",
@@ -107,6 +116,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "Higher CC limit / MSB",
     helpText: "",
+    block: Block.Analog,
   },
   MidiChannel: {
     key: "midiChannel",
@@ -117,5 +127,6 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 16,
     label: "MIDI channel",
     helpText: "Denotes the MIDI CC number for each analog component.",
+    block: Block.Analog,
   },
 };

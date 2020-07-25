@@ -12,97 +12,101 @@ export enum ErrorCode {
   WRITE = 12,
   NOT_SUPPORTED = 13,
   READ = 14,
+  UKNOWN_ERROR = 704,
+  UI_QUEUE_REQ_ID_CONFLICT = 711,
+  UI_QUEUE_REQ_DATA_MISSING = 712,
+  UI_QUEUE_REQ_ALREADY_ACTIVE = 713,
+  UI_QUEUE_REQ_NONE_ACTIVE = 714,
 }
 
 interface IErrorDefinition {
-  code: number;
-  key: string;
+  code: ErrorCode;
   description: string;
 }
 
 const unknownError: IErrorDefinition = {
-  code: 14,
-  key: "READ",
+  code: ErrorCode.UKNOWN_ERROR,
   description: "Missing error description (READ error).",
 };
 
-export const errorDefinitions: IErrorDefinition[] = [
-  {
-    code: 2,
-    key: "STATUS",
+export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
+  [ErrorCode.UKNOWN_ERROR]: unknownError,
+  [ErrorCode.STATUS]: {
+    code: ErrorCode.STATUS,
     description:
       "This error happens when MESSAGE_STATUS isn't REQUEST (0) in request.",
   },
-  {
-    code: 3,
-    key: "HANDSHAKE",
+  [ErrorCode.HANDSHAKE]: {
+    code: ErrorCode.HANDSHAKE,
     description:
       "This error is returned when request is correct, but handshake request hasn't been sent to board (or SysEx connection has been closed).",
   },
-  {
-    code: 4,
-    key: "WISH",
+  [ErrorCode.WISH]: {
+    code: ErrorCode.WISH,
     description:
       "This error is returned when WISH is anything other than GET, SET or BACKUP.",
   },
-  {
-    code: 5,
-    key: "AMOUNT",
+  [ErrorCode.AMOUNT]: {
+    code: ErrorCode.AMOUNT,
     description:
       "This error is returned when AMOUNT is anything other than SINGLE or ALL.",
   },
-  {
-    code: 6,
-    key: "BLOCK",
+  [ErrorCode.BLOCK]: {
+    code: ErrorCode.BLOCK,
     description: "This error is returned when BLOCK byte is incorrect.",
   },
-  {
-    code: 7,
-    key: "SECTION",
+  [ErrorCode.SECTION]: {
+    code: ErrorCode.SECTION,
     description: "This error is returned when SECTION byte is incorrect.",
   },
-  {
-    code: 8,
-    key: "PART",
+  [ErrorCode.PART]: {
+    code: ErrorCode.PART,
     description: "This error is returned when message part is incorrect.",
   },
-  {
-    code: 9,
-    key: "INDEX",
+  [ErrorCode.INDEX]: {
+    code: ErrorCode.INDEX,
     description: "This error is returned when wanted parameter is incorrect.",
   },
-  {
-    code: 10,
-    key: "NEW_VALUE",
+  [ErrorCode.NEW_VALUE]: {
+    code: ErrorCode.NEW_VALUE,
     description: "This error is returned when NEW_VALUE is incorrect.",
   },
-  {
-    code: 11,
-    key: "MSG_LENGTH",
+  [ErrorCode.MSG_LENGTH]: {
+    code: ErrorCode.MSG_LENGTH,
     description: "This error is returned when request is too short.",
   },
-  {
-    code: 12,
-    key: "WRITE",
+  [ErrorCode.WRITE]: {
+    code: ErrorCode.WRITE,
     description:
       "This error is returned when writing new value to board has failed. This can happen if EEPROM on board is damaged (less likely) or if new value is incorrect (more likely).",
   },
-  {
-    code: 13,
-    key: "NOT_SUPPORTED",
+  [ErrorCode.NOT_SUPPORTED]: {
+    code: ErrorCode.NOT_SUPPORTED,
     description: "This error is returned when X is not supported by the board.",
   },
-  {
-    code: 14,
-    key: "READ",
+  [ErrorCode.READ]: {
+    code: ErrorCode.READ,
     description: "Missing error description (READ error).",
   },
-];
-
-export const getErrorDefinition = (value: number): IErrorDefinition => {
-  const definition = errorDefinitions.find(
-    (def: IErrorDefinition) => def.code === value
-  );
-
-  return definition || unknownError;
+  [ErrorCode.UI_QUEUE_REQ_ID_CONFLICT]: {
+    code: ErrorCode.UI_QUEUE_REQ_ID_CONFLICT,
+    description:
+      "A Qeue Request tried to acquire next increment ID but it was already used by another request.",
+  },
+  [ErrorCode.UI_QUEUE_REQ_DATA_MISSING]: {
+    code: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
+    description: "A Qeue Request failed to provide data.",
+  },
+  [ErrorCode.UI_QUEUE_REQ_ALREADY_ACTIVE]: {
+    code: ErrorCode.UI_QUEUE_REQ_ALREADY_ACTIVE,
+    description: "A Qeue Request was found already active upon starting.",
+  },
+  [ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE]: {
+    code: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
+    description:
+      "No Qeue Request was found already active upon receiving a MIDI response.",
+  },
 };
+
+export const getErrorDefinition = (code: ErrorCode): IErrorDefinition =>
+  errorDefinitions[code] || unknownError;

@@ -1,4 +1,5 @@
 import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
+import { Block } from "./definitions-device";
 
 export const defaultGlobalData: Dictionary<number> = {
   preservePresetState: (null as unknown) as number,
@@ -12,6 +13,7 @@ export const defaultGlobalData: Dictionary<number> = {
 
 export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
   PreservePresetState: {
+    block: Block.Global,
     key: "preservePresetState",
     type: DefinitionType.Setting,
     section: 2,
@@ -21,6 +23,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `When disabled, first preset will always be loaded on board power on. Otherwise, preset configured here is remembered.`,
   },
   ActivePreset: {
+    block: Block.Global,
     key: "activePreset",
     type: DefinitionType.Setting,
     section: 2,
@@ -45,6 +48,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Sets active preset.`,
   },
   StandardNoteOff: {
+    block: Block.Global,
     key: "standardNoteOff",
     type: DefinitionType.Setting,
     section: 0,
@@ -54,6 +58,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `When disabled, Note On with velocity 0 will be sent as note off. If enabled, true Note Off event will be sent instead.`,
   },
   RunningStatus: {
+    block: Block.Global,
     key: "runningStatus",
     type: DefinitionType.Setting,
     section: 0,
@@ -63,6 +68,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `This setting applies only to DIN MIDI out. This setting can cause issues on older MIDI gear so it's best to leave it disabled.`,
   },
   DinMidiState: {
+    block: Block.Global,
     key: "dinMidiState",
     type: DefinitionType.Setting,
     section: 0,
@@ -72,6 +78,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Enable or disable DIN MIDI input and output.`,
   },
   MidiMergeEnable: {
+    block: Block.Global,
     key: "midiMergeEnable",
     type: DefinitionType.Setting,
     section: 0,
@@ -81,6 +88,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `When enabled, all data received via DIN MIDI can be forwarded to USB, DIN MIDI out or both interfaces.`,
   },
   MidiMergeType: {
+    block: Block.Global,
     key: "midiMergeType",
     type: DefinitionType.Setting,
     section: 1,

@@ -40,6 +40,7 @@ export interface ISelectOption {
 }
 
 interface IBlockDefinitionBase {
+  block: Block;
   component: FormInputComponent;
   key: string;
   section: number;

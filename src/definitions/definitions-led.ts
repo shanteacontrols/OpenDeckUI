@@ -1,4 +1,5 @@
 import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
+import { Block } from "./definitions-device";
 
 export const defaultLedSettingsData: Dictionary<number> = {
   blinkWithMidiClock: (null as unknown) as number,
@@ -19,6 +20,7 @@ export const defaultLedComponentData: Dictionary<number> = {
 export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
   // Settings definitions
   BlinkWithMidiClock: {
+    block: Block.Led,
     key: "blinkWithMidiClock",
     type: DefinitionType.Setting,
     section: 2,
@@ -48,6 +50,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     ],
     label: "Enable fade speed",
     helpText: `Speed at which LEDs transition between on and off state. Default value is 0, which means fading is disabled by default.`,
+    block: Block.Led,
   },
   StartupAnimation: {
     key: "startupAnimation",
@@ -57,6 +60,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Toggle,
     label: "Start-up animation",
     helpText: `Enables or disables LED animation. If animation is enabled, all LEDS will slowly turn on and off when board is powered.`,
+    block: Block.Led,
   },
   // Component definitions
   LedColorTesting: {
@@ -76,6 +80,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     ],
     label: "LED color testing",
     helpText: ``,
+    block: Block.Led,
   },
   LedBlinkTesting: {
     key: "ledBlinkTesting",
@@ -84,6 +89,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Toggle,
     label: "LED blink testing",
     helpText: ``,
+    block: Block.Led,
   },
   ActivationId: {
     key: "activationId",
@@ -94,6 +100,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "Activation ID",
     helpText: ``,
+    block: Block.Led,
   },
   RGBEnable: {
     key: "rgbEnable",
@@ -102,6 +109,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Toggle,
     label: "RGB Enable",
     helpText: ``,
+    block: Block.Led,
   },
   ControlType: {
     key: "controlType",
@@ -122,6 +130,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     ],
     label: "Control type",
     helpText: ``,
+    block: Block.Led,
   },
   ActivationVelocity: {
     key: "activationVelocity",
@@ -132,6 +141,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 127,
     label: "Activation Velocity",
     helpText: "",
+    block: Block.Led,
   },
   MidiChannel: {
     key: "midiChannel",
@@ -142,5 +152,6 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 10,
     label: "MIDI channel",
     helpText: "Denotes note/program change MIDI number",
+    block: Block.Led,
   },
 };

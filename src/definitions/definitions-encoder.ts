@@ -1,4 +1,5 @@
 import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
+import { Block } from "./definitions-device";
 
 export const defaultEncoderData: Dictionary<number> = {
   enabled: (null as unknown) as number,
@@ -14,6 +15,7 @@ export const defaultEncoderData: Dictionary<number> = {
 
 export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
   Enabled: {
+    block: Block.Encoder,
     key: "enabled",
     type: DefinitionType.ComponentValue,
     section: 0,
@@ -22,6 +24,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Enables or disables encoder. All encoders are disabled by default.`,
   },
   InvertDirection: {
+    block: Block.Encoder,
     key: "invertDirection",
     type: DefinitionType.ComponentValue,
     section: 1,
@@ -30,6 +33,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `When enabled, encoder will send inverted MIDI CC messages in different directions. Default option is disabled for all encoders.`,
   },
   EncodingMode: {
+    block: Block.Encoder,
     key: "encodingMode",
     type: DefinitionType.ComponentValue,
     section: 2,
@@ -49,6 +53,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Denotes encoder encoding mode. Default option is 7Fh01h for all encoders.`,
   },
   MidiIdLSB: {
+    block: Block.Encoder,
     key: "midiIdLSB",
     type: DefinitionType.ComponentValue,
     section: 3,
@@ -59,6 +64,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: "MIDI LSB channel for current component",
   },
   MidiChannel: {
+    block: Block.Encoder,
     key: "midiChannel",
     type: DefinitionType.ComponentValue,
     section: 4,
@@ -69,6 +75,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: "Denotes the MIDI CC number for each encoder.",
   },
   PulsesPerStep: {
+    block: Block.Encoder,
     key: "pulsesPerStep",
     type: DefinitionType.ComponentValue,
     section: 5,
@@ -82,6 +89,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Amount of pulses encoder generates for single step.`,
   },
   Acceleration: {
+    block: Block.Encoder,
     key: "acceleration",
     type: DefinitionType.ComponentValue,
     section: 6,
@@ -96,6 +104,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `-`,
   },
   MidiIdMSB: {
+    block: Block.Encoder,
     key: "midiIdMSB",
     type: DefinitionType.ComponentValue,
     section: 7,
@@ -106,6 +115,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: "MIDI MSB channel for current component",
   },
   RemoteSync: {
+    block: Block.Encoder,
     key: "remoteSync",
     type: DefinitionType.ComponentValue,
     section: 8,
