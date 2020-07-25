@@ -5,7 +5,7 @@
   "editor.formatOnPaste": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
-    "source.fixAll.tslint": true
+    "source.fixAll.tslint": false
   },
   // VETUR
   "vetur.validation.template": true,
