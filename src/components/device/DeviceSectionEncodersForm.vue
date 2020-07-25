@@ -8,15 +8,8 @@
     route-name="device-encoders"
     :default-data="defaultEncoderData"
   >
-    <template #default="{ loading, form, showMsbControls, onValueChange }">
+    <template #default="{ form, showMsbControls, onValueChange }">
       <Section>
-        <div
-          v-if="loading"
-          class="absolute flex inset-0 opacity-75 bg-gray-900"
-        >
-          <Spinner class="self-center" />
-        </div>
-
         <div class="pb-8 grid gap-6 grid-cols-1 md:grid-cols-2 md:gap-10">
           <FormField
             :value="form.enabled"
