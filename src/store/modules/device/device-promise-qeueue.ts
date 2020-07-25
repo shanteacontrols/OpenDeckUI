@@ -14,8 +14,9 @@ import {
   getErrorDefinition,
   SysExCommand,
   IRequestDefinition,
+  ErrorCode,
 } from "../../../definitions";
-import { activityLog } from "./activity-log";
+import { activityLog } from "../activity-log";
 
 const componentInfoMessageId = 73;
 
@@ -31,7 +32,7 @@ export interface IRequestInProcess {
   state: RequestState;
   command: SysExCommand;
   promiseResolve: () => void;
-  promiseReject: () => void;
+  promiseReject: (code?: ErrorCode) => void;
   config?: IRequestConfig;
   payload: number[];
   handler: (data: any) => void;
@@ -67,7 +68,10 @@ const addRequestToProcessor = (
 ) => {
   const id = requestProcessor.maxRequestId++;
   if (requestStack.value[id]) {
-    activityLog.addError({ message: `Request ID already used: ${id}` });
+    activityLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQ_ID_CONFLICT,
+      requestId: id,
+    });
     return;
   }
 
@@ -84,7 +88,7 @@ const addRequestToProcessor = (
   };
 
   requestStack.value[id] = requestToStore;
-  activityLog.addRequest(id);
+  activityLog.actions.addRequest(id);
 
   if (!requestProcessor.activeRequestId.value) {
     startRequest(id);
@@ -104,13 +108,17 @@ export const purgeFinishedRequests = (): void => {
 const startRequest = (id: number) => {
   const request = requestStack.value[id];
   if (!request) {
-    activityLog.addError({ message: `Request data missing for ${id}` });
+    activityLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
+      requestId: id,
+    });
     return;
   }
 
   if (requestProcessor.activeRequestId.value) {
-    activityLog.addError({
-      message: `Cannot start request ${id}, ${requestProcessor.activeRequestId.value} is already active`,
+    activityLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQ_ALREADY_ACTIVE,
+      requestId: id,
     });
     return;
   }
@@ -125,13 +133,15 @@ const startRequest = (id: number) => {
 const getActiveRequest = () => {
   const id = requestProcessor.activeRequestId.value;
   if (!id) {
-    activityLog.addError({ message: `No active request found` });
     return;
   }
 
   const request = requestStack.value[id];
   if (!request) {
-    activityLog.addError({ message: `Active request data missing for ${id}` });
+    activityLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
+      requestId: id,
+    });
   }
 
   return request;
@@ -145,17 +155,19 @@ const onRequestDone = (
 ) => {
   const request = requestStack.value[id];
   if (!request) {
-    activityLog.addError({ message: `CANNOT FIND REQUEST ID:  ${id}` });
+    activityLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
+      requestId: id,
+    });
     return;
   }
 
   // Check response status
   if (status > 1) {
     request.state = RequestState.Error;
-    request.promiseReject();
-
     const errorDefinition = getErrorDefinition(status);
     request.errorMessage = errorDefinition.description;
+    request.promiseReject(errorDefinition.code);
     // @TODO: show alert/modal with error details
   } else {
     request.state = RequestState.Done;
@@ -188,7 +200,7 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   if (data[0] === componentInfoMessageId) {
     // @TODO: componentInfo messages should trigger a blink on ui element
-    // activityLog.addInfo({
+    // activityLog.actions.addInfo({
     //   block: data[1],
     //   index: data[2],
     //   payload: data,
@@ -198,8 +210,8 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   const request = getActiveRequest();
   if (!request || request.state !== RequestState.Sent) {
-    activityLog.addError({
-      message: "RESPONSE NOT MATCHED TO A REQUEST",
+    activityLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
       payload: data,
     });
     return;

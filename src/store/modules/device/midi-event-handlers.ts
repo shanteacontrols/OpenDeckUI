@@ -1,18 +1,18 @@
 import { Input } from "webmidi";
-import { activityLog } from "./activity-log";
+import { activityLog } from "../activity-log";
 
 export const attachMidiEventHandlers = (input: Input): void => {
-  input.addListener("noteon", "all", activityLog.addMidi);
-  input.addListener("noteoff", "all", activityLog.addMidi);
-  input.addListener("controlchange", "all", activityLog.addMidi);
-  input.addListener("programchange", "all", activityLog.addMidi);
-  input.addListener("pitchbend", "all", activityLog.addMidi);
-  input.addListener("clock", "all", activityLog.addMidi);
-  input.addListener("start", "all", activityLog.addMidi);
-  input.addListener("continue", "all", activityLog.addMidi);
-  input.addListener("stop", "all", activityLog.addMidi);
-  input.addListener("activesensing", "all", activityLog.addMidi);
-  input.addListener("reset", "all", activityLog.addMidi);
+  input.addListener("noteon", "all", activityLog.actions.addMidi);
+  input.addListener("noteoff", "all", activityLog.actions.addMidi);
+  input.addListener("controlchange", "all", activityLog.actions.addMidi);
+  input.addListener("programchange", "all", activityLog.actions.addMidi);
+  input.addListener("pitchbend", "all", activityLog.actions.addMidi);
+  input.addListener("clock", "all", activityLog.actions.addMidi);
+  input.addListener("start", "all", activityLog.actions.addMidi);
+  input.addListener("continue", "all", activityLog.actions.addMidi);
+  input.addListener("stop", "all", activityLog.actions.addMidi);
+  input.addListener("activesensing", "all", activityLog.actions.addMidi);
+  input.addListener("reset", "all", activityLog.actions.addMidi);
   // @TODO: check which WebMidi version removed nrpn and why?
   // input.addListener("nrpn", "all", handleNrpn);
 };

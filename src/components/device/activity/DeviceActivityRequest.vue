@@ -1,12 +1,18 @@
 <template>
   <div class="p-2 border-b border-gray-800 last:border-b-0">
-    <strong v-if="request.config" class="mr-2 text-gray-400">
+    <strong class="mr-1 text-gray-400">{{ request.command }}</strong>
+    <strong v-if="request.config" class="mr-1 text-gray-400">
       {{ getDefinitionLabel(request.config) }}
     </strong>
-    <strong class="mr-1 text-gray-400">{{ request.command }}</strong>
+    <strong
+      v-if="request.config && request.config.value"
+      class="mr-2 text-gray-500"
+    >
+      - {{ request.config.value }}
+    </strong>
 
-    <small class="float-right"
-      >{{ request.state }}
+    <small class="float-right">
+      {{ request.state }}
       <span v-if="request.time.finished">
         in
         <strong
@@ -24,9 +30,9 @@
         >
       </span>
     </small>
-    <template v-if="request.responseData">
+    <template v-if="request.payload">
       <br />
-      <span class=""> Sent {{ request.payload }} </span>
+      <span class="">Sent {{ request.payload }} </span>
     </template>
     <template v-if="request.responseData">
       <br />
@@ -51,26 +57,10 @@ import {
   IRequestInProcess,
   RequestState,
 } from "../../../store/modules/device/device-promise-qeueue";
-import {
-  Block,
-  GlobalDefinitions,
-  ButtonSectionDefinitions,
-  EncoderSectionDefinitions,
-  AnalogSectionDefinitions,
-  LedSectionDefinitions,
-  DisplayDefinitions,
-} from "../../../definitions";
+import { Block, DefinitionType } from "../../../definitions";
+import { findDefinitionByRequestConfig } from "../../../definitions/definition-map";
 import { getDifferenceInMs } from "../../../util";
 import { IRequestConfig } from "../../../store/modules/device/state";
-
-const definitionMap = {
-  [Block.Global as number]: GlobalDefinitions,
-  [Block.Button as number]: ButtonSectionDefinitions,
-  [Block.Encoder as number]: EncoderSectionDefinitions,
-  [Block.Analog as number]: AnalogSectionDefinitions,
-  [Block.Led as number]: LedSectionDefinitions,
-  [Block.Display as number]: DisplayDefinitions,
-};
 
 export default defineComponent({
   name: "DeviceActivityRequest",
@@ -82,13 +72,18 @@ export default defineComponent({
   },
   setup() {
     const getDefinitionLabel = (config: IRequestConfig): string => {
-      const definition = definitionMap[config.block];
-      const section = Object.values(definition).find(
-        (def) => def.section === config.section
-      );
+      const definition = findDefinitionByRequestConfig(config);
+      if (!definition) {
+        return "";
+      }
 
-      return `${Block[config.block]} ${config.index} ${
-        section && section.label
+      const indexString =
+        definition.type === DefinitionType.Setting
+          ? " - "
+          : `# ${config.index}`;
+
+      return `- ${Block[config.block]} ${indexString} ${
+        definition && definition.label
       }`;
     };
 

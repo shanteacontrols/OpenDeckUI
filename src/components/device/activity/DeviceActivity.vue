@@ -1,4 +1,4 @@
-<template>
+D<template>
   <Section class="border-t border-gray-800">
     <template #title>
       <Heading preset="section-title">
@@ -50,6 +50,7 @@
           v-for="(logEntry, idx) in filteredLog"
           :key="idx"
           class="px-2 py-1 text-sm border-b border-gray-900 last:border-b-0 odd:bg-gray-900"
+          :class="{ 'text-red-500': logEntry.type === LogType.Error }"
         >
           <td class="pr-2 text-right">
             {{ formatDate(logEntry.time) }}
@@ -58,15 +59,27 @@
             {{ logEntry.time.getMilliseconds() }}
           </td>
           <td>
-            {{ logEntry.type }}
-            <span v-if="logEntry.type === LogType.Request">
-              {{ logEntry.id }}
+            <template
+              v-if="logEntry.type === LogType.Request || logEntry.requestId"
+            >
+              <span> Request {{ logEntry.id || logEntry.requestId }} </span>
+              <br />
+            </template>
+            <span v-if="logEntry.type === LogType.Error">
+              Error {{ logEntry.errorCode }}
+            </span>
+            <span v-else-if="logEntry.type === LogType.Info">
+              Component info
+            </span>
+            <span v-else-if="logEntry.type === LogType.Midi">
+              MIDI
             </span>
           </td>
           <td>
-            <div v-if="logEntry.type === LogType.Error">
-              {{ logEntry }}
-            </div>
+            <DeviceActivityError
+              v-if="logEntry.type === LogType.Error"
+              :log-entry="logEntry"
+            />
             <DeviceActivityRequest
               v-if="logEntry.type === LogType.Request"
               :request="requestStack[logEntry.id]"
@@ -93,14 +106,17 @@ import {
   requestStack,
 } from "../../../store/modules/device/device-promise-qeueue";
 import {
-  activityLog,
+  activityLogMapped,
   LogType,
-} from "../../../store/modules/device/activity-log";
+  ILogEntry,
+} from "../../../store/modules/activity-log";
 import { Block } from "../../../definitions";
 import { formatDate } from "../../../util";
-import DeviceActivityRequest from "./DeviceActivityRequest.vue";
+
+import DeviceActivityError from "./DeviceActivityError.vue";
 import DeviceActivityInfoMessage from "./DeviceActivityInfoMessage.vue";
 import DeviceActivityMidi from "./DeviceActivityMidi.vue";
+import DeviceActivityRequest from "./DeviceActivityRequest.vue";
 
 export default defineComponent({
   name: "DeviceActivity",
@@ -114,7 +130,6 @@ export default defineComponent({
 
     const toggleFilterType = (type: LogType) => {
       const pos = logTypeFilter.indexOf(type);
-      console.log(logTypeFilter, type, pos);
       if (pos !== -1) {
         logTypeFilter.splice(pos, 1);
       } else {
@@ -123,11 +138,13 @@ export default defineComponent({
     };
 
     const filteredLog = computed(() =>
-      activityLog.stack.value.filter((log) => logTypeFilter.includes(log.type))
+      activityLogMapped.stack.value.filter((log: ILogEntry) =>
+        logTypeFilter.includes(log.type)
+      )
     );
 
     const clear = () => {
-      activityLog.clear();
+      activityLogMapped.clear();
       purgeFinishedRequests();
     };
 
@@ -135,7 +152,7 @@ export default defineComponent({
       clear,
       requestStack,
       filteredLog,
-      activityLog,
+      activityLog: activityLogMapped,
       Block,
       formatDate,
       LogType,
@@ -144,9 +161,10 @@ export default defineComponent({
     };
   },
   components: {
-    DeviceActivityRequest,
-    DeviceActivityMidi,
+    DeviceActivityError,
     DeviceActivityInfoMessage,
+    DeviceActivityMidi,
+    DeviceActivityRequest,
   },
 });
 </script>

@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { ILogEntryInfo } from "../../../store/modules/device/activity-log";
+import { ILogEntryInfo } from "../../../store/modules/activity-log";
 import { formatDate } from "../../../util";
 import { Block } from "../../../definitions";
 

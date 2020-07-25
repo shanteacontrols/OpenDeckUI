@@ -2,6 +2,7 @@ import WebMidi, { Input, Output } from "webmidi";
 import { state, MidiConnectionState } from "./state";
 import { isConnected, isConnecting } from "./computed";
 import { logger } from "../../../util";
+import { Block } from "../../../definitions";
 
 // Local states
 
@@ -84,6 +85,16 @@ const newMidiLoadPromise = async (): Promise<void> =>
     }, true);
   });
 
+const isControlDisabled = (block: Block, key: string): boolean =>
+  state.disableUiControls.some((d) => d.key === key && d.block === block);
+
+const disableControl = (block: Block, key: string): void => {
+  const isDisabled = isControlDisabled(block, key);
+  if (!isDisabled) {
+    state.disableUiControls.push({ block, key });
+  }
+};
+
 // Export
 
 export interface IMidiActions {
@@ -92,10 +103,14 @@ export interface IMidiActions {
   findInputOutput: (
     inputId: string
   ) => Promise<{ input: Input; output: Output }>;
+  disableControl: (block: Block, key: string) => void;
+  isControlDisabled: (block: Block, key: string) => boolean;
 }
 
 export const midiStoreActions: IMidiActions = {
   startConnectionWatcher: () => connectionWatcher(),
   loadMidi,
   findInputOutput,
+  disableControl,
+  isControlDisabled,
 };

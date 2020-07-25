@@ -12,6 +12,7 @@ import { sendMessage, handleSysExEvent } from "./device-promise-qeueue";
 import { attachMidiEventHandlers } from "./midi-event-handlers";
 import { Input, Output } from "webmidi";
 import { midiStore } from "../midi";
+import { logger } from "../../../util";
 
 // Actions
 
@@ -96,13 +97,23 @@ export const getComponentSettings = async (
   customIndex?: number
 ): Promise<any> => {
   const settings = {} as any;
-  const definitionsArray = convertDefinitionsToArray(componentDefinition);
+
+  const definitionsArray = convertDefinitionsToArray(
+    componentDefinition
+  ).filter(
+    (def) =>
+      !midiStore.state.disableUiControls.includes({
+        block,
+        key: def.key,
+      })
+  );
 
   const tasks = definitionsArray
     .filter((definition) => definition.type === filterType)
     .map((definition) => {
+      const adjustedIndex = customIndex ? customIndex : null;
       const index =
-        customIndex || (definition as IBlockSettingDefinition).settingIndex;
+        adjustedIndex || (definition as IBlockSettingDefinition).settingIndex;
       const config = { block, section: definition.section, index };
 
       const handler = (result: number[]) => {
@@ -112,7 +123,9 @@ export const getComponentSettings = async (
         command: SysExCommand.GetValue,
         handler,
         config,
-      });
+      }).catch((error) =>
+        logger.error("Failed to read component config", error)
+      );
     });
 
   await Promise.all(tasks);
@@ -131,7 +144,7 @@ export const setComponentSectionValue = async (
   value: number,
   handler: (val: any) => void
 ): Promise<any> =>
-  await sendMessage({
+  sendMessage({
     command: SysExCommand.SetValue,
     handler,
     config: {

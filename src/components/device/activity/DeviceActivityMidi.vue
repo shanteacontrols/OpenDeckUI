@@ -35,7 +35,7 @@
 import { defineComponent } from "vue";
 import { formatDate } from "../../../util";
 import { Block } from "../../../definitions";
-import { ILogEntryMidi } from "../../../store/modules/device/activity-log";
+import { ILogEntryMidi } from "../../../store/modules/activity-log";
 
 export default defineComponent({
   name: "DeviceActivityMidi",
