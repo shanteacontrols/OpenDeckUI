@@ -1,5 +1,5 @@
 <template>
-  <DeviceComponentForm
+  <DeviceForm
     :component-block="Block.Analog"
     :component-index="componentIndex"
     :component-count="count"
@@ -78,7 +78,7 @@
         </div>
       </Section>
     </template>
-  </DeviceComponentForm>
+  </DeviceForm>
 </template>
 
 <script lang="ts">
@@ -90,7 +90,7 @@ import {
 } from "../../definitions";
 import router from "../../router";
 import { deviceStoreMapped } from "../../store";
-import DeviceComponentForm from "./DeviceComponentForm.vue";
+import DeviceForm from "./DeviceForm.vue";
 
 export default defineComponent({
   name: "DeviceSectionAnalogsForm",
@@ -108,7 +108,7 @@ export default defineComponent({
     };
   },
   components: {
-    DeviceComponentForm,
+    DeviceForm,
   },
 });
 </script>

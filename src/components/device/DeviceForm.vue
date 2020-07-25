@@ -44,6 +44,7 @@
       :form="form"
       :showMsbContros="showMsbControls"
       :onValueChange="onValueChange"
+      :loading="loading"
     ></slot>
   </form>
 </template>
@@ -56,7 +57,7 @@ import { deviceStoreMapped } from "../../store";
 import { logger } from "../../util";
 
 export default defineComponent({
-  name: "DeviceComponentForm",
+  name: "DeviceForm",
   props: {
     componentBlock: {
       type: Number,

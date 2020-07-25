@@ -1,6 +1,9 @@
 <template>
   <form class="" novalidate @submit.prevent="">
     <slot :form="form" :onSettingChange="onSettingChange"></slot>
+    <div v-if="loading" class="absolute flex inset-0 opacity-75 bg-gray-900">
+      <Spinner class="self-center" />
+    </div>
   </form>
 </template>
 
@@ -14,7 +17,7 @@ import Chevron from "../icons/Chevron.vue";
 import { logger } from "../../util";
 
 export default defineComponent({
-  name: "DeviceComponentSettings",
+  name: "DeviceSettings",
   props: {
     componentBlock: {
       type: Number,

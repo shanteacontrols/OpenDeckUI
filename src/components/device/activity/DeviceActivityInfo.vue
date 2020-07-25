@@ -16,7 +16,7 @@ import { formatDate } from "../../../util";
 import { Block } from "../../../definitions";
 
 export default defineComponent({
-  name: "DeviceActivityInfoMessage",
+  name: "DeviceActivityInfo",
   props: {
     logEntry: {
       required: true,

@@ -12,7 +12,7 @@
         :to="{ name: 'device', params: { inputId } }"
         class="font-bold"
       >
-        {{ boardName }}
+        Board: {{ boardName }}
         <small v-if="firmwareVersion">- Firmware {{ firmwareVersion }} </small>
       </router-link>
     </template>

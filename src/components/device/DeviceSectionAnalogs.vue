@@ -1,5 +1,5 @@
 <template>
-  <DeviceComponentGrid
+  <DeviceGrid
     class="analogs"
     route-name="device-analogs-form"
     :count="count"
@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import DeviceComponentGrid from "./DeviceComponentGrid.vue";
+import DeviceGrid from "./DeviceGrid.vue";
 import { deviceStoreMapped } from "../../store";
 
 export default defineComponent({
@@ -20,7 +20,7 @@ export default defineComponent({
     };
   },
   components: {
-    DeviceComponentGrid,
+    DeviceGrid,
   },
 });
 </script>

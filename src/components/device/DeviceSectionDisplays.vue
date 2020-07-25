@@ -1,5 +1,5 @@
 <template>
-  <DeviceComponentSettings
+  <DeviceSettings
     class="displays flex flex-wrap flex-grow"
     :component-block="Block.Display"
     :component-definition="DisplayDefinitions"
@@ -64,7 +64,7 @@
         </div>
       </Section>
     </template>
-  </DeviceComponentSettings>
+  </DeviceSettings>
 </template>
 
 <script lang="ts">
@@ -74,7 +74,7 @@ import {
   defaultDisplayData,
   DisplayDefinitions,
 } from "../../definitions";
-import DeviceComponentSettings from "./DeviceComponentSettings.vue";
+import DeviceSettings from "./DeviceSettings.vue";
 import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
@@ -88,7 +88,7 @@ export default defineComponent({
     };
   },
   components: {
-    DeviceComponentSettings,
+    DeviceSettings,
   },
 });
 </script>

@@ -27,7 +27,7 @@ import { defaultTheme } from "./../../definitions";
 import { deviceStoreMapped } from "../../store";
 
 export default defineComponent({
-  name: "DeviceComponentGrid",
+  name: "DeviceGrid",
   props: {
     count: Number,
     title: String,

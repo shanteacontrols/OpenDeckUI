@@ -1,6 +1,6 @@
 <template>
   <div class="leds">
-    <DeviceComponentSettings
+    <DeviceSettings
       class="w-full"
       :component-block="Block.Led"
       :component-definition="LedSectionDefinitions"
@@ -29,9 +29,9 @@
           </div>
         </Section>
       </template>
-    </DeviceComponentSettings>
+    </DeviceSettings>
 
-    <DeviceComponentGrid
+    <DeviceGrid
       class="w-full"
       route-name="device-leds-form"
       :count="count"
@@ -48,8 +48,8 @@ import {
   LedSectionDefinitions,
 } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
-import DeviceComponentSettings from "./DeviceComponentSettings.vue";
-import DeviceComponentGrid from "./DeviceComponentGrid.vue";
+import DeviceSettings from "./DeviceSettings.vue";
+import DeviceGrid from "./DeviceGrid.vue";
 
 export default defineComponent({
   name: "DeviceSectionLeds",
@@ -63,8 +63,8 @@ export default defineComponent({
     };
   },
   components: {
-    DeviceComponentSettings,
-    DeviceComponentGrid,
+    DeviceSettings,
+    DeviceGrid,
   },
 });
 </script>

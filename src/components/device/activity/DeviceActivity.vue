@@ -80,7 +80,7 @@ D<template>
               v-if="logEntry.type === LogType.Request"
               :request="requestStack[logEntry.id]"
             />
-            <DeviceActivityInfoMessage
+            <DeviceActivityInfo
               v-if="logEntry.type === LogType.Info"
               :log-entry="logEntry"
             />
@@ -110,7 +110,7 @@ import { Block } from "../../../definitions";
 import { formatDate } from "../../../util";
 
 import DeviceActivityError from "./DeviceActivityError.vue";
-import DeviceActivityInfoMessage from "./DeviceActivityInfoMessage.vue";
+import DeviceActivityInfo from "./DeviceActivityInfo.vue";
 import DeviceActivityMidi from "./DeviceActivityMidi.vue";
 import DeviceActivityRequest from "./DeviceActivityRequest.vue";
 import FormToggle from "../../form/FormToggle.vue";
@@ -159,7 +159,7 @@ export default defineComponent({
   },
   components: {
     DeviceActivityError,
-    DeviceActivityInfoMessage,
+    DeviceActivityInfo,
     DeviceActivityMidi,
     DeviceActivityRequest,
     FormToggle,

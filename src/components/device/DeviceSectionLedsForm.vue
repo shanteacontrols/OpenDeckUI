@@ -1,5 +1,5 @@
 <template>
-  <DeviceComponentForm
+  <DeviceForm
     :component-block="Block.Led"
     :component-index="componentIndex"
     :component-count="count"
@@ -51,7 +51,7 @@
         </div>
       </Section>
     </template>
-  </DeviceComponentForm>
+  </DeviceForm>
 </template>
 
 <script lang="ts">
@@ -64,7 +64,7 @@ import {
 } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
 import router from "../../router";
-import DeviceComponentForm from "./DeviceComponentForm.vue";
+import DeviceForm from "./DeviceForm.vue";
 
 export default defineComponent({
   name: "DeviceSectionLedsForm",
@@ -83,7 +83,7 @@ export default defineComponent({
     };
   },
   components: {
-    DeviceComponentForm,
+    DeviceForm,
   },
 });
 </script>

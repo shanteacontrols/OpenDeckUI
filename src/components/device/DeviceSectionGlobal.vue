@@ -1,5 +1,5 @@
 <template>
-  <DeviceComponentSettings
+  <DeviceSettings
     class="global flex flex-wrap flex-grow"
     :component-block="Block.Global"
     :component-definition="GlobalDefinitions"
@@ -58,13 +58,13 @@
         </div>
       </Section>
     </template>
-  </DeviceComponentSettings>
+  </DeviceSettings>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Block, defaultGlobalData, GlobalDefinitions } from "../../definitions";
-import DeviceComponentSettings from "./DeviceComponentSettings.vue";
+import DeviceSettings from "./DeviceSettings.vue";
 import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
@@ -78,7 +78,7 @@ export default defineComponent({
     };
   },
   components: {
-    DeviceComponentSettings,
+    DeviceSettings,
   },
 });
 </script>
