@@ -103,8 +103,7 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   },
   [ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE]: {
     code: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
-    description:
-      "No Qeue Request was found already active upon receiving a MIDI response.",
+    description: "No Request active in Qeue upon receiving a MIDI response.",
   },
 };
 

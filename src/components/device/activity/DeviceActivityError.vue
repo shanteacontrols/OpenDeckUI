@@ -2,6 +2,9 @@
   <div class="p-2 border-b border-gray-800 last:border-b-0">
     <span class="text-red-500">
       {{ logEntry.message }}
+      {{
+        logEntry.errorCode && getErrorDefinition(logEntry.errorCode).description
+      }}
     </span>
   </div>
 </template>
@@ -9,7 +12,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { RequestState } from "../../../store/modules/device/device-promise-qeueue";
-import { Block } from "../../../definitions";
+import { Block, getErrorDefinition } from "../../../definitions";
 import { ILogEntryError } from "../../../store/modules/activity-log";
 
 export default defineComponent({
@@ -24,6 +27,7 @@ export default defineComponent({
     return {
       RequestState,
       Block,
+      getErrorDefinition,
     };
   },
 });
