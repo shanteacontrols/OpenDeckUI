@@ -17,15 +17,17 @@ D<template>
           Clear
         </button>
 
-        <FormToggle
-          v-for="(type, idx) in LogType"
-          :key="idx"
-          class="float-right ml-2"
-          :value="logTypeFilter.includes(type)"
-          @changed="() => toggleFilterType(type)"
-        >
-          {{ type }}
-        </FormToggle>
+        <div class="clearfix pt-4 md:pt-0 md:clear-none md:float-right">
+          <FormToggle
+            v-for="(type, idx) in LogType"
+            :key="idx"
+            class="inline-block float-left md:float-right mr-2 mb-2"
+            :value="logTypeFilter.includes(type)"
+            @changed="() => toggleFilterType(type)"
+          >
+            {{ type }}
+          </FormToggle>
+        </div>
       </Heading>
     </template>
 

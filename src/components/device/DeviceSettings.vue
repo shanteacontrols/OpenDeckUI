@@ -1,9 +1,9 @@
 <template>
-  <form class="" novalidate @submit.prevent="">
-    <slot :form="form" :onSettingChange="onSettingChange"></slot>
+  <form class="relative" novalidate @submit.prevent="">
     <div v-if="loading" class="absolute flex inset-0 opacity-75 bg-gray-900">
       <Spinner class="self-center" />
     </div>
+    <slot :form="form" :onSettingChange="onSettingChange"></slot>
   </form>
 </template>
 

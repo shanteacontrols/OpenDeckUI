@@ -34,9 +34,7 @@ export const connectDeviceStoreToInput = async (
   state.input.addListener("sysex", "all", handleSysExEvent);
   attachMidiEventHandlers(state.input);
 
-  state.connectionState = DeviceConnectionState.Open;
-  await prepareConnectionInfo();
-  state.connectionPromise = (null as unknown) as Promise<any>;
+  await openConnection();
 
   // These requests won't run until connection promise is finished
   await loadDeviceInfo();
@@ -52,6 +50,7 @@ const connectDevice = async (inputId: string): Promise<void> => {
   if (state.connectionPromise) {
     return state.connectionPromise;
   }
+  state.connectionState = DeviceConnectionState.Pending;
 
   // All subsequent connect attempts should receive the same promise as response
   state.connectionPromise = connectDeviceStoreToInput(inputId);
@@ -59,7 +58,27 @@ const connectDevice = async (inputId: string): Promise<void> => {
   return state.connectionPromise;
 };
 
-const prepareConnectionInfo = async (): Promise<any> => {
+export const closeConnection = async (): Promise<any> => {
+  state.connectionState = DeviceConnectionState.Closed;
+  await sendMessage({
+    command: SysExCommand.CloseConnection,
+    handler: () => (state.connectionState = DeviceConnectionState.Closed),
+  });
+};
+
+export const ensureConnection = async (): Promise<any> => {
+  if (state.connectionState !== DeviceConnectionState.Closed) {
+    return;
+  }
+
+  await sendMessage({
+    command: SysExCommand.Handshake,
+    handler: () => ({}),
+  });
+  state.connectionState = DeviceConnectionState.Open;
+};
+
+export const openConnection = async (): Promise<any> => {
   await sendMessage({
     command: SysExCommand.Handshake,
     handler: () => ({}),
@@ -77,6 +96,8 @@ const prepareConnectionInfo = async (): Promise<any> => {
     command: SysExCommand.GetFirmwareVersion,
     handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
   });
+  state.connectionState = DeviceConnectionState.Open;
+  state.connectionPromise = (null as unknown) as Promise<any>;
 };
 
 const loadDeviceInfo = async (): Promise<any> => {
@@ -101,10 +122,7 @@ export const getComponentSettings = async (
   const filterByType = (definition: IBlockDefinition) =>
     definition.type === definitionType;
   const removeDisabled = (def: IBlockDefinition) =>
-    !midiStore.state.disableUiControls.includes({
-      block,
-      key: def.key,
-    });
+    !midiStore.actions.isControlDisabled(def);
 
   const tasks = convertDefinitionsToArray(componentDefinition)
     .filter(filterByType)
@@ -163,6 +181,8 @@ export const setComponentSectionValue = async (
 export interface IDeviceActions {
   setInfo: (data: Partial<IDeviceState>) => void;
   connectDevice: (inputId: string) => Promise<void>;
+  closeConnection: () => Promise<void>;
+  ensureConnection: () => Promise<void>;
   loadDeviceInfo: () => Promise<void>;
   getComponentSettings: (
     definition: Dictionary<IBlockDefinition>,
@@ -180,6 +200,8 @@ export interface IDeviceActions {
 export const deviceStoreActions: IDeviceActions = {
   setInfo,
   connectDevice,
+  closeConnection,
+  ensureConnection,
   loadDeviceInfo,
   getComponentSettings,
   setComponentSectionValue,

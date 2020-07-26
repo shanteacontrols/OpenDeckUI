@@ -1,9 +1,29 @@
 import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
 import { Block } from "./definitions-device";
 
+export enum EncodingMode {
+  Controlchange7F = 0,
+  Controlchange3F = 1,
+  Programchange = 2,
+  ControlchangeContinuous7 = 3,
+  ControlchangeContinuous14 = 8,
+  Changepreset = 4,
+  Pitchbend = 5,
+  NRPN6 = 6,
+  NRPN7 = 7,
+}
+
+export const ShowAccelerationOnTypes = [
+  EncodingMode.Pitchbend,
+  EncodingMode.ControlchangeContinuous7,
+  EncodingMode.ControlchangeContinuous14,
+  EncodingMode.NRPN6,
+  EncodingMode.NRPN7,
+];
+
 export const defaultEncoderData: Dictionary<number> = {
   enabled: (null as unknown) as number,
-  invertDirection: (null as unknown) as number,
+  invertState: (null as unknown) as number,
   encodingMode: (null as unknown) as number,
   midiIdLSB: (null as unknown) as number,
   midiChannel: (null as unknown) as number,
@@ -23,13 +43,13 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     label: "Enabled",
     helpText: `Enables or disables encoder. All encoders are disabled by default.`,
   },
-  InvertDirection: {
+  InvertState: {
     block: Block.Encoder,
-    key: "invertDirection",
+    key: "invertState",
     type: DefinitionType.ComponentValue,
     section: 1,
     component: FormInputComponent.Toggle,
-    label: "Invert direction",
+    label: "Invert",
     helpText: `When enabled, encoder will send inverted MIDI CC messages in different directions. Default option is disabled for all encoders.`,
   },
   EncodingMode: {
@@ -39,17 +59,23 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     section: 2,
     component: FormInputComponent.Select,
     options: [
-      { value: 0, text: "Control change - 7Fh01h" },
-      { value: 1, text: "Control change - 3Fh41h" },
-      { value: 2, text: "Program change" },
-      { value: 3, text: "Control change -Continuous 7-bit" },
-      { value: 8, text: "Control change - Continuous 14-bit" },
-      { value: 4, text: "Change preset" },
-      { value: 5, text: "Pitch bend" },
-      { value: 6, text: "NRPN/7-bit" },
-      { value: 7, text: "NRPN/14-bit" },
+      { value: EncodingMode.Controlchange7F, text: "Control change - 7Fh01h" },
+      { value: EncodingMode.Controlchange3F, text: "Control change - 3Fh41h" },
+      { value: EncodingMode.Programchange, text: "Program change" },
+      {
+        value: EncodingMode.ControlchangeContinuous7,
+        text: "Control change -Continuous 7-bit",
+      },
+      {
+        value: EncodingMode.ControlchangeContinuous14,
+        text: "Control change - Continuous 14-bit",
+      },
+      { value: EncodingMode.Changepreset, text: "Change preset" },
+      { value: EncodingMode.Pitchbend, text: "Pitch bend" },
+      { value: EncodingMode.NRPN6, text: "NRPN/7-bit" },
+      { value: EncodingMode.NRPN7, text: "NRPN/14-bit" },
     ],
-    label: "Invert direction",
+    label: "Encoding mode",
     helpText: `Denotes encoder encoding mode. Default option is 7Fh01h for all encoders.`,
   },
   MidiIdLSB: {
@@ -60,7 +86,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "MIDI ID LSB",
+    label: "MIDI ID (LSB)",
     helpText: "MIDI LSB channel for current component",
   },
   MidiChannel: {
@@ -70,7 +96,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     section: 4,
     component: FormInputComponent.Input,
     min: 1,
-    max: 10,
+    max: 16,
     label: "MIDI channel",
     helpText: "Denotes the MIDI CC number for each encoder.",
   },
@@ -111,7 +137,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "MIDI ID MSB",
+    label: "MIDI ID (MSB)",
     helpText: "MIDI MSB channel for current component",
   },
   RemoteSync: {

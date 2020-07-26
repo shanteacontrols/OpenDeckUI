@@ -32,6 +32,9 @@
         >
           <p>WebMidi connecting</p>
         </div>
+        <div class="absolute flex inset-0 opacity-75 bg-gray-900">
+          <Spinner class="self-center" />
+        </div>
       </Section>
       <Section
         v-else-if="!isConnected"
@@ -77,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, onUnmounted } from "vue";
 import { midiStoreMapped, deviceStoreMapped } from "../store";
 import router from "../router";
 import Layout from "./layout/Layout.vue";
@@ -93,6 +96,8 @@ export default defineComponent({
     );
 
     const { isConnected, isConnecting } = midiStoreMapped;
+
+    onUnmounted(() => deviceStoreMapped.closeConnection);
 
     return {
       isHomePage,

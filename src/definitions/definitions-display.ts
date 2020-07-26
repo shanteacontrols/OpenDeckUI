@@ -82,12 +82,12 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
         text: "0",
       },
       {
-        value: 1,
-        text: "0X78",
+        value: 120,
+        text: "0X78 (120)",
       },
       {
-        value: 2,
-        text: "0X7A",
+        value: 122,
+        text: "0X7A (122)",
       },
     ],
     label: "I2C address.",

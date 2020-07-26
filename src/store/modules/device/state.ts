@@ -42,7 +42,6 @@ export type IDeviceState = {
   encoders: number;
   analogInputs: number;
   LEDs: number;
-  showMsbControls: boolean;
 };
 
 // State
@@ -61,7 +60,6 @@ export const defaultState: IDeviceState = {
   encoders: 0,
   analogInputs: 0,
   LEDs: 0,
-  showMsbControls: false,
 };
 
 export const state = reactive(defaultState);

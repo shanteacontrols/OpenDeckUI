@@ -8,6 +8,7 @@ export interface IDeviceComputed {
   manufacturer: ComputedRef<string>;
   isConnected: ComputedRef<boolean>;
   isConnecting: ComputedRef<boolean>;
+  showMsbControls: ComputedRef<boolean>;
 }
 
 // Composable
@@ -20,10 +21,12 @@ const isConnecting = computed(
 const isConnected = computed(
   () => state.connectionState === DeviceConnectionState.Open
 );
+const showMsbControls = computed(() => state.valueSize === 1);
 
 export const deviceStoreComputed: IDeviceComputed = {
   name,
   manufacturer,
   isConnecting,
   isConnected,
+  showMsbControls,
 };

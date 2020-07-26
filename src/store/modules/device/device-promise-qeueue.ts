@@ -8,7 +8,7 @@ import {
 } from "./state";
 import { logger, convertDataValuesToSingleByte } from "../../../util";
 import {
-  RequestType,
+  RequestKind,
   requestDefinitions,
   openDeckManufacturerId,
   getErrorDefinition,
@@ -19,6 +19,8 @@ import {
 import { findDefinitionByRequestConfig } from "../../../definitions/definition-map";
 import { activityLog } from "../activity-log";
 import { midiStore } from "../midi";
+import { ControlDisableType } from "../midi/state";
+import { ensureConnection } from "./actions";
 
 const componentInfoMessageId = 73;
 
@@ -107,7 +109,7 @@ export const purgeFinishedRequests = (): void => {
   });
 };
 
-const startRequest = (id: number) => {
+const startRequest = async (id: number) => {
   const request = requestStack.value[id];
   if (!request) {
     activityLog.actions.addError({
@@ -126,10 +128,9 @@ const startRequest = (id: number) => {
   }
 
   requestProcessor.activeRequestId.value = id;
-  request.state = RequestState.Sent;
   request.time.started = new Date();
-
   state.output.sendSysex(openDeckManufacturerId, request.payload);
+  request.state = RequestState.Sent;
 };
 
 const getActiveRequest = () => {
@@ -177,21 +178,23 @@ const onRequestDone = (
       requestId: id,
     });
 
-    if (responseCode === ErrorCode.NOT_SUPPORTED) {
-      if (!request.config) {
-        return;
-      }
-
+    if (request.config) {
       const definition = findDefinitionByRequestConfig(request.config);
-      if (!definition) {
-        return;
+      // Disable this control in UI if not supported
+      if (definition && responseCode === ErrorCode.NOT_SUPPORTED) {
+        midiStore.actions.disableControl(
+          definition,
+          ControlDisableType.NotSupported
+        );
       }
-
-      // Disable this control in UI
-      midiStore.actions.disableControl(request.config.block, definition.key);
+      // Show notice that firmware doesn't support this control
+      if (definition && responseCode === ErrorCode.INDEX) {
+        midiStore.actions.disableControl(
+          definition,
+          ControlDisableType.MissingIndex
+        );
+      }
     }
-
-    // @TODO: show alert/modal with error details
   } else {
     request.state = RequestState.Done;
     request.responseData = responseData;
@@ -251,7 +254,7 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   // Ensure we are working with array of single byte values
   const responseData =
-    state.valueSize === 2 && definition.type !== RequestType.Predefined
+    state.valueSize === 2 && definition.type !== RequestKind.Predefined
       ? convertDataValuesToSingleByte(data)
       : data;
 
@@ -273,10 +276,10 @@ const prepareRequestPayload = (
   definition: IRequestDefinition,
   config?: IRequestConfig
 ) => {
-  if ([RequestType.Custom, RequestType.Predefined].includes(definition.type)) {
-    if (!definition.specialRequestId) {
+  if ([RequestKind.Custom, RequestKind.Predefined].includes(definition.type)) {
+    if (definition.specialRequestId === undefined) {
       throw new Error(
-        `Missing specialRequestId for definition ${definition.type}`
+        `Missing specialRequestId for definition ${definition.key}`
       );
     }
 
@@ -298,7 +301,7 @@ export const sendMessage = async (params: IBusRequestConfig): Promise<any> => {
   if (!definition.isConnectionInfoRequest && state.connectionPromise) {
     await state.connectionPromise;
   } else if (state.connectionState !== DeviceConnectionState.Open) {
-    throw new Error("INVALID CONNECTION STATE, NOT OPEN, BUT NOT CONNECTING");
+    await ensureConnection();
   }
 
   return new Promise((resolve, reject) => {

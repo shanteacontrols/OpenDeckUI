@@ -15,8 +15,8 @@
             class="w-full pb-8 grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xl:gap-10"
           >
             <FormField
-              :value="form.midiType"
-              :field-definition="ButtonSectionDefinitions.MidiType"
+              :value="form.Type"
+              :field-definition="ButtonSectionDefinitions.Type"
               @modified="onValueChange"
             />
 
@@ -33,12 +33,14 @@
             />
 
             <FormField
+              v-show="!HideMidiIdOnTypes.includes(form.midiMessage)"
               :value="form.midiId"
               :field-definition="ButtonSectionDefinitions.MidiId"
               @modified="onValueChange"
             />
 
             <FormField
+              v-show="!HideVelocityOnTypes.includes(form.midiMessage)"
               :value="form.onVelocity"
               :field-definition="ButtonSectionDefinitions.OnVelocity"
               @modified="onValueChange"
@@ -56,11 +58,13 @@ import {
   Block,
   defaultButtonData,
   ButtonSectionDefinitions,
+  defaultTheme,
+  HideVelocityOnTypes,
+  HideMidiIdOnTypes,
 } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
 import router from "../../router";
 import DeviceForm from "./DeviceForm.vue";
-import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
   name: "DeviceSectionButtonsForm",
@@ -73,6 +77,8 @@ export default defineComponent({
       ...defaultTheme,
       componentIndex,
       count: deviceStoreMapped.buttons,
+      HideVelocityOnTypes,
+      HideMidiIdOnTypes,
       Block,
       defaultButtonData,
       ButtonSectionDefinitions,

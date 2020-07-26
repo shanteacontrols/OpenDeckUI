@@ -6,36 +6,13 @@
     :default-data="defaultDisplayData"
   >
     <template #default="{ form, onSettingChange }">
-      <Section title="Displays" class="w-full xl:w-1/3">
-        <div
-          class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2 xl:grid-cols-1"
-        >
+      <Section title="Display Features" class="w-full">
+        <div class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2">
           <FormField
             :value="form.enableDisplay"
             :field-definition="DisplayDefinitions.EnableDisplay"
             @modified="onSettingChange"
           />
-          <FormField
-            :value="form.displayController"
-            :field-definition="DisplayDefinitions.DisplayController"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.displayResolution"
-            :field-definition="DisplayDefinitions.DisplayResolution"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.i2CAddress"
-            :field-definition="DisplayDefinitions.I2CAddress"
-            @modified="onSettingChange"
-          />
-        </div>
-      </Section>
-      <Section title="Displays MIDI" class="w-full xl:w-2/3">
-        <div
-          class="w-full pb-8 grid gap-6 md:grid-cols-2 xl:gap-10 xl:grid-cols-2"
-        >
           <FormField
             :value="form.welcomeMessage"
             :field-definition="DisplayDefinitions.WelcomeMessage"
@@ -51,6 +28,22 @@
             :field-definition="DisplayDefinitions.AlternateMidiNoteDisplay"
             @modified="onSettingChange"
           />
+        </div>
+      </Section>
+      <Section title="Display Settings" class="w-full">
+        <div
+          class="w-full pb-8 grid gap-6 md:grid-cols-2 xl:gap-10 xl:grid-cols-2"
+        >
+          <FormField
+            :value="form.displayController"
+            :field-definition="DisplayDefinitions.DisplayController"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.displayResolution"
+            :field-definition="DisplayDefinitions.DisplayResolution"
+            @modified="onSettingChange"
+          />
           <FormField
             :value="form.midiEventRetentionTime"
             :field-definition="DisplayDefinitions.MidiEventRetentionTime"
@@ -59,6 +52,11 @@
           <FormField
             :value="form.octaveNormalizationValue"
             :field-definition="DisplayDefinitions.OctaveNormalizationValue"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.i2CAddress"
+            :field-definition="DisplayDefinitions.I2CAddress"
             @modified="onSettingChange"
           />
         </div>

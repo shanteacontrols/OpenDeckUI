@@ -1,5 +1,5 @@
 <template>
-  <form novalidate @submit.prevent="">
+  <form class="relative" novalidate @submit.prevent="">
     <Heading preset="section-title" class="flex w-full">
       <router-link class="mr-6" :to="{ name: routeName }">
         <h2>{{ componentName }}s</h2>
@@ -40,15 +40,11 @@
       </div>
     </Heading>
 
-    <slot
-      :form="form"
-      :showMsbContros="showMsbControls"
-      :onValueChange="onValueChange"
-    ></slot>
-
     <div v-if="loading" class="absolute flex inset-0 opacity-75 bg-gray-900">
       <Spinner class="self-center" />
     </div>
+
+    <slot :form="form" :onValueChange="onValueChange"></slot>
   </form>
 </template>
 
@@ -130,7 +126,7 @@ export default defineComponent({
 
       const onSuccess = () => {
         form[key] = value;
-        loading.value = false;
+        setTimeout(() => (loading.value = false), 100);
       };
 
       return deviceStoreMapped
@@ -151,7 +147,7 @@ export default defineComponent({
     };
 
     return {
-      ...deviceStoreMapped,
+      inputId: deviceStoreMapped.inputId,
       form: {
         ...toRefs(form),
       },

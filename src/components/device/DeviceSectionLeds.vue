@@ -9,7 +9,7 @@
       <template #default="{ form, onSettingChange }">
         <Section title="LEDs" class="border-b border-gray-900">
           <div
-            class="w-full grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xl:gap-10"
+            class="w-full grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10"
           >
             <FormField
               :value="form.blinkWithMidiClock"
@@ -31,11 +31,7 @@
       </template>
     </DeviceSettings>
 
-    <DeviceGrid
-      class="w-full"
-      route-name="device-leds-form"
-      :count="count"
-    />
+    <DeviceGrid class="w-full" route-name="device-leds-form" :count="count" />
   </div>
 </template>
 

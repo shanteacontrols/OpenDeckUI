@@ -50,6 +50,8 @@ interface IBlockDefinitionBase {
   options?: Array<ISelectOption>;
   min?: number;
   max?: number;
+  isLsb?: boolean;
+  isMsb?: boolean;
 }
 
 export interface IBlockComponentDefinition extends IBlockDefinitionBase {

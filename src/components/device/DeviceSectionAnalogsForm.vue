@@ -8,71 +8,72 @@
     route-name="device-analogs"
     :default-data="defaultAnalogData"
   >
-    <template #default="{ form, showMsbControls, onValueChange }">
+    <template #default="{ form, onValueChange }">
       <Section class="w-full">
         <div
-          class="w-full pb-8 grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 xl:gap-10"
+          class="w-full pb-8 grid gap-6 grid-cols-1 sm:grid-cols-2 xl:gap-10"
         >
+          <FormField
+            :value="form.type"
+            :field-definition="AnalogSectionDefinitions.Type"
+            @modified="onValueChange"
+          />
           <FormField
             :value="form.enabled"
             :field-definition="AnalogSectionDefinitions.Enabled"
             @modified="onValueChange"
           />
-
           <FormField
-            :value="form.invertDirection"
-            :field-definition="AnalogSectionDefinitions.InvertDirection"
+            v-if="form.type !== AnalogType.Button"
+            :value="form.midiChannel"
+            :field-definition="AnalogSectionDefinitions.MidiChannel"
             @modified="onValueChange"
           />
-
           <FormField
-            :value="form.midiType"
-            :field-definition="AnalogSectionDefinitions.MidiType"
+            v-if="form.type !== AnalogType.Button"
+            :value="form.Invert"
+            :field-definition="AnalogSectionDefinitions.Invert"
             @modified="onValueChange"
           />
-
+        </div>
+        <div
+          class="w-full pb-8 grid gap-6 grid-cols-1 sm:grid-cols-2 xl:gap-10"
+        >
           <FormField
+            v-if="form.type !== AnalogType.Button"
             :value="form.midiIdLSB"
             :field-definition="AnalogSectionDefinitions.MidiIdLSB"
             @modified="onValueChange"
           />
-
           <FormField
-            v-if="showMsbControls"
+            v-if="form.type !== AnalogType.Button"
             :value="form.midiIdMSB"
             :field-definition="AnalogSectionDefinitions.MidiIdMSB"
             @modified="onValueChange"
           />
 
           <FormField
+            v-if="form.type !== AnalogType.Button"
             :value="form.lowerCCLimitLSB"
             :field-definition="AnalogSectionDefinitions.LowerCCLimitLSB"
             @modified="onValueChange"
           />
-
           <FormField
-            v-if="showMsbControls"
+            v-if="form.type !== AnalogType.Button"
             :value="form.lowerCCLimitMSB"
             :field-definition="AnalogSectionDefinitions.LowerCCLimitMSB"
             @modified="onValueChange"
           />
-
           <FormField
+            v-if="form.type !== AnalogType.Button"
             :value="form.upperCCLimitLSB"
             :field-definition="AnalogSectionDefinitions.UpperCCLimitLSB"
             @modified="onValueChange"
           />
-
           <FormField
-            v-if="showMsbControls"
+            v-if="form.type !== AnalogType.Button"
             :value="form.upperCCLimitMSB"
             :field-definition="AnalogSectionDefinitions.UpperCCLimitMSB"
-            @modified="onValueChange"
-          />
-
-          <FormField
-            :value="form.midiChannel"
-            :field-definition="AnalogSectionDefinitions.MidiChannel"
             @modified="onValueChange"
           />
         </div>
@@ -87,6 +88,7 @@ import {
   Block,
   defaultAnalogData,
   AnalogSectionDefinitions,
+  AnalogType,
 } from "../../definitions";
 import router from "../../router";
 import { deviceStoreMapped } from "../../store";
@@ -103,6 +105,7 @@ export default defineComponent({
       componentIndex,
       count: deviceStoreMapped.analogInputs,
       Block,
+      AnalogType,
       defaultAnalogData,
       AnalogSectionDefinitions,
     };

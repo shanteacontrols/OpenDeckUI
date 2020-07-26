@@ -1,8 +1,8 @@
 import WebMidi, { Input, Output } from "webmidi";
-import { state, MidiConnectionState } from "./state";
+import { state, MidiConnectionState, ControlDisableType } from "./state";
 import { isConnected, isConnecting } from "./computed";
 import { logger } from "../../../util";
-import { Block } from "../../../definitions";
+import { IBlockDefinition } from "../../../definitions";
 
 // Local states
 
@@ -87,13 +87,23 @@ const newMidiLoadPromise = async (): Promise<void> =>
     }, true);
   });
 
-const isControlDisabled = (block: Block, key: string): boolean =>
-  state.disableUiControls.some((d) => d.key === key && d.block === block);
+const isControlDisabled = (
+  def: IBlockDefinition,
+  type?: ControlDisableType
+): boolean =>
+  state.disableUiControls.some(
+    (d) =>
+      d.key === def.key && d.block === def.block && (!type || d.type === type)
+  );
 
-const disableControl = (block: Block, key: string): void => {
-  const isDisabled = isControlDisabled(block, key);
+const disableControl = (
+  def: IBlockDefinition,
+  type: ControlDisableType
+): void => {
+  const isDisabled = isControlDisabled(def);
   if (!isDisabled) {
-    state.disableUiControls.push({ block, key });
+    const { block, key } = def;
+    state.disableUiControls.push({ block, key, type });
   }
 };
 
@@ -105,8 +115,11 @@ export interface IMidiActions {
   findInputOutput: (
     inputId: string
   ) => Promise<{ input: Input; output: Output }>;
-  disableControl: (block: Block, key: string) => void;
-  isControlDisabled: (block: Block, key: string) => boolean;
+  disableControl: (def: IBlockDefinition, type: ControlDisableType) => void;
+  isControlDisabled: (
+    def: IBlockDefinition,
+    type?: ControlDisableType
+  ) => boolean;
 }
 
 export const midiStoreActions: IMidiActions = {

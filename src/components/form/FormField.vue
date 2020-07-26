@@ -1,5 +1,5 @@
 <template>
-  <div class="form-field">
+  <div v-if="(!isMsb || showMsbControls)" class="form-field">
     <label
       class="block mb-2 text-sm font-bold"
       :class="{
@@ -7,7 +7,14 @@
         'text-gray-400': !isDisabled,
       }"
     >
-      {{ label }}
+      {{
+        !showMsbControls && isLsb
+          ? label.replace("(LSB)", "").replace("LSB", "")
+          : label
+      }}
+      <small v-if="min || max" class="ml-2 text-gray-700"
+        >{{ min }} - {{ max }}</small
+      >
     </label>
     <div v-if="!isDisabled">
       <div class="mb-2">
@@ -22,11 +29,18 @@
         />
       </div>
     </div>
-    <p v-else class="text-red-500 text-sm mb-2">Not supported by hardware</p>
+    <p v-else class="text-red-500 text-sm mb-2">
+      <template v-if="isFirmwareOld">
+        Not supported on current firmware. Consider updating the firmware.
+      </template>
+      <template v-if="isNotSupported">
+        Not supported on this board.
+      </template>
+    </p>
 
     <FormErrorDisplay class="text-red-500" :errors="errors" />
 
-    <div
+    <p
       v-if="helpText"
       class="text-sm leading-5"
       :class="{
@@ -34,8 +48,12 @@
         'text-gray-500': !isDisabled,
       }"
     >
-      {{ helpText }}
-    </div>
+      {{
+        !showMsbControls && helpText
+          ? helpText.replace("(LSB)", "").replace("LSB", "")
+          : helpText
+      }}
+    </p>
   </div>
 </template>
 
@@ -57,7 +75,8 @@ import FormSelect from "./FormSelect.vue";
 import FormToggle from "./FormToggle.vue";
 import FormInput from "./FormInput.vue";
 import FormErrorDisplay from "./FormErrorDisplay.vue";
-import { midiStoreMapped } from "../../store";
+import { midiStoreMapped, deviceStoreMapped } from "../../store";
+import { ControlDisableType } from "../../store/modules/midi/state";
 
 const getValidatorForDefinition = (definition: IBlockDefinition) => {
   const validators = [required()] as any[];
@@ -72,7 +91,12 @@ const getValidatorForDefinition = (definition: IBlockDefinition) => {
         validators.push(minValue(definition.min));
       }
       if (definition.max !== undefined) {
-        validators.push(maxValue(definition.max));
+        // For newer versions with 2-byte data protocol values can be bigger
+        let maxSize =
+          definition.isLsb && deviceStoreMapped.showMsbControls
+            ? 16383
+            : definition.max;
+        validators.push(maxValue(maxSize));
       }
       break;
 
@@ -107,13 +131,34 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const { block, key, section, label, helpText } = props.fieldDefinition;
+    const {
+      key,
+      section,
+      label,
+      helpText,
+      isMsb,
+      isLsb,
+      min,
+      max,
+    } = props.fieldDefinition;
 
     const settingIndex = (props.fieldDefinition as IBlockSettingDefinition)
       .settingIndex;
 
-    const isDisabled = computed(() =>
-      midiStoreMapped.isControlDisabled(block, key)
+    const isNotSupported = computed(() =>
+      midiStoreMapped.isControlDisabled(
+        props.fieldDefinition,
+        ControlDisableType.NotSupported
+      )
+    );
+    const isFirmwareOld = computed(() =>
+      midiStoreMapped.isControlDisabled(
+        props.fieldDefinition,
+        ControlDisableType.MissingIndex
+      )
+    );
+    const isDisabled = computed(
+      () => isFirmwareOld.value || isNotSupported.value
     );
 
     const valueRef = toRefs(props).value;
@@ -146,16 +191,21 @@ export default defineComponent({
 
     return {
       fieldComponent: props.fieldDefinition.component,
+      showMsbControls: deviceStoreMapped.showMsbControls,
       componentProps,
       emit,
-      key,
-      section,
-      helpText,
-      label,
       input,
       errors,
       onValueChange,
+      label,
+      helpText,
       isDisabled,
+      isNotSupported,
+      isFirmwareOld,
+      isMsb,
+      isLsb,
+      min,
+      max,
       ...midiStoreMapped,
     };
   },

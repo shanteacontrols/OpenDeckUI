@@ -8,7 +8,7 @@
     route-name="device-encoders"
     :default-data="defaultEncoderData"
   >
-    <template #default="{ form, showMsbControls, onValueChange }">
+    <template #default="{ form, onValueChange }">
       <Section>
         <div class="pb-8 grid gap-6 grid-cols-1 md:grid-cols-2 md:gap-10">
           <FormField
@@ -16,64 +16,47 @@
             :field-definition="EncoderSectionDefinitions.Enabled"
             @modified="onValueChange"
           />
-
           <FormField
-            :value="form.invertDirection"
-            :field-definition="EncoderSectionDefinitions.InvertDirection"
+            :value="form.invertState"
+            :field-definition="EncoderSectionDefinitions.InvertState"
             @modified="onValueChange"
           />
-
-          <!-- <FormField
-          :value="form.midiType"
-          :field-definition="EncoderSectionDefinitions.MidiType"
-          @modified="onValueChange"
-        /> -->
-
           <FormField
+            :value="form.encodingMode"
+            :field-definition="EncoderSectionDefinitions.EncodingMode"
+            @modified="onValueChange"
+          />
+          <FormField
+            :value="form.midiChannel"
+            :field-definition="EncoderSectionDefinitions.MidiChannel"
+            @modified="onValueChange"
+          />
+          <FormField
+            v-show="ShowAccelerationOnTypes.includes(form.encodingMode)"
+            :value="form.acceleration"
+            :field-definition="EncoderSectionDefinitions.Acceleration"
+            @modified="onValueChange"
+          />
+          <FormField
+            :trim-lsb-string="!showMsbControls"
             :value="form.midiIdLSB"
             :field-definition="EncoderSectionDefinitions.MidiIdLSB"
             @modified="onValueChange"
           />
-
+          <FormField
+            :value="form.pulsesPerStep"
+            :field-definition="EncoderSectionDefinitions.PulsesPerStep"
+            @modified="onValueChange"
+          />
           <FormField
             v-if="showMsbControls"
             :value="form.midiIdMSB"
             :field-definition="EncoderSectionDefinitions.MidiIdMSB"
             @modified="onValueChange"
           />
-
-          <!--
-        <FormField
-          :value="form.lowerCCLimitLSB"
-          :field-definition="EncoderSectionDefinitions.LowerCCLimitLSB"
-          @modified="onValueChange"
-        />
-        -->
           <FormField
-            v-if="showMsbControls"
-            :value="form.lowerCCLimitMSB"
-            :field-definition="EncoderSectionDefinitions.LowerCCLimitMSB"
-            @modified="onValueChange"
-          />
-
-          <!--
-        <FormField
-          :value="form.upperCCLimitLSB"
-          :field-definition="EncoderSectionDefinitions.UpperCCLimitLSB"
-          @modified="onValueChange"
-        />
-        -->
-
-          <FormField
-            v-if="showMsbControls"
-            :value="form.upperCCLimitMSB"
-            :field-definition="EncoderSectionDefinitions.UpperCCLimitMSB"
-            @modified="onValueChange"
-          />
-
-          <FormField
-            :value="form.midiChannel"
-            :field-definition="EncoderSectionDefinitions.MidiChannel"
+            :value="form.remoteSync"
+            :field-definition="EncoderSectionDefinitions.RemoteSync"
             @modified="onValueChange"
           />
         </div>
@@ -88,6 +71,7 @@ import {
   Block,
   defaultEncoderData,
   EncoderSectionDefinitions,
+  ShowAccelerationOnTypes,
 } from "../../definitions";
 import router from "../../router";
 import { deviceStoreMapped } from "../../store";
@@ -103,8 +87,10 @@ export default defineComponent({
     return {
       componentIndex,
       count: deviceStoreMapped.analogInputs,
+      showMsbControls: deviceStoreMapped.showMsbControls,
       Block,
       defaultEncoderData,
+      ShowAccelerationOnTypes,
       EncoderSectionDefinitions,
     };
   },

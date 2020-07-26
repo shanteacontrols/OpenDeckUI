@@ -4,5 +4,5 @@ export const defaultTheme = {
   box: `${paddingMain}`,
   section: `bg-black`,
   sectionTitle: `${paddingMain} font-bold border-b border-gray-900 text-gray-400`,
-  sectionContent: `${paddingMain}`,
+  sectionContent: `${paddingMain} w-full`,
 };

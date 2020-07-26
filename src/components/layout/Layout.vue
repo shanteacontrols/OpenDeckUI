@@ -35,9 +35,7 @@
     </div>
 
     <div class="w-full bg-gray-900 md:flex self-end">
-      <nav
-        class="w-full md:w-1/3 flex-grow lg:max-w-xs order-2 md:order-1 pb-4"
-      >
+      <nav class="w-full md:w-1/3 lg:max-w-xs order-2 md:order-1 pb-4">
         <div :class="`${box}`">
           <slot name="primary-footer"></slot>
         </div>

@@ -3,7 +3,7 @@ import { arrayEqual } from "../util";
 
 export const openDeckManufacturerId = [0, 83, 67]; // Hex [00 53 43]
 
-export enum RequestType {
+export enum RequestKind {
   Predefined = "predefined",
   Custom = "custom",
   Configuration = "configuration",
@@ -68,7 +68,8 @@ const Boards = [
 ];
 
 export interface IRequestDefinition {
-  type: RequestType;
+  type: RequestKind;
+  key: SysExCommand;
   specialRequestId?: number;
   // Flag for priority messages needed for preparing data communication
   isConnectionInfoRequest?: boolean;
@@ -91,6 +92,7 @@ export interface IDeviceComponentCounts {
 
 export enum SysExCommand {
   // Predefined
+  CloseConnection = "CloseConnection",
   Handshake = "Handshake",
   GetValueSize = "GetValueSize",
   GetValuesPerMessage = "GetValuesPerMessage",
@@ -115,18 +117,27 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   // Predefined
 
   [SysExCommand.Handshake]: {
-    type: RequestType.Predefined,
+    key: SysExCommand.Handshake,
+    type: RequestKind.Predefined,
     specialRequestId: 1,
     isConnectionInfoRequest: true,
   },
+  [SysExCommand.CloseConnection]: {
+    key: SysExCommand.CloseConnection,
+    type: RequestKind.Predefined,
+    specialRequestId: 0,
+    isConnectionInfoRequest: true,
+  },
   [SysExCommand.GetValueSize]: {
-    type: RequestType.Predefined,
+    key: SysExCommand.GetValueSize,
+    type: RequestKind.Predefined,
     isConnectionInfoRequest: true,
     specialRequestId: 2,
     parser: (response: number[]): number => response[0],
   },
   [SysExCommand.GetValuesPerMessage]: {
-    type: RequestType.Predefined,
+    key: SysExCommand.GetValuesPerMessage,
+    type: RequestKind.Predefined,
     isConnectionInfoRequest: true,
     specialRequestId: 3,
     parser: (response: number[]): number[] => response,
@@ -135,14 +146,16 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   // Custom
 
   [SysExCommand.GetFirmwareVersion]: {
-    type: RequestType.Custom,
+    key: SysExCommand.GetFirmwareVersion,
+    type: RequestKind.Custom,
     specialRequestId: 86, // Hex: 56
     isConnectionInfoRequest: true,
     parser: (response: number[]): string =>
       "v" + response[0] + "." + response[1] + "." + response[2],
   },
   [SysExCommand.GetHardwareUid]: {
-    type: RequestType.Custom,
+    key: SysExCommand.GetHardwareUid,
+    type: RequestKind.Custom,
     specialRequestId: 66, // Hex: 42
     parser: (value: number[]): string => {
       const board = Boards.find(
@@ -153,12 +166,14 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     },
   },
   [SysExCommand.GetFirmwareVersionAndHardwareUid]: {
-    type: RequestType.Custom,
+    key: SysExCommand.GetFirmwareVersionAndHardwareUid,
+    type: RequestKind.Custom,
     isConnectionInfoRequest: true,
     specialRequestId: 67, // Hex: 43
   },
   [SysExCommand.GetNumberOfSupportedComponents]: {
-    type: RequestType.Custom,
+    key: SysExCommand.GetNumberOfSupportedComponents,
+    type: RequestKind.Custom,
     specialRequestId: 77, // Hex: 4D
     parser: (response: number[]): IDeviceComponentCounts => ({
       buttons: response[0],
@@ -168,38 +183,46 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     }),
   },
   [SysExCommand.GetNumberOfSupportedPresets]: {
-    type: RequestType.Custom,
+    key: SysExCommand.GetNumberOfSupportedPresets,
+    type: RequestKind.Custom,
     specialRequestId: 80, // Hex: 50
   },
   [SysExCommand.Reboot]: {
-    type: RequestType.Custom,
+    key: SysExCommand.Reboot,
+    type: RequestKind.Custom,
     specialRequestId: 127, // Hex: 7F
   },
   [SysExCommand.GetBootLoaderSupport]: {
-    type: RequestType.Custom,
+    key: SysExCommand.GetBootLoaderSupport,
+    type: RequestKind.Custom,
     specialRequestId: 81, // Hex: 51
   },
   [SysExCommand.BootloaderMode]: {
-    type: RequestType.Custom,
+    key: SysExCommand.BootloaderMode,
+    type: RequestKind.Custom,
     specialRequestId: 85, // Hex: 55
   },
   [SysExCommand.FactoryReset]: {
-    type: RequestType.Custom,
+    key: SysExCommand.FactoryReset,
+    type: RequestKind.Custom,
     specialRequestId: 68, // Hex: 44
   },
   [SysExCommand.DisableProcessing]: {
-    type: RequestType.Custom,
+    key: SysExCommand.DisableProcessing,
+    type: RequestKind.Custom,
     specialRequestId: 100, // Hex: 64
   },
   [SysExCommand.EnableProcessing]: {
-    type: RequestType.Custom,
+    key: SysExCommand.EnableProcessing,
+    type: RequestKind.Custom,
     specialRequestId: 101, // Hex: 65
   },
 
   // Configuration requests
 
   [SysExCommand.GetValue]: {
-    type: RequestType.Configuration,
+    key: SysExCommand.GetValue,
+    type: RequestKind.Configuration,
     // predefinedBytes: {
     //   messageStatus: MessageStatus.Request,
     //   messagePart: 0, // @TODO: calculate on the fly
@@ -221,7 +244,8 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     ],
   },
   [SysExCommand.SetValue]: {
-    type: RequestType.Configuration,
+    key: SysExCommand.SetValue,
+    type: RequestKind.Configuration,
     // predefinedBytes: {
     //   messageStatus: MessageStatus.Request,
     //   messagePart: 0, // @TODO: calculate on the fly

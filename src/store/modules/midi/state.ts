@@ -8,9 +8,15 @@ export enum MidiConnectionState {
   Open = "open",
 }
 
+export enum ControlDisableType {
+  NotSupported = "not_supported",
+  MissingIndex = "missing_index",
+}
+
 export interface IControlDisable {
   block: Block;
   key: string;
+  type: ControlDisableType;
 }
 
 export interface IMidiState {
