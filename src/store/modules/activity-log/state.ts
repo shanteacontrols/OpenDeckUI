@@ -14,6 +14,7 @@ export enum LogType {
 export interface ILogEntryBase {
   time: Date;
   type: LogType;
+  requestId?: number;
 }
 
 export type ILogEntry =
@@ -26,10 +27,14 @@ export type ILogEntry =
 
 export type IActivityLogState = {
   stack: Array<ILogEntry>;
+  prunedCount: number;
+  logTypeFilter: Array<LogType>;
 };
 
 export const defaultState: IActivityLogState = {
   stack: [] as Array<ILogEntry>,
+  prunedCount: 0,
+  logTypeFilter: [] as Array<LogType>,
 };
 
 export const state = reactive<IActivityLogState>(defaultState);

@@ -1,4 +1,5 @@
-import { LogType, ILogEntryBase, state } from "./state";
+import { LogType, ILogEntryBase } from "./state";
+import { addBuffered } from "./actions";
 import { Block } from "../../../definitions";
 
 export interface ILogEntryInfo extends ILogEntryBase {
@@ -14,10 +15,9 @@ interface InfoParams {
   payload: number[];
 }
 
-export const addInfo = (params: InfoParams): void => {
-  state.stack.push({
+export const addInfo = (params: InfoParams): void =>
+  addBuffered({
     type: LogType.Info,
     time: new Date(),
     ...params,
   });
-};

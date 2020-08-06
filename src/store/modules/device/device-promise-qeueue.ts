@@ -226,11 +226,11 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   if (data[0] === componentInfoMessageId) {
     // @TODO: componentInfo messages should trigger a blink on ui element
-    // activityLog.actions.addInfo({
-    //   block: data[1],
-    //   index: data[2],
-    //   payload: data,
-    // });
+    activityLog.actions.addInfo({
+      block: data[1],
+      index: data[2],
+      payload: data,
+    });
     return;
   }
 
