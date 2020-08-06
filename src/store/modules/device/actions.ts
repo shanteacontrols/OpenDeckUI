@@ -96,6 +96,10 @@ export const openConnection = async (): Promise<any> => {
     command: SysExCommand.GetFirmwareVersion,
     handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
   });
+  await sendMessage({
+    command: SysExCommand.GetBootLoaderSupport,
+    handler: (bootLoaderSupport: string) => setInfo({ bootLoaderSupport }),
+  });
   state.connectionState = DeviceConnectionState.Open;
   state.connectionPromise = (null as unknown) as Promise<any>;
 };
