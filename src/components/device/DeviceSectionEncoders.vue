@@ -1,6 +1,7 @@
 <template>
   <DeviceGrid
     class="encoders"
+    :block="Block.Encoder"
     route-name="device-encoders-form"
     :count="count"
     title="Encoders"
@@ -11,16 +12,18 @@
 import { defineComponent } from "vue";
 import DeviceGrid from "./DeviceGrid.vue";
 import { deviceStoreMapped } from "../../store";
+import { Block } from "../../definitions";
 
 export default defineComponent({
   name: "DeviceSectionEncoders",
-  setup() {
-    return {
-      count: deviceStoreMapped.encoders,
-    };
-  },
   components: {
     DeviceGrid,
+  },
+  setup() {
+    return {
+      Block,
+      count: deviceStoreMapped.encoders,
+    };
   },
 });
 </script>

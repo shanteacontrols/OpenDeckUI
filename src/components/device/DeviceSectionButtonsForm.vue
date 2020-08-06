@@ -68,9 +68,12 @@ import DeviceForm from "./DeviceForm.vue";
 
 export default defineComponent({
   name: "DeviceSectionButtonsForm",
+  components: {
+    DeviceForm,
+  },
   setup() {
     const componentIndex = computed(() =>
-      Number(router.currentRoute.value.params.componentIndex)
+      Number(router.currentRoute.value.params.componentIndex),
     );
 
     return {
@@ -83,9 +86,6 @@ export default defineComponent({
       defaultButtonData,
       ButtonSectionDefinitions,
     };
-  },
-  components: {
-    DeviceForm,
   },
 });
 </script>

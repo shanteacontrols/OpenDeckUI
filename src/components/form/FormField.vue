@@ -103,16 +103,15 @@ const getValidatorForDefinition = (definition: IBlockDefinition) => {
     case FormInputComponent.Select:
       if (definition.options) {
         validators.push(
-          allowedValues(definition.options.map((opt) => opt.value))
+          allowedValues(definition.options.map((opt) => opt.value)),
         );
       }
       break;
 
     default:
       throw new Error(
-        `Unknown component type ${definition.component} for ${definition.key}`
+        `Unknown component type ${definition.component} for ${definition.key}`,
       );
-      break;
   }
 
   return validators;
@@ -120,6 +119,12 @@ const getValidatorForDefinition = (definition: IBlockDefinition) => {
 
 export default defineComponent({
   name: "FormField",
+  components: {
+    FormSelect,
+    FormInput,
+    FormToggle,
+    FormErrorDisplay,
+  },
   props: {
     value: {
       default: null,
@@ -130,6 +135,7 @@ export default defineComponent({
       required: true,
     },
   },
+  emits: ["modified"],
   setup(props, { emit }) {
     const {
       key,
@@ -140,7 +146,8 @@ export default defineComponent({
       isLsb,
       min,
       max,
-    } = props.fieldDefinition;
+      options,
+    } = toRefs(props.fieldDefinition);
 
     const settingIndex = (props.fieldDefinition as IBlockSettingDefinition)
       .settingIndex;
@@ -148,17 +155,17 @@ export default defineComponent({
     const isNotSupported = computed(() =>
       midiStoreMapped.isControlDisabled(
         props.fieldDefinition,
-        ControlDisableType.NotSupported
-      )
+        ControlDisableType.NotSupported,
+      ),
     );
     const isFirmwareOld = computed(() =>
       midiStoreMapped.isControlDisabled(
         props.fieldDefinition,
-        ControlDisableType.MissingIndex
-      )
+        ControlDisableType.MissingIndex,
+      ),
     );
     const isDisabled = computed(
-      () => isFirmwareOld.value || isNotSupported.value
+      () => isFirmwareOld.value || isNotSupported.value,
     );
 
     const valueRef = toRefs(props).value;
@@ -176,7 +183,7 @@ export default defineComponent({
     const { input, errors, onValueChange } = useInputValidator(
       valueRef,
       validators,
-      valueChangeHandler
+      valueChangeHandler,
     );
 
     const componentProps = {
@@ -186,7 +193,7 @@ export default defineComponent({
     } as any;
 
     if (props.fieldDefinition.component === FormInputComponent.Select) {
-      componentProps.options = props.fieldDefinition.options;
+      componentProps.options = options;
     }
 
     return {
@@ -208,12 +215,6 @@ export default defineComponent({
       max,
       ...midiStoreMapped,
     };
-  },
-  components: {
-    FormSelect,
-    FormInput,
-    FormToggle,
-    FormErrorDisplay,
   },
 });
 </script>

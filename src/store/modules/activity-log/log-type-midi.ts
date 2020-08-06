@@ -1,6 +1,5 @@
 import { LogType, ILogEntryBase } from "./state";
 import { addBuffered } from "./actions";
-import { debounce } from "lodash-es";
 
 export type MidiEventType =
   | "noteon"
@@ -38,7 +37,7 @@ export interface MidiEventParams {
   };
 }
 
-export const addMidiEntry = (params: MidiEventParams): void => {
+export const addMidi = (params: MidiEventParams): void => {
   const { type, channel, data, value, controller } = params;
   const dataArray = data ? Array.from(data) : [];
 
@@ -54,5 +53,3 @@ export const addMidiEntry = (params: MidiEventParams): void => {
 
   addBuffered(logEntry);
 };
-
-export const addMidi = debounce(addMidiEntry, 10, { maxWait: 300 });

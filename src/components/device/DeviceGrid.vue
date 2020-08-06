@@ -6,7 +6,10 @@
       <router-link
         v-for="componentIndex in (count || 0)"
         :key="componentIndex"
-        class="px-1 py-1 mb-4 ml-4 select-none cursor-pointer border border-gray-700 text-gray-600 bg-gray-900 hover:bg-yellow-400 hover:text-gray-800 rounded-full"
+        class="px-1 py-1 mb-4 ml-4 select-none cursor-pointer border border-gray-700 text-gray-600 bg-gray-900 hover:bg-yellow-400 hover:text-gray-800 rounded-full transition-colors duration-500 ease-in-out"
+        :class="{
+          'bg-yellow-500': highlights[block].includes(componentIndex - 1),
+        }"
         :to="{
           name: routeName,
           params: {
@@ -23,14 +26,24 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { defaultTheme } from "./../../definitions";
-import { deviceStoreMapped } from "../../store";
+import { defaultTheme, Block } from "./../../definitions";
+import { deviceStoreMapped, activityLogMapped, LogType } from "../../store";
 
 export default defineComponent({
   name: "DeviceGrid",
   props: {
-    count: Number,
-    title: String,
+    title: {
+      default: "",
+      type: String,
+    },
+    count: {
+      default: 0,
+      type: Number,
+    },
+    block: {
+      required: true,
+      type: Number as () => Block,
+    },
     routeName: {
       required: true,
       type: String,
@@ -38,8 +51,10 @@ export default defineComponent({
   },
   setup() {
     return {
+      LogType,
       defaultTheme,
       ...deviceStoreMapped,
+      ...activityLogMapped,
     };
   },
 });

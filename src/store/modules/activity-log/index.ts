@@ -1,18 +1,19 @@
 import { IActivityLogState, state } from "./state";
 import { activityLogActions, IActivityLogActions } from "./actions";
+import { activityLogComputed, IActivityLogComputed } from "./computed";
 import { mapStore, IStore, IMappedStore } from "../../store-util";
 
 export type IActivityLog = IStore<IActivityLogState, any, IActivityLogActions>;
 
 export type IMappedActivityLog = IMappedStore<
   IActivityLogState,
-  any,
+  IActivityLogComputed,
   IActivityLogActions
 >;
 
 export const activityLog: IActivityLog = {
   state,
-  computed: undefined,
+  computed: activityLogComputed,
   actions: activityLogActions,
 };
 

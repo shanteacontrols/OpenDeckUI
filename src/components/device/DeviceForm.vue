@@ -10,7 +10,6 @@
         <strong>
           {{ componentIndex }}
         </strong>
-        <div></div>
       </h3>
       <div class="hidden md:block md:flex-grow text-right">
         <router-link
