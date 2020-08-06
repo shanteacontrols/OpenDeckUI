@@ -88,11 +88,15 @@ import DeviceNav from "./device/DeviceNav.vue";
 
 export default defineComponent({
   name: "App",
+  components: {
+    Layout,
+    DeviceNav,
+  },
   setup() {
     midiStoreMapped.loadMidi();
     const { inputId, boardName, firmwareVersion } = deviceStoreMapped;
     const isHomePage = computed(
-      () => router.currentRoute.value.name === "home"
+      () => router.currentRoute.value.name === "home",
     );
 
     const { isConnected, isConnecting } = midiStoreMapped;
@@ -107,10 +111,6 @@ export default defineComponent({
       boardName,
       firmwareVersion,
     };
-  },
-  components: {
-    Layout,
-    DeviceNav,
   },
 });
 </script>

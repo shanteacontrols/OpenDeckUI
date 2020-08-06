@@ -32,8 +32,12 @@ import { defineComponent, computed } from "vue";
 export default defineComponent({
   name: "FormToggle",
   props: {
-    value: [Boolean, Number],
+    value: {
+      default: 0,
+      type: [Boolean, Number],
+    },
   },
+  emits: ["changed"],
   setup(props, { emit }) {
     const isChecked = computed(() => !!props.value);
 

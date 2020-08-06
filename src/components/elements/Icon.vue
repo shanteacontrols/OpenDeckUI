@@ -31,6 +31,14 @@ enum icons {
 
 export default defineComponent({
   name: "Icon",
+  components: {
+    IconAnalog,
+    IconButton,
+    IconEncoder,
+    IconLed,
+    IconDisplay,
+    IconGlobal,
+  },
   props: {
     icon: {
       type: String,
@@ -42,14 +50,6 @@ export default defineComponent({
     return {
       icons,
     };
-  },
-  components: {
-    IconAnalog,
-    IconButton,
-    IconEncoder,
-    IconLed,
-    IconDisplay,
-    IconGlobal,
   },
 });
 </script>

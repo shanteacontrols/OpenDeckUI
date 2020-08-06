@@ -37,13 +37,13 @@ import ConnectionState from "./elements/ConnectionState.vue";
 
 export default defineComponent({
   name: "AppDeviceSelect",
+  components: {
+    ConnectionState,
+  },
   setup() {
     return {
       inputs: midiStoreMapped.inputs,
     };
-  },
-  components: {
-    ConnectionState,
   },
 });
 </script>

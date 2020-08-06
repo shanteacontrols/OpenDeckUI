@@ -25,19 +25,19 @@ import DeviceActivity from "./activity/DeviceActivity.vue";
 
 export default defineComponent({
   name: "Device",
+  components: {
+    DeviceActivity,
+  },
   setup() {
     onMounted(async () => {
       await deviceStoreMapped.connectDevice(
-        router.currentRoute.value.params.inputId as string
+        router.currentRoute.value.params.inputId as string,
       );
     });
 
     return {
       ...deviceStoreMapped,
     };
-  },
-  components: {
-    DeviceActivity,
   },
 });
 </script>

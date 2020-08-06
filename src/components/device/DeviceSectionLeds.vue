@@ -49,6 +49,10 @@ import DeviceGrid from "./DeviceGrid.vue";
 
 export default defineComponent({
   name: "DeviceSectionLeds",
+  components: {
+    DeviceSettings,
+    DeviceGrid,
+  },
   setup() {
     return {
       count: deviceStoreMapped.LEDs,
@@ -57,10 +61,6 @@ export default defineComponent({
       defaultLedSettingsData,
       LedSectionDefinitions,
     };
-  },
-  components: {
-    DeviceSettings,
-    DeviceGrid,
   },
 });
 </script>

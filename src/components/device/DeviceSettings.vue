@@ -13,7 +13,6 @@ import { IBlockDefinition, DefinitionType } from "../../definitions";
 import { deviceStore } from "../../store";
 import { defaultTheme } from "./../../definitions";
 
-import Chevron from "../icons/Chevron.vue";
 import { logger } from "../../util";
 
 export default defineComponent({
@@ -42,7 +41,7 @@ export default defineComponent({
       const componentConfig = await deviceStore.actions.getComponentSettings(
         props.componentDefinition,
         props.componentBlock,
-        DefinitionType.Setting
+        DefinitionType.Setting,
       );
       Object.assign(form, componentConfig);
       // prevent initial value change from writing to device
@@ -81,7 +80,7 @@ export default defineComponent({
             index: settingIndex,
           },
           value,
-          onSuccess
+          onSuccess,
         )
         .catch((error) => {
           logger.error("ERROR WHILE SAVING SETTING DATA", error);
@@ -98,9 +97,6 @@ export default defineComponent({
       loading,
       onSettingChange,
     };
-  },
-  components: {
-    Chevron,
   },
 });
 </script>

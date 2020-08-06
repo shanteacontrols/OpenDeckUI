@@ -69,6 +69,9 @@ import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
   name: "DeviceSectionGlobal",
+  components: {
+    DeviceSettings,
+  },
   setup() {
     return {
       ...defaultTheme,
@@ -76,9 +79,6 @@ export default defineComponent({
       defaultGlobalData,
       GlobalDefinitions,
     };
-  },
-  components: {
-    DeviceSettings,
   },
 });
 </script>

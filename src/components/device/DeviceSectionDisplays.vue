@@ -77,6 +77,9 @@ import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
   name: "DeviceSectionDisplay",
+  components: {
+    DeviceSettings,
+  },
   setup() {
     return {
       ...defaultTheme,
@@ -84,9 +87,6 @@ export default defineComponent({
       defaultDisplayData,
       DisplayDefinitions,
     };
-  },
-  components: {
-    DeviceSettings,
   },
 });
 </script>

@@ -17,7 +17,10 @@ import { IFormSelectOption } from "../../definitions";
 export default defineComponent({
   name: "FormSelect",
   props: {
-    value: [String, Number],
+    value: {
+      default: "",
+      type: [String, Number],
+    },
     options: {
       required: true,
       type: Array as () => Array<IFormSelectOption>,

@@ -96,9 +96,12 @@ import DeviceForm from "./DeviceForm.vue";
 
 export default defineComponent({
   name: "DeviceSectionAnalogsForm",
+  components: {
+    DeviceForm,
+  },
   setup() {
     const componentIndex = computed(() =>
-      Number(router.currentRoute.value.params.componentIndex)
+      Number(router.currentRoute.value.params.componentIndex),
     );
 
     return {
@@ -109,9 +112,6 @@ export default defineComponent({
       defaultAnalogData,
       AnalogSectionDefinitions,
     };
-  },
-  components: {
-    DeviceForm,
   },
 });
 </script>

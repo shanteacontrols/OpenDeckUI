@@ -15,9 +15,18 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "FormInput",
   props: {
-    name: String,
-    placeholder: String,
-    value: [String, Number],
+    value: {
+      default: "",
+      type: [String, Number],
+    },
+    name: {
+      default: "",
+      type: String,
+    },
+    placeholder: {
+      default: "",
+      type: String,
+    },
     type: {
       default: "number",
       type: String as () => "number" | "text",

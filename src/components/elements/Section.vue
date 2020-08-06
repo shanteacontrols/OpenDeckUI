@@ -19,7 +19,10 @@ import { defaultTheme } from "./../../definitions";
 export default defineComponent({
   name: "Section",
   props: {
-    title: String,
+    title: {
+      type: String,
+      required: true,
+    },
   },
   setup() {
     return {

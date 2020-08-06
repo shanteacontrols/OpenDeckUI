@@ -10,6 +10,7 @@
         <strong>
           {{ componentIndex }}
         </strong>
+        <div></div>
       </h3>
       <div class="hidden md:block md:flex-grow text-right">
         <router-link
@@ -57,6 +58,9 @@ import { logger } from "../../util";
 
 export default defineComponent({
   name: "DeviceForm",
+  components: {
+    Chevron,
+  },
   props: {
     componentBlock: {
       type: Number,
@@ -85,12 +89,13 @@ export default defineComponent({
     routeName: {
       type: String,
       required: false,
+      default: "",
     },
   },
   setup(props) {
     const loading = ref(true);
     const form = reactive(props.defaultData);
-    const componentIndex = toRefs(props).componentIndex;
+    const index = toRefs(props).componentIndex;
 
     const loadData = async () => {
       loading.value = true;
@@ -100,7 +105,7 @@ export default defineComponent({
         props.componentDefinition,
         props.componentBlock,
         DefinitionType.ComponentValue,
-        componentIndex.value
+        index.value,
       );
       Object.assign(form, componentConfig);
       // prevent initial value change from writing to device
@@ -108,7 +113,7 @@ export default defineComponent({
     };
 
     onMounted(() => loadData());
-    watch([componentIndex], () => loadData());
+    watch([index], () => loadData());
 
     const onValueChange = ({
       key,
@@ -134,10 +139,10 @@ export default defineComponent({
           {
             block: props.componentBlock,
             section,
-            index: componentIndex.value,
+            index,
           },
           value,
-          onSuccess
+          onSuccess,
         )
         .catch((error) => {
           logger.error("ERROR WHILE SAVING COMPONENT VALUE DATA", error);
@@ -153,11 +158,7 @@ export default defineComponent({
       },
       loading,
       onValueChange,
-      componentIndex,
     };
-  },
-  components: {
-    Chevron,
   },
 });
 </script>
