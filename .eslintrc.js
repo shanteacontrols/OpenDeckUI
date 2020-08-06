@@ -1,11 +1,23 @@
 module.exports = {
+  root: true,
+  parser: "vue-eslint-parser",
+  parserOptions: {
+    parser: "@typescript-eslint/parser",
+  },
+  plugins: ["vue", "@typescript-eslint", "prettier"],
   extends: [
-    "plugin:vue/recommended",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/vue3-recommended",
+    "plugin:prettier/recommended",
     "@vue/typescript/recommended",
     "@vue/prettier",
     "@vue/prettier/@typescript-eslint",
   ],
   rules: {
+    "no-console": 2,
+    "prettier/prettier": 2,
     "no-unused-vars": [
       "error",
       // we are only using this rule to check for unused arguments since TS
@@ -14,5 +26,8 @@ module.exports = {
     ],
     "vue/valid-template-root": "off",
     "@typescript-eslint/no-explicit-any": "off",
+  },
+  env: {
+    node: true,
   },
 };

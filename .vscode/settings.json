@@ -1,18 +1,24 @@
 {
   "editor.autoIndent": "advanced",
   "editor.tabSize": 2,
-  "editor.formatOnSave": false,
-  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true,
     "source.fixAll.tslint": false
   },
-  // VETUR
-  "vetur.validation.template": true,
+  // VETUR - disable
+  "vetur.validation.template": false,
+  "vetur.completion.autoImport": false,
   // TYPESCRIPT
   "typescript.tsdk": "node_modules/typescript/lib", //  Use the project's ts version
+  "typescript.format.enable": false,
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
   // PRETTIER
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "formattingToggle.affects": ["formatOnPaste", "formatOnSave", "formatOnType"],
   // ESLINT
   "eslint.enable": true,
   "eslint.alwaysShowStatus": true,

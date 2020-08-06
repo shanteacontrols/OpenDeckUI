@@ -3,9 +3,10 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
-    "strict": true,
+    "declaration": true,
     "isolatedModules": true,
     "esModuleInterop": true,
+    "noUnusedLocals": true,
     "lib": ["dom", "esnext"],
   },
   "exclude": ["node_modules", "dist"]
