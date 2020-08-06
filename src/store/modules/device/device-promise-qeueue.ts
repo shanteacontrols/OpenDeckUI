@@ -68,7 +68,7 @@ const addRequestToProcessor = (
   request: Omit<
     IRequestInProcess,
     "id" | "state" | "responseCount" | "responseData" | "time"
-  >
+  >,
 ) => {
   const id = requestProcessor.maxRequestId++;
   if (requestStack.value[id]) {
@@ -154,7 +154,7 @@ const onRequestDone = (
   id: number,
   responseCode: number,
   responseData: number[],
-  parsed: number | number[] | string
+  parsed: number | number[] | string,
 ) => {
   const request = requestStack.value[id];
   if (!request) {
@@ -184,14 +184,14 @@ const onRequestDone = (
       if (definition && responseCode === ErrorCode.NOT_SUPPORTED) {
         midiStore.actions.disableControl(
           definition,
-          ControlDisableType.NotSupported
+          ControlDisableType.NotSupported,
         );
       }
       // Show notice that firmware doesn't support this control
       if (definition && responseCode === ErrorCode.INDEX) {
         midiStore.actions.disableControl(
           definition,
-          ControlDisableType.MissingIndex
+          ControlDisableType.MissingIndex,
         );
       }
     }
@@ -274,12 +274,12 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
 const prepareRequestPayload = (
   definition: IRequestDefinition,
-  config?: IRequestConfig
+  config?: IRequestConfig,
 ) => {
   if ([RequestKind.Custom, RequestKind.Predefined].includes(definition.type)) {
     if (definition.specialRequestId === undefined) {
       throw new Error(
-        `Missing specialRequestId for definition ${definition.key}`
+        `Missing specialRequestId for definition ${definition.key}`,
       );
     }
 

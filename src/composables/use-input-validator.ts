@@ -12,7 +12,7 @@ interface InputValidatorObject {
 const useInputValidator = (
   startValue: Ref<validatorInputValue>,
   validators: validator[],
-  onValidChange: validationAction
+  onValidChange: validationAction,
 ): InputValidatorObject => {
   const input = ref(startValue.value);
   const errors = ref<Array<string>>([]);

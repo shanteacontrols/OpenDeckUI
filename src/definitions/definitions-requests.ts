@@ -160,7 +160,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     parser: (value: number[]): string => {
       const board = Boards.find(
         (b: any) =>
-          arrayEqual(b.id, value) || (b.oldId && arrayEqual(b.oldId, value))
+          arrayEqual(b.id, value) || (b.oldId && arrayEqual(b.oldId, value)),
       );
       return board ? board.name : "UNKNOWN BOARD";
     },

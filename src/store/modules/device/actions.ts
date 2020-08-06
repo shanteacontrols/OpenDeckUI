@@ -21,7 +21,7 @@ const setInfo = (data: Partial<IDeviceState>): void => {
 };
 
 export const connectDeviceStoreToInput = async (
-  inputId: string
+  inputId: string,
 ): Promise<any> => {
   await midiStore.actions.loadMidi();
   const { input, output } = await midiStore.actions.findInputOutput(inputId);
@@ -115,7 +115,7 @@ export const getComponentSettings = async (
   componentDefinition: Dictionary<IBlockDefinition>,
   block: number,
   definitionType: DefinitionType,
-  componentIndex?: number
+  componentIndex?: number,
 ): Promise<any> => {
   const settings = {} as any;
 
@@ -147,7 +147,7 @@ export const getComponentSettings = async (
         handler,
         config,
       }).catch((error) =>
-        logger.error("Failed to read component config", error)
+        logger.error("Failed to read component config", error),
       );
     });
 
@@ -165,7 +165,7 @@ export interface IGetValueOptions {
 export const setComponentSectionValue = async (
   config: IGetValueOptions,
   value: number,
-  handler: (val: any) => void
+  handler: (val: any) => void,
 ): Promise<any> =>
   sendMessage({
     command: SysExCommand.SetValue,
@@ -188,12 +188,12 @@ export interface IDeviceActions {
     definition: Dictionary<IBlockDefinition>,
     block: Block,
     definitionType: DefinitionType,
-    customIndex?: number
+    customIndex?: number,
   ) => Promise<any>;
   setComponentSectionValue: (
     config: IGetValueOptions,
     value: number,
-    handler: () => void
+    handler: () => void,
   ) => Promise<any>;
 }
 

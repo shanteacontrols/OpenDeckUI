@@ -18,7 +18,7 @@ const midiBuffer = [] as ILogEntry[];
 let delayMs = delayShort;
 
 export const getFilteredLogs = (
-  filterBy: (log: ILogEntry) => boolean
+  filterBy: (log: ILogEntry) => boolean,
 ): ILogEntry[] => state.stack.filter(filterBy);
 
 const pushBufferToStack = () => {

@@ -23,7 +23,7 @@ const DefinitionMap = {
 };
 
 export const findDefinitionByRequestConfig = (
-  config: IRequestConfig
+  config: IRequestConfig,
 ): IBlockDefinition | undefined => {
   const definitions = DefinitionMap[config.block];
   if (!definitions) {
@@ -40,6 +40,6 @@ export const findDefinitionByRequestConfig = (
     (def) =>
       matchSection(def) &&
       (!isSettingType(def) ||
-        matchesSettingIndex(def as IBlockSettingDefinition))
+        matchesSettingIndex(def as IBlockSettingDefinition)),
   );
 };

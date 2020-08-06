@@ -68,7 +68,7 @@ export type IBlockDefinition =
   | IBlockComponentDefinition;
 
 export const convertDefinitionsToArray = (
-  definitions: Dictionary<IBlockDefinition>
+  definitions: Dictionary<IBlockDefinition>,
 ): Array<IBlockDefinition> => {
   return Object.keys(definitions).map((key: string) => definitions[key]);
 };

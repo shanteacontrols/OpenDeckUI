@@ -16,10 +16,10 @@ export interface IDeviceComputed {
 const name = computed(() => state.input && state.input.name);
 const manufacturer = computed(() => state.input && state.input.manufacturer);
 const isConnecting = computed(
-  () => state.connectionState === DeviceConnectionState.Pending
+  () => state.connectionState === DeviceConnectionState.Pending,
 );
 const isConnected = computed(
-  () => state.connectionState === DeviceConnectionState.Open
+  () => state.connectionState === DeviceConnectionState.Open,
 );
 const showMsbControls = computed(() => state.valueSize === 1);
 

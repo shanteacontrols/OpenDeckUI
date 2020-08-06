@@ -24,7 +24,7 @@ export type IMappedStore<S extends IStoreState, C, A> = ToRefs<
   A;
 
 export const mapStore = <S extends IStoreState, C, A>(
-  store: IStore<S, C, A>
+  store: IStore<S, C, A>,
 ): IMappedStore<S, C, A> => {
   return {
     ...toRefs(readonly<S>(store.state)),
