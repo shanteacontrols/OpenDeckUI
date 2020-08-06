@@ -31,7 +31,12 @@
       </template>
     </DeviceSettings>
 
-    <DeviceGrid class="w-full" route-name="device-leds-form" :count="count" />
+    <DeviceGrid
+      class="w-full"
+      route-name="device-leds-form"
+      :block="Block.Led"
+      :count="count"
+    />
   </div>
 </template>
 

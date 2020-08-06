@@ -138,7 +138,7 @@ export default defineComponent({
           {
             block: props.componentBlock,
             section,
-            index,
+            index: index.value,
           },
           value,
           onSuccess,
