@@ -173,9 +173,9 @@ export default defineComponent({
     const valueChangeHandler = (value: any) => {
       if (Number(value) !== valueRef.value) {
         emit("modified", {
-          key,
+          key: key.value,
           value: Number(value),
-          section,
+          section: section.value,
           settingIndex, // defined for settings only
         });
       }
