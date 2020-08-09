@@ -59,7 +59,7 @@ interface IRequestProcessor {
 
 export const requestProcessor: IRequestProcessor = {
   activeRequestId: ref((null as unknown) as number),
-  maxRequestId: 1, // Must be over 0 to avoid conflicts with boolean checks
+  maxRequestId: 100, // Must be over 0 to avoid conflicts with boolean checks
 };
 
 export const requestStack = ref({} as Record<number, IRequestInProcess>);
@@ -70,7 +70,8 @@ const addRequestToProcessor = (
     "id" | "state" | "responseCount" | "responseData" | "time"
   >,
 ) => {
-  const id = requestProcessor.maxRequestId++;
+  const id = requestProcessor.maxRequestId + 1;
+  requestProcessor.maxRequestId = id;
   if (requestStack.value[id]) {
     activityLog.actions.addError({
       errorCode: ErrorCode.UI_QUEUE_REQ_ID_CONFLICT,
