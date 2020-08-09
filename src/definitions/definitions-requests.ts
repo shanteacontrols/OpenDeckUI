@@ -1,5 +1,4 @@
 import { MessageStatus, Wish, Amount } from ".";
-import { arrayEqual } from "../util";
 
 export const openDeckManufacturerId = [0, 83, 67]; // Hex [00 53 43]
 
@@ -9,61 +8,79 @@ export enum RequestKind {
   Configuration = "configuration",
 }
 
-const Boards = [
+export interface IBoardDefinition {
+  name: string;
+  id: number[];
+  oldId?: number[];
+  firmwareFileLocation?: string;
+}
+
+export const Boards: IBoardDefinition[] = [
   {
     name: "Arduino Leonardo",
     id: [24, 58, 76, 24],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "Arduino Mega",
     id: [9, 16, 0, 18],
     oldId: [],
+    firmwareFileLocation: "bin/compiled/fw/avr/atmega2560/mega2560.hex",
   },
   {
     name: "Arduino Pro Micro",
     id: [27, 107, 33, 98],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "Arduino Uno",
     id: [105, 67, 14, 63],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "Teensy++ 2.0",
     id: [112, 11, 64, 30],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "DubFocus",
     id: [57, 92, 109, 93],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "Bergamot",
     id: [48, 106, 107, 21],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "STM32F4 Discovery",
     id: [43, 19, 68, 122],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "Jamiel",
     id: [125, 12, 108, 80],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "Jose",
     id: [3, 109, 68, 30],
     oldId: [],
+    firmwareFileLocation: null,
   },
   {
     name: "Cardamom",
     id: [99, 82, 54, 48],
     oldId: [],
+    firmwareFileLocation: null,
   },
 ];
 
@@ -73,6 +90,7 @@ export interface IRequestDefinition {
   specialRequestId?: number;
   // Flag for priority messages needed for preparing data communication
   isConnectionInfoRequest?: boolean;
+  expectsNoResponse?: boolean;
   // predefinedBytes?: {
   //   messageStatus: MessageStatus;
   //   messagePart: 0; // @TODO: calculate on the fly
@@ -126,6 +144,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: SysExCommand.CloseConnection,
     type: RequestKind.Predefined,
     specialRequestId: 0,
+    expectsNoResponse: true,
     isConnectionInfoRequest: true,
   },
   [SysExCommand.GetValueSize]: {
@@ -157,13 +176,13 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: SysExCommand.GetHardwareUid,
     type: RequestKind.Custom,
     specialRequestId: 66, // Hex: 42
-    parser: (value: number[]): string => {
-      const board = Boards.find(
-        (b: any) =>
-          arrayEqual(b.id, value) || (b.oldId && arrayEqual(b.oldId, value)),
-      );
-      return board ? board.name : "UNKNOWN BOARD";
-    },
+    // parser: (value: number[]): string => {
+    //   const board = Boards.find(
+    //     (b: any) =>
+    //       arrayEqual(b.id, value) || (b.oldId && arrayEqual(b.oldId, value)),
+    //   );
+    //   return board ? board.name : "UNKNOWN BOARD";
+    // },
   },
   [SysExCommand.GetFirmwareVersionAndHardwareUid]: {
     key: SysExCommand.GetFirmwareVersionAndHardwareUid,
@@ -190,6 +209,8 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [SysExCommand.Reboot]: {
     key: SysExCommand.Reboot,
     type: RequestKind.Custom,
+    isConnectionInfoRequest: true,
+    expectsNoResponse: true,
     specialRequestId: 127, // Hex: 7F
   },
   [SysExCommand.GetBootLoaderSupport]: {
@@ -200,11 +221,15 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [SysExCommand.BootloaderMode]: {
     key: SysExCommand.BootloaderMode,
     type: RequestKind.Custom,
+    isConnectionInfoRequest: true,
+    expectsNoResponse: true,
     specialRequestId: 85, // Hex: 55
   },
   [SysExCommand.FactoryReset]: {
     key: SysExCommand.FactoryReset,
     type: RequestKind.Custom,
+    isConnectionInfoRequest: true,
+    expectsNoResponse: true,
     specialRequestId: 68, // Hex: 44
   },
   [SysExCommand.DisableProcessing]: {

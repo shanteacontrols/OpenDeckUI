@@ -37,6 +37,7 @@ export type IDeviceState = {
   valueSize: number;
   valuesPerMessageRequest: number;
   boardName: string;
+  firmwareFileLocation: string;
   firmwareVersion: string;
   bootLoaderSupport: boolean;
   buttons: number;
@@ -56,6 +57,7 @@ export const defaultState: IDeviceState = {
   valueSize: (null as unknown) as number,
   valuesPerMessageRequest: (null as unknown) as number,
   boardName: (null as unknown) as string,
+  firmwareFileLocation: (null as unknown) as string,
   firmwareVersion: (null as unknown) as string,
   bootLoaderSupport: false,
   buttons: 0,
