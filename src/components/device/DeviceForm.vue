@@ -133,11 +133,14 @@ export default defineComponent({
         setTimeout(() => (loading.value = false), 100);
       };
 
+      // Fix for unreliable value (ref.value vs value)
+      const sectionValue = section.value || section;
+
       return deviceStoreMapped
         .setComponentSectionValue(
           {
             block: props.componentBlock,
-            section: section.value,
+            section: sectionValue,
             index: index.value,
           },
           value,
