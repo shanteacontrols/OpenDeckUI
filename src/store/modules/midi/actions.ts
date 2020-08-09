@@ -8,6 +8,8 @@ import { IBlockDefinition } from "../../../definitions";
 
 let loadMidiPromise = (null as unknown) as Promise<void>;
 
+let connectionWatcherTimer = null;
+
 // Helpers
 
 const setConnectionState = (value: MidiConnectionState): void => {
@@ -15,11 +17,22 @@ const setConnectionState = (value: MidiConnectionState): void => {
 };
 
 const connectionWatcher = async (): Promise<void> => {
-  if (!isConnected() && !isConnecting()) {
-    loadMidi();
+  if (connectionWatcherTimer) {
+    clearTimeout(connectionWatcherTimer);
   }
 
-  setTimeout(() => connectionWatcher(), 4000);
+  try {
+    if (!isConnected() && !isConnecting()) {
+      await loadMidi();
+    }
+
+    assignInputs();
+  } catch (err) {
+    logger.error("MIDI Connection watcher error", err);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  connectionWatcherTimer = setTimeout(connectionWatcher, 2000);
 };
 
 const filterByName = (input: Input) => input.name.startsWith("OpenDeck");
@@ -32,7 +45,7 @@ const assignInputs = () => {
 // Actions
 
 export const findInputOutput = async (
-  inputId: string
+  inputId: string,
 ): Promise<{ input: Input; output: Output }> => {
   await loadMidi();
 
@@ -42,7 +55,7 @@ export const findInputOutput = async (
     throw new Error(`CANNOT FIND INPUT ${inputId}`);
   }
   const output = WebMidi.outputs.find(
-    (output: Output) => output.name === input.name
+    (output: Output) => output.name === input.name,
   );
   if (!output) {
     // @TODO: show alert warning
@@ -89,16 +102,16 @@ const newMidiLoadPromise = async (): Promise<void> =>
 
 const isControlDisabled = (
   def: IBlockDefinition,
-  type?: ControlDisableType
+  type?: ControlDisableType,
 ): boolean =>
   state.disableUiControls.some(
     (d) =>
-      d.key === def.key && d.block === def.block && (!type || d.type === type)
+      d.key === def.key && d.block === def.block && (!type || d.type === type),
   );
 
 const disableControl = (
   def: IBlockDefinition,
-  type: ControlDisableType
+  type: ControlDisableType,
 ): void => {
   const isDisabled = isControlDisabled(def);
   if (!isDisabled) {
@@ -110,20 +123,18 @@ const disableControl = (
 // Export
 
 export interface IMidiActions {
-  startConnectionWatcher: () => Promise<void>;
   loadMidi: () => Promise<void>;
   findInputOutput: (
-    inputId: string
+    inputId: string,
   ) => Promise<{ input: Input; output: Output }>;
   disableControl: (def: IBlockDefinition, type: ControlDisableType) => void;
   isControlDisabled: (
     def: IBlockDefinition,
-    type?: ControlDisableType
+    type?: ControlDisableType,
   ) => boolean;
 }
 
 export const midiStoreActions: IMidiActions = {
-  startConnectionWatcher: () => connectionWatcher(),
   loadMidi,
   findInputOutput,
   disableControl,
