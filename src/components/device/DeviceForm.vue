@@ -137,7 +137,7 @@ export default defineComponent({
         .setComponentSectionValue(
           {
             block: props.componentBlock,
-            section,
+            section: section.value,
             index: index.value,
           },
           value,
