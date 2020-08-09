@@ -1,6 +1,8 @@
 import AppDeviceSelect from "../components/AppDeviceSelect.vue";
 import Device from "../components/device/Device.vue";
 import DeviceSectionGlobal from "../components/device/DeviceSectionGlobal.vue";
+import DeviceSectionHardware from "../components/device/DeviceSectionHardware.vue";
+import DeviceSectionFirmwareUpdate from "../components/device/DeviceSectionFirmwareUpdate.vue";
 import DeviceSectionButtons from "../components/device/DeviceSectionButtons.vue";
 import DeviceSectionButtonsForm from "../components/device/DeviceSectionButtonsForm.vue";
 import DeviceSectionAnalogs from "../components/device/DeviceSectionAnalogs.vue";
@@ -28,6 +30,16 @@ const routes = [
         path: "",
         name: "device-global",
         component: DeviceSectionGlobal,
+      },
+      {
+        path: "hardware",
+        name: "device-hardware",
+        component: DeviceSectionHardware,
+      },
+      {
+        path: "firmware-update",
+        name: "device-firmware-update",
+        component: DeviceSectionFirmwareUpdate,
       },
       {
         path: "buttons",

@@ -128,10 +128,17 @@ const startRequest = async (id: number) => {
     return;
   }
 
-  requestProcessor.activeRequestId.value = id;
   request.time.started = new Date();
   state.output.sendSysex(openDeckManufacturerId, request.payload);
+
+  requestProcessor.activeRequestId.value = id;
   request.state = RequestState.Sent;
+
+  const definition = requestDefinitions[request.command];
+  if (definition.expectsNoResponse) {
+    requestProcessor.activeRequestId.value = null;
+    request.state = RequestState.Done;
+  }
 };
 
 const getActiveRequest = () => {
@@ -299,10 +306,12 @@ export const sendMessage = async (params: IBusRequestConfig): Promise<any> => {
   const definition = requestDefinitions[command];
 
   // Delay any data requests until connection info messages exchanged
-  if (!definition.isConnectionInfoRequest && state.connectionPromise) {
-    await state.connectionPromise;
-  } else if (state.connectionState !== DeviceConnectionState.Open) {
-    await ensureConnection();
+  if (!definition.isConnectionInfoRequest) {
+    if (state.connectionPromise) {
+      await state.connectionPromise;
+    } else if (state.connectionState !== DeviceConnectionState.Open) {
+      await ensureConnection();
+    }
   }
 
   return new Promise((resolve, reject) => {

@@ -6,14 +6,19 @@
       </router-link>
     </template>
 
-    <template #secondary-header>
+    <template v-if="!isHomePage && boardName" #secondary-header>
       <router-link
-        v-if="!isHomePage && boardName"
         :to="{ name: 'device', params: { inputId } }"
         class="font-bold"
       >
         Board: {{ boardName }}
         <small v-if="firmwareVersion">- Firmware {{ firmwareVersion }} </small>
+      </router-link>
+      <router-link
+        class="ml-4 text-xs"
+        :to="{ name: 'device-hardware', params: { inputId } }"
+      >
+        HW settings
       </router-link>
     </template>
 
