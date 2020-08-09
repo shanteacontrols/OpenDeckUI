@@ -31,7 +31,7 @@
         <FormToggle
           v-for="(type, idx) in LogType"
           :key="idx"
-          class="inline-block float-left md:float-right mr-2 mb-2"
+          class="inline-block float-left md:float-right mr-2 mb-2 z-0"
           :value="logTypeFilter.includes(type)"
           @changed="() => toggleFilterType(type)"
         >
