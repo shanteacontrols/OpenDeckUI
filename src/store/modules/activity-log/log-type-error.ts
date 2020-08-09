@@ -1,5 +1,6 @@
 import { LogType, ILogEntryBase, state } from "./state";
-import { ErrorCode } from "../../../definitions";
+import { ErrorCode, getErrorDefinition } from "../../../definitions";
+import { logger } from "../../../util";
 
 export interface ILogEntryError extends ILogEntryBase {
   type: LogType.Error;
@@ -23,5 +24,11 @@ export const addError = (params: ErrorParams): void => {
     time: new Date(),
     ...params,
   });
-  // logger.error(params.message, params.error);
+
+  if (params.errorCode) {
+    const definition = getErrorDefinition(params.errorCode);
+    logger.error(definition.description, params.error);
+  } else {
+    logger.error(definition.message, params.error);
+  }
 };
