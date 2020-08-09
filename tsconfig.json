@@ -7,7 +7,8 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "noUnusedLocals": true,
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "esnext"]
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "include": ["./src/**/*"]
 }
