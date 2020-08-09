@@ -1,6 +1,6 @@
 <template>
   <Section title="Firmware update" class="w-full">
-    <p v-if="bootLoaderSupport" class="mb-6 text-sm leading-5 text-gray-500">
+    <p v-if="!bootLoaderSupport" class="mb-6 text-sm leading-5 text-gray-500">
       Your device does not have bootloader support. <br />
       To perform a manual firmware update please consult the
       <a href="https://github.com/paradajz/OpenDeck/wiki/Firmware-update"
@@ -92,3 +92,18 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+.release-description {
+  margin-bottom: 1em;
+}
+.release-description h1,
+.release-description h2,
+.release-description h3 {
+  font-weight: bold;
+}
+.release-description ul {
+  margin-left: 2em;
+  list-style: circle;
+}
+</style>

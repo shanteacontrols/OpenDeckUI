@@ -273,6 +273,10 @@ const loadDeviceInfo = async (): Promise<any> => {
     command: SysExCommand.GetNumberOfSupportedComponents,
     handler: (components: IDeviceComponentCounts) => setInfo(components),
   });
+  await sendMessage({
+    command: SysExCommand.GetBootLoaderSupport,
+    handler: (bootLoaderSupport: string) => setInfo({ bootLoaderSupport }),
+  });
 };
 
 export const getComponentSettings = async (
