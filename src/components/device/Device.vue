@@ -1,6 +1,12 @@
 <template>
-  <div v-if="isConnecting" class="lg:text-center">
-    <p>Connecting to WebMidi device</p>
+  <div
+    v-if="isConnecting"
+    class="lg:text-center relative"
+    style="min-height: 50vh;"
+  >
+    <div class="absolute flex inset-0 opacity-75 bg-gray-900">
+      <Spinner class="self-center" />
+    </div>
   </div>
 
   <div v-else-if="isConnected">

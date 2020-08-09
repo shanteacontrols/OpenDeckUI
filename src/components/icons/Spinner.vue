@@ -26,7 +26,7 @@ export default defineComponent({
 
 <style scoped>
 .spinner {
-  margin: 100px auto 0;
+  margin: 40px auto;
   width: 70px;
   text-align: center;
 }
