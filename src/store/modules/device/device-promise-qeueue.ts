@@ -17,7 +17,7 @@ import {
   ErrorCode,
 } from "../../../definitions";
 import { findDefinitionByRequestConfig } from "../../../definitions/definition-map";
-import { activityLog } from "../activity-log";
+import { activityLog, MidiEventTypeMMC } from "../activity-log";
 import { midiStore } from "../midi";
 import { ControlDisableType } from "../midi/state";
 import { ensureConnection } from "./actions";
@@ -244,6 +244,17 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   const request = getActiveRequest();
   if (!request || request.state !== RequestState.Sent) {
+    // Note: MMC MIDI events are sent as SYSEX events, so handle them specifically here
+    if (
+      event.data.length === 6 &&
+      Object.keys(MidiEventTypeMMC).includes(String(event.data[4]))
+    ) {
+      activityLog.actions.addMidi({
+        type: MidiEventTypeMMC[event.data[4]],
+      });
+      return;
+    }
+
     activityLog.actions.addError({
       errorCode: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
       payload: data,

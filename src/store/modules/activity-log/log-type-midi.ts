@@ -12,7 +12,48 @@ export type MidiEventType =
   | "continue"
   | "stop"
   | "activesensing"
+  | "mmcstop"
+  | "mmcplay"
+  | "mmcsrecordstart"
+  | "mmcsrecordstop"
+  | "mmcspause"
   | "reset";
+
+export const MidiEventTypeLabel = {
+  noteon: "Note On",
+  noteoff: "Note On",
+  controlchange: "Control Change",
+  programchange: "Program Change",
+  pitchbend: "Pitch Bend",
+  clock: "Clock",
+  start: "Start",
+  continue: "Continue",
+  stop: "Stop",
+  activesensing: "Active Sensing",
+  reset: "Reset",
+  mmcstop: "MMC Stop",
+  mmcplay: "MMC Play",
+  mmcrecordstart: "MMC Record Start",
+  mmcrecordstop: "MMC Record Stop",
+  mmcpause: "MMC Pause",
+};
+
+export const MidiEventTypeMMC = {
+  1: "mmcstop",
+  2: "mmcplay",
+  6: "mmcrecordstart",
+  7: "mmcrecordstop",
+  9: "mmcpause",
+};
+
+export const MidiRealtimeEvent = [
+  "clock",
+  "start",
+  "continue",
+  "stop",
+  "activesensing",
+  "reset",
+];
 
 export interface ILogEntryMidi extends ILogEntryBase {
   type: LogType.Midi;

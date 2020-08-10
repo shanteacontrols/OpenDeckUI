@@ -1,41 +1,36 @@
 <template>
-  <p class="p-2 border-b border-gray-800 last:border-b-0">
+  <div class="p-2 border-b border-gray-800 last:border-b-0">
     <strong class="me-2">
-      {{ logEntry.eventType }}
-      <span v-if="logEntry.controller && logEntry.controller.name" class="mr-2">
-        {{ logEntry.controller.name }}
-      </span>
-      <span
-        v-if="logEntry.controller && logEntry.controller.number"
-        class="mr-2"
+      <span v-if="MidiRealtimeEvent.includes(logEntry.eventType)"
+        >Real time:</span
       >
-        #{{ logEntry.controller.number }}
-      </span>
+      {{ MidiEventTypeLabel[logEntry.eventType] }}
     </strong>
-    <template v-if="logEntry.value">
-      <br />
-      <span class="mr-2">Value: {{ logEntry.value }} </span>
-    </template>
-    <template v-if="logEntry.channel">
-      <br />
-      <span class="mr-2"> Channel: {{ logEntry.channel }} </span>
-    </template>
-    <template v-if="logEntry.data">
-      <br />
-      <span class="mr-2"> Data: {{ logEntry.data }} </span>
-    </template>
-    <template v-if="logEntry.controller">
-      <br />
-      <span class="mr-2"> controller: {{ logEntry.controller }} </span>
-    </template>
-  </p>
+    <div v-if="logEntry.value" class="mr-2">Value: {{ logEntry.value }}</div>
+    <div v-if="logEntry.channel" class="mr-2">
+      Channel: {{ logEntry.channel }}
+    </div>
+    <div v-if="logEntry.controller && logEntry.controller.number" class="mr-2">
+      controller: {{ logEntry.controller.number }}
+    </div>
+    <div v-if="logEntry.data && logEntry.data.length > 2" class="mr-2">
+      Velocity: {{ logEntry.data[2] }}
+    </div>
+    <div v-if="logEntry.data && logEntry.data.length" class="mr-2">
+      Raw data: {{ logEntry.data }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { formatDate } from "../../../util";
 import { Block } from "../../../definitions";
-import { ILogEntryMidi } from "../../../store/modules/activity-log";
+import {
+  ILogEntryMidi,
+  MidiEventTypeLabel,
+  MidiRealtimeEvent,
+} from "../../../store/modules/activity-log";
 
 export default defineComponent({
   name: "DeviceActivityMidi",
@@ -49,6 +44,8 @@ export default defineComponent({
     return {
       Block,
       formatDate,
+      MidiEventTypeLabel,
+      MidiRealtimeEvent,
     };
   },
 });

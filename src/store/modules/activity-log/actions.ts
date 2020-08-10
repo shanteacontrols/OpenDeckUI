@@ -10,7 +10,6 @@ import { debounce } from "lodash-es";
 const delayShort = 100;
 const delayLong = 700;
 const bufferSlowdownRequests = 30;
-const keepMidiLogsForMs = 250;
 const keepInfoLogsForMs = 250;
 
 let lastBufferPushTime = new Date();
