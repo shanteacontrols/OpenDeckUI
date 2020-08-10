@@ -12,7 +12,7 @@
         <small v-if="firmwareVersion">- Firmware {{ firmwareVersion }} </small>
       </strong>
       <router-link
-        class="ml-4 text-xs"
+        class="ml-4 px-2 py-1 bg-gray-800 rounded-full float-right text-xs"
         :to="{ name: 'device-hardware', params: { inputId } }"
       >
         HW settings
