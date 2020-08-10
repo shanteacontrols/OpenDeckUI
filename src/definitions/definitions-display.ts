@@ -90,7 +90,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
         text: "0X7A (122)",
       },
     ],
-    label: "I2C address.",
+    label: "I2C address",
     helpText: ``,
   },
   WelcomeMessage: {

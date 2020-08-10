@@ -7,13 +7,10 @@
     </template>
 
     <template v-if="!isHomePage && boardName" #secondary-header>
-      <router-link
-        :to="{ name: 'device', params: { inputId } }"
-        class="font-bold"
-      >
+      <strong class="font-bold text-gray-400">
         Board: {{ boardName }}
         <small v-if="firmwareVersion">- Firmware {{ firmwareVersion }} </small>
-      </router-link>
+      </strong>
       <router-link
         class="ml-4 text-xs"
         :to="{ name: 'device-hardware', params: { inputId } }"
@@ -76,7 +73,7 @@
         </li>
         <li>
           <a class="inline-block py-1" href="https://shanteacontrols.com/"
-            >Shantea controls</a
+            >Shantea Controls</a
           >
         </li>
       </ul>
