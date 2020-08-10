@@ -42,13 +42,10 @@ const pushBufferToStack = () => {
   midiBuffer.length = 0;
 };
 
-const isLogFresh = (log: ILogEntry) => {
+const pruneInfoLogsForAnimation = (log: ILogEntry) => {
   const now = new Date().valueOf();
   if (LogType.Info === log.type) {
     return log.time.valueOf() > now - keepInfoLogsForMs;
-  }
-  if (LogType.Midi === log.type && state.stack.length > 100) {
-    return log.time.valueOf() > now - keepMidiLogsForMs;
   }
   return true;
 };
@@ -60,7 +57,7 @@ const pruneOld = () => {
     return;
   }
 
-  const filtered = getFilteredLogs(isLogFresh);
+  const filtered = state.stack.filter(pruneInfoLogsForAnimation).slice(-100);
 
   state.prunedCount = state.prunedCount + lengthBefore - filtered.length;
   state.stack = Array.from(filtered);
