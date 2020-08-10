@@ -34,7 +34,7 @@ export type IActivityLogState = {
 export const defaultState: IActivityLogState = {
   stack: [] as Array<ILogEntry>,
   prunedCount: 0,
-  logTypeFilter: [] as Array<LogType>,
+  logTypeFilter: [LogType.Midi] as Array<LogType>,
 };
 
 export const state = reactive<IActivityLogState>(defaultState);
