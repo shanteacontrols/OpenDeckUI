@@ -6,7 +6,7 @@
       <router-link
         v-for="componentIndex in (count || 0)"
         :key="componentIndex"
-        class="px-1 py-1 mb-4 ml-4 select-none cursor-pointer border border-gray-700 text-gray-600 bg-gray-900 hover:bg-yellow-400 hover:text-gray-800 rounded-full transition-colors duration-500 ease-in-out"
+        class="px-1 py-1 mb-4 ml-4 select-none cursor-pointer border border-gray-700 text-gray-600 bg-gray-900 hover:bg-yellow-400 hover:text-gray-800 rounded-full transition-colors duration-100"
         :class="{
           'bg-yellow-500': (highlights[block] || []).includes(
             componentIndex - 1,
