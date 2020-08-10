@@ -23,7 +23,6 @@
           <span>{{ input.manufacturer || "unknown manufacturer" }}</span>
           <br />
           <strong>{{ input.name }}</strong>
-          <ConnectionState class="float-right ml-2" :state="input.state" />
         </router-link>
       </div>
     </div>
@@ -31,18 +30,27 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { midiStoreMapped } from "../store";
-import ConnectionState from "./elements/ConnectionState.vue";
+import { defineComponent, onMounted } from "vue";
+import { midiStore } from "../store";
+import router from "../router";
 
 export default defineComponent({
   name: "AppDeviceSelect",
-  components: {
-    ConnectionState,
-  },
   setup() {
+    onMounted(() => {
+      // If only one input is available, open it right away
+      if (midiStore.state.inputs.length === 1) {
+        router.push({
+          name: "device",
+          params: {
+            inputId: midiStore.state.inputs[0].id,
+          },
+        });
+      }
+    });
+
     return {
-      inputs: midiStoreMapped.inputs,
+      inputs: midiStore.state.inputs,
     };
   },
 });

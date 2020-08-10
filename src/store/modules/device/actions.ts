@@ -28,9 +28,7 @@ const setInfo = (data: Partial<IDeviceState>): void => {
 let connectionWatcherTimer = null;
 
 const connectionWatcher = async (): Promise<void> => {
-  if (connectionWatcherTimer) {
-    clearTimeout(connectionWatcherTimer);
-  }
+  stopDeviceConnectionWatcher();
 
   try {
     if (state.connectionState !== DeviceConnectionState.Open && state.inputId) {
@@ -46,7 +44,14 @@ const connectionWatcher = async (): Promise<void> => {
   connectionWatcherTimer = setTimeout(() => connectionWatcher(), 2000);
 };
 
-const startConnectionWatcher = (): Promise<void> => connectionWatcher();
+const startDeviceConnectionWatcher = (): Promise<void> => connectionWatcher();
+
+const stopDeviceConnectionWatcher = (): Promise<void> => {
+  if (connectionWatcherTimer) {
+    clearTimeout(connectionWatcherTimer);
+    connectionWatcherTimer = null;
+  }
+};
 
 export const connectDeviceStoreToInput = async (
   inputId: string,
@@ -81,7 +86,7 @@ export const connectDeviceStoreToInput = async (
   });
   state.connectionState = DeviceConnectionState.Open;
   state.connectionPromise = (null as unknown) as Promise<any>;
-  startConnectionWatcher();
+  startDeviceConnectionWatcher();
 
   // These requests won't run until connection promise is finished
   await loadDeviceInfo();
@@ -106,6 +111,7 @@ const connectDevice = async (inputId: string): Promise<void> => {
 };
 
 export const closeConnection = async (): Promise<any> => {
+  stopDeviceConnectionWatcher();
   state.connectionState = DeviceConnectionState.Closed;
   await sendMessage({
     command: SysExCommand.CloseConnection,
@@ -356,7 +362,7 @@ export interface IDeviceActions {
   startBootLoaderMode: () => Promise<void>;
   startFactoryReset: () => Promise<void>;
   startReboot: () => Promise<void>;
-  startConnectionWatcher: () => void;
+  startDeviceConnectionWatcher: () => void;
   startFirmwareUpdate: () => Promise<void>;
   getComponentSettings: (
     definition: Dictionary<IBlockDefinition>,
@@ -380,7 +386,7 @@ export const deviceStoreActions: IDeviceActions = {
   startBootLoaderMode,
   startFactoryReset,
   startReboot,
-  startConnectionWatcher,
+  startDeviceConnectionWatcher,
   startFirmwareUpdate,
   loadDeviceInfo,
   getComponentSettings,

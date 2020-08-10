@@ -17,9 +17,7 @@ const setConnectionState = (value: MidiConnectionState): void => {
 };
 
 const connectionWatcher = async (): Promise<void> => {
-  if (connectionWatcherTimer) {
-    clearTimeout(connectionWatcherTimer);
-  }
+  stopMidiConnectionWatcher();
 
   try {
     if (!isConnected() && !isConnecting()) {
@@ -31,8 +29,16 @@ const connectionWatcher = async (): Promise<void> => {
     logger.error("MIDI Connection watcher error", err);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   connectionWatcherTimer = setTimeout(connectionWatcher, 2000);
+};
+
+const startMidiConnectionWatcher = (): Promise<void> => connectionWatcher();
+
+const stopMidiConnectionWatcher = (): Promise<void> => {
+  if (connectionWatcherTimer) {
+    clearTimeout(connectionWatcherTimer);
+    connectionWatcherTimer = null;
+  }
 };
 
 const filterByName = (input: Input) => input.name.startsWith("OpenDeck");
@@ -132,6 +138,8 @@ export interface IMidiActions {
     def: IBlockDefinition,
     type?: ControlDisableType,
   ) => boolean;
+  startMidiConnectionWatcher: () => void;
+  stopMidiConnectionWatcher: () => void;
 }
 
 export const midiStoreActions: IMidiActions = {
@@ -139,4 +147,6 @@ export const midiStoreActions: IMidiActions = {
   findInputOutput,
   disableControl,
   isControlDisabled,
+  startMidiConnectionWatcher,
+  stopMidiConnectionWatcher,
 };

@@ -90,6 +90,7 @@ export default defineComponent({
   },
   setup() {
     midiStoreMapped.loadMidi();
+    midiStoreMapped.startMidiConnectionWatcher();
     const { inputId, boardName, firmwareVersion } = deviceStoreMapped;
     const isHomePage = computed(
       () => router.currentRoute.value.name === "home",
@@ -97,7 +98,10 @@ export default defineComponent({
 
     const { isConnected, isConnecting } = midiStoreMapped;
 
-    onUnmounted(() => deviceStoreMapped.closeConnection);
+    onUnmounted(() => {
+      deviceStoreMapped.closeConnection();
+      midiStoreMapped.stopMidiConnectionWatcher();
+    });
 
     return {
       isHomePage,
