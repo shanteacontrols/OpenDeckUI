@@ -72,7 +72,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     key: "dinMidiState",
     type: DefinitionType.Setting,
     section: 0,
-    settingIndex: 2,
+    settingIndex: 3,
     component: FormInputComponent.Toggle,
     label: "DIN MIDI state",
     helpText: `Enable or disable DIN MIDI input and output.`,
