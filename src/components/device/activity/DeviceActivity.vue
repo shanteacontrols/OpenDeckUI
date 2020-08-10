@@ -3,16 +3,6 @@
     <template #title>
       <Heading preset="section-title">
         Activity
-        <span class="float-right text-xs text-gray-600">
-          <small class="ml-2 leading-7">
-            Shown:
-            <strong class="text-gray-300">{{ filteredLog.length }}</strong>
-          </small>
-          <small class="ml-2 leading-7">
-            Pruned:
-            <strong class="text-gray-300">{{ prunedCount }} </strong>
-          </small>
-        </span>
       </Heading>
     </template>
 
