@@ -57,6 +57,8 @@
           />
         </div>
       </Section>
+
+      <DeviceSectionHardware class="border-t-2 border-gray-900" />
     </template>
   </DeviceSettings>
 </template>
@@ -64,13 +66,15 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Block, defaultGlobalData, GlobalDefinitions } from "../../definitions";
-import DeviceSettings from "./DeviceSettings.vue";
 import { defaultTheme } from "./../../definitions";
+import DeviceSettings from "./DeviceSettings.vue";
+import DeviceSectionHardware from "./DeviceSectionHardware.vue";
 
 export default defineComponent({
   name: "DeviceSectionGlobal",
   components: {
     DeviceSettings,
+    DeviceSectionHardware,
   },
   setup() {
     return {
