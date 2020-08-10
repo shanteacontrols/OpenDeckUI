@@ -31,30 +31,19 @@
         </p>
       </div>
 
-      <div class="form-field">
+      <div v-if="bootLoaderSupport" class="form-field">
         <label class="block mb-2 text-sm font-bold text-gray-400">
           Bootloader
         </label>
-        <template v-if="bootLoaderSupport">
-          <button
-            class="my-3 py-2 px-3 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-            :disabled="!bootLoaderSupport"
-            @click.prevent="startBootLoaderMode"
-          >
-            Start bootloader mode
-          </button>
-
-          <p class="text-sm leading-5 text-gray-500">
-            Starting bootloader mode is required for manual firmware updates.
-            The UI may become unresponsive in bootloader mode.
-          </p>
-        </template>
-        <p v-else class="mb-6 text-sm leading-5 text-gray-500">
-          Your device does not have bootloader support. <br />
-          To perform a manual firmware update please consult the
-          <a href="https://github.com/paradajz/OpenDeck/wiki/Firmware-update"
-            >wiki firmware update page</a
-          >.
+        <button
+          class="my-3 py-2 px-3 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
+          @click.prevent="startBootLoaderMode"
+        >
+          Start bootloader mode
+        </button>
+        <p class="text-sm leading-5 text-gray-500">
+          Starting bootloader mode is required for manual firmware updates. The
+          UI may become unresponsive in bootloader mode.
         </p>
       </div>
 
