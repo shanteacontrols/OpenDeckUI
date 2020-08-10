@@ -4,7 +4,6 @@
     :block="Block.Button"
     route-name="device-buttons-form"
     :count="count"
-    title="Buttons"
   />
 </template>
 

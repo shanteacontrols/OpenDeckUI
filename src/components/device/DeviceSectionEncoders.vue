@@ -4,7 +4,6 @@
     :block="Block.Encoder"
     route-name="device-encoders-form"
     :count="count"
-    title="Encoders"
   />
 </template>
 

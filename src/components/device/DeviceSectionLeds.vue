@@ -7,7 +7,7 @@
       :default-data="defaultLedSettingsData"
     >
       <template #default="{ form, onSettingChange }">
-        <Section title="LEDs" class="border-b border-gray-900">
+        <Section title="Global" class="border-b border-gray-900">
           <div
             class="w-full grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10"
           >

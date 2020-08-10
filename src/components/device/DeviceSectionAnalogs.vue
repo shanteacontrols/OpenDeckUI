@@ -4,7 +4,6 @@
     :block="Block.Analog"
     route-name="device-analogs-form"
     :count="count"
-    title="Analogs"
   />
 </template>
 

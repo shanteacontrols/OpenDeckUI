@@ -47,7 +47,7 @@
         </p>
       </div>
 
-      <div class="form-field">
+      <div v-if="bootLoaderSupport" class="form-field">
         <label class="block mb-2 text-sm font-bold text-gray-400">
           Firmware update
         </label>

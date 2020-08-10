@@ -6,10 +6,8 @@
     :default-data="defaultGlobalData"
   >
     <template #default="{ form, onSettingChange }">
-      <Section title="Global Presets" class="w-full xl:w-1/3">
-        <div
-          class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2 xl:grid-cols-1"
-        >
+      <Section title="Presets" class="w-full">
+        <div class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2">
           <FormField
             :value="form.preservePresetState"
             :field-definition="GlobalDefinitions.PreservePresetState"
@@ -23,10 +21,8 @@
         </div>
       </Section>
 
-      <Section title="Global MIDI" class="w-full xl:w-2/3">
-        <div
-          class="w-full pb-8 grid gap-6 md:grid-cols-2 xl:gap-10 xl:grid-cols-2"
-        >
+      <Section title="MIDI" class="w-full border-t-2 border-gray-900">
+        <div class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2">
           <FormField
             :value="form.standardNoteOff"
             :field-definition="GlobalDefinitions.StandardNoteOff"
@@ -58,7 +54,7 @@
         </div>
       </Section>
 
-      <DeviceSectionHardware class="border-t-2 border-gray-900" />
+      <DeviceSectionHardware class="w-full border-t-2 border-gray-900" />
     </template>
   </DeviceSettings>
 </template>

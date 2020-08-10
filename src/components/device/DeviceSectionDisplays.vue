@@ -13,52 +13,48 @@
             :field-definition="DisplayDefinitions.EnableDisplay"
             @modified="onSettingChange"
           />
-          <FormField
-            :value="form.welcomeMessage"
-            :field-definition="DisplayDefinitions.WelcomeMessage"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.showVersionsOnStartup"
-            :field-definition="DisplayDefinitions.ShowVersionsOnStartup"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.alternateMidiNoteDisplay"
-            :field-definition="DisplayDefinitions.AlternateMidiNoteDisplay"
-            @modified="onSettingChange"
-          />
-        </div>
-      </Section>
-      <Section title="Display Settings" class="w-full">
-        <div
-          class="w-full pb-8 grid gap-6 md:grid-cols-2 xl:gap-10 xl:grid-cols-2"
-        >
-          <FormField
-            :value="form.displayController"
-            :field-definition="DisplayDefinitions.DisplayController"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.displayResolution"
-            :field-definition="DisplayDefinitions.DisplayResolution"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.midiEventRetentionTime"
-            :field-definition="DisplayDefinitions.MidiEventRetentionTime"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.octaveNormalizationValue"
-            :field-definition="DisplayDefinitions.OctaveNormalizationValue"
-            @modified="onSettingChange"
-          />
-          <FormField
-            :value="form.i2CAddress"
-            :field-definition="DisplayDefinitions.I2CAddress"
-            @modified="onSettingChange"
-          />
+          <template v-if="form.enableDisplay">
+            <FormField
+              :value="form.welcomeMessage"
+              :field-definition="DisplayDefinitions.WelcomeMessage"
+              @modified="onSettingChange"
+            />
+            <FormField
+              :value="form.showVersionsOnStartup"
+              :field-definition="DisplayDefinitions.ShowVersionsOnStartup"
+              @modified="onSettingChange"
+            />
+            <FormField
+              :value="form.alternateMidiNoteDisplay"
+              :field-definition="DisplayDefinitions.AlternateMidiNoteDisplay"
+              @modified="onSettingChange"
+            />
+            <FormField
+              :value="form.displayController"
+              :field-definition="DisplayDefinitions.DisplayController"
+              @modified="onSettingChange"
+            />
+            <FormField
+              :value="form.displayResolution"
+              :field-definition="DisplayDefinitions.DisplayResolution"
+              @modified="onSettingChange"
+            />
+            <FormField
+              :value="form.midiEventRetentionTime"
+              :field-definition="DisplayDefinitions.MidiEventRetentionTime"
+              @modified="onSettingChange"
+            />
+            <FormField
+              :value="form.octaveNormalizationValue"
+              :field-definition="DisplayDefinitions.OctaveNormalizationValue"
+              @modified="onSettingChange"
+            />
+            <FormField
+              :value="form.i2CAddress"
+              :field-definition="DisplayDefinitions.I2CAddress"
+              @modified="onSettingChange"
+            />
+          </template>
         </div>
       </Section>
     </template>
