@@ -1,9 +1,10 @@
 <template>
-  <Section class="" title="Please select a device">
+  <Section>
     <!-- Aviailable devices -->
-    <div class="mx-auto max-w-sm mt-24 mb-24 md:mb-64 text-left">
+    <div class="mx-auto max-w-sm my-24 md:my-48 text-left">
       <h3 v-if="!inputs.length" class="p-4 text-xl text-center">
-        No devices found
+        No OpenDeck board found. Please connect the board in order to use the
+        interface.
       </h3>
       <div
         v-else
@@ -30,25 +31,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent } from "vue";
 import { midiStore } from "../store";
-import router from "../router";
 
 export default defineComponent({
   name: "AppDeviceSelect",
   setup() {
-    onMounted(() => {
-      // If only one input is available, open it right away
-      if (midiStore.state.inputs.length === 1) {
-        router.push({
-          name: "device",
-          params: {
-            inputId: midiStore.state.inputs[0].id,
-          },
-        });
-      }
-    });
-
     return {
       inputs: midiStore.state.inputs,
     };

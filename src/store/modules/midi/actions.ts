@@ -2,6 +2,7 @@ import WebMidi, { Input, Output } from "webmidi";
 import { state, MidiConnectionState, ControlDisableType } from "./state";
 import { isConnected, isConnecting } from "./computed";
 import { logger } from "../../../util";
+import router from "../../../router";
 import { IBlockDefinition } from "../../../definitions";
 
 // Local states
@@ -25,11 +26,25 @@ const connectionWatcher = async (): Promise<void> => {
     }
 
     assignInputs();
+
+    const isDevicePageOpen = router.currentRoute.value.matched.some(
+      (r) => r.name === "device",
+    );
+
+    // If only one input is available, open it right away
+    if (state.inputs.length === 1 && !isDevicePageOpen) {
+      router.push({
+        name: "device",
+        params: {
+          inputId: state.inputs[0].id,
+        },
+      });
+    }
   } catch (err) {
     logger.error("MIDI Connection watcher error", err);
   }
 
-  connectionWatcherTimer = setTimeout(connectionWatcher, 2000);
+  connectionWatcherTimer = setTimeout(connectionWatcher, 1000);
 };
 
 const startMidiConnectionWatcher = (): Promise<void> => connectionWatcher();

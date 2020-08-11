@@ -36,9 +36,13 @@ export default defineComponent({
   },
   setup() {
     onMounted(async () => {
-      await deviceStoreMapped.connectDevice(
-        router.currentRoute.value.params.inputId as string,
-      );
+      try {
+        await deviceStoreMapped.connectDevice(
+          router.currentRoute.value.params.inputId as string,
+        );
+      } catch (err) {
+        router.push({ name: "home" });
+      }
     });
 
     return {

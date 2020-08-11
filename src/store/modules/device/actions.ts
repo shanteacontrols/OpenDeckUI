@@ -18,6 +18,7 @@ import { Input, Output } from "webmidi";
 import { midiStore } from "../midi";
 import { logger, arrayEqual } from "../../../util";
 import { SysExCommand } from "../../../definitions/definitions-requests.ts";
+import router from "../../../router";
 
 // Actions
 
@@ -31,17 +32,24 @@ const connectionWatcher = async (): Promise<void> => {
   stopDeviceConnectionWatcher();
 
   try {
-    if (state.connectionState !== DeviceConnectionState.Open && state.inputId) {
-      const { input } = await midiStore.actions.findInputOutput(state.inputId);
-      if (input) {
-        await connectDevice(state.inputId);
-      }
+    if (!state.inputId) {
+      return router.push({ name: "home" });
+    }
+
+    const { input } = await midiStore.actions.findInputOutput(state.inputId);
+    if (!input) {
+      return router.push({ name: "home" });
+    }
+
+    if (state.connectionState !== DeviceConnectionState.Open) {
+      await connectDevice(state.inputId);
     }
   } catch (err) {
     logger.error("Device connection watcher error", err);
+    return router.push({ name: "home" });
   }
 
-  connectionWatcherTimer = setTimeout(() => connectionWatcher(), 2000);
+  connectionWatcherTimer = setTimeout(() => connectionWatcher(), 1000);
 };
 
 const startDeviceConnectionWatcher = (): Promise<void> => connectionWatcher();
@@ -96,9 +104,7 @@ const connectDevice = async (inputId: string): Promise<void> => {
   if (typeof inputId !== "string") {
     throw new Error("MISSING OR INVALID DEVICE INPUT ID");
   }
-  if (state.connectionState === DeviceConnectionState.Open) {
-    return;
-  }
+
   if (state.connectionPromise) {
     return state.connectionPromise;
   }
@@ -291,6 +297,8 @@ export const getComponentSettings = async (
   definitionType: DefinitionType,
   componentIndex?: number,
 ): Promise<any> => {
+  await ensureConnection();
+
   const settings = {} as any;
 
   const filterByType = (definition: IBlockDefinition) =>
@@ -363,6 +371,7 @@ export interface IDeviceActions {
   startFactoryReset: () => Promise<void>;
   startReboot: () => Promise<void>;
   startDeviceConnectionWatcher: () => void;
+  stopDeviceConnectionWatcher: () => void;
   startFirmwareUpdate: () => Promise<void>;
   getComponentSettings: (
     definition: Dictionary<IBlockDefinition>,
@@ -387,6 +396,7 @@ export const deviceStoreActions: IDeviceActions = {
   startFactoryReset,
   startReboot,
   startDeviceConnectionWatcher,
+  stopDeviceConnectionWatcher,
   startFirmwareUpdate,
   loadDeviceInfo,
   getComponentSettings,
