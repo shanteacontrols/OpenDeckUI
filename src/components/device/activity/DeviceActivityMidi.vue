@@ -1,21 +1,21 @@
 <template>
   <div class="p-2 border-b border-gray-800 last:border-b-0">
-    <strong class="me-2">
+    <strong class="mr-2 text-gray-400">
       <span v-if="MidiRealtimeEvent.includes(logEntry.eventType)"
-        >Real time:</span
+        >real time:</span
       >
       {{ MidiEventTypeLabel[logEntry.eventType] }}
     </strong>
-    <div v-if="logEntry.value" class="mr-2">Value: {{ logEntry.value }}</div>
-    <div v-if="logEntry.channel" class="mr-2">
-      Channel: {{ logEntry.channel }}
-    </div>
-    <div v-if="logEntry.controller && logEntry.controller.number" class="mr-2">
-      controller: {{ logEntry.controller.number }}
-    </div>
-    <div v-if="logEntry.data && logEntry.data.length > 2" class="mr-2">
-      Velocity: {{ logEntry.data[2] }}
-    </div>
+    <span v-if="logEntry.channel" class="mr-2">
+      channel {{ logEntry.channel }}
+    </span>
+    <span v-if="logEntry.value" class="mr-2"> value {{ logEntry.value }} </span>
+    <span v-if="logEntry.controller && logEntry.controller.number" class="mr-2">
+      controller {{ logEntry.controller.number }}
+    </span>
+    <span v-if="logEntry.data && logEntry.data.length > 2" class="mr-2">
+      velocity {{ logEntry.data[2] }}
+    </span>
     <div v-if="logEntry.data && logEntry.data.length" class="mr-2">
       Raw data: {{ logEntry.data }}
     </div>

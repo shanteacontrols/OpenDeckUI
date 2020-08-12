@@ -38,10 +38,6 @@
       <br />
       <span class="">Received {{ request.responseData }} </span>
     </template>
-    <template v-if="request.parsed">
-      <br />
-      <span class="">Parsed {{ request.parsed }} </span>
-    </template>
     <template v-if="request.errorMessage">
       <br />
       <span class="text-red-500">
