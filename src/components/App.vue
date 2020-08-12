@@ -10,8 +10,8 @@
       <strong class="font-bold text-gray-400">
         Board: {{ boardName }}
         <small v-if="firmwareVersion">- Firmware {{ firmwareVersion }} </small>
-        <small v-if="activePreset" class="ml-2"
-          >(preset {{ activePreset }})</small
+        <small v-if="activePreset !== null" class="ml-2"
+          >(preset {{ activePreset + 1 }})</small
         >
       </strong>
     </template>
@@ -95,7 +95,7 @@ export default defineComponent({
     midiStoreMapped.loadMidi();
     midiStoreMapped.startMidiConnectionWatcher();
     const {
-      inputId,
+      outputId,
       boardName,
       firmwareVersion,
       activePreset,
@@ -113,7 +113,7 @@ export default defineComponent({
 
     return {
       isHomePage,
-      inputId,
+      outputId,
       isConnected,
       isConnecting,
       boardName,

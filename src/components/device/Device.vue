@@ -11,7 +11,6 @@
 
   <div v-else-if="isConnected">
     <router-view></router-view>
-    <DeviceActivity />
   </div>
 
   <div v-else class="lg:text-center">
@@ -21,10 +20,12 @@
       Connect
     </button>
   </div>
+
+  <DeviceActivity />
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, onUnmounted } from "vue";
 import router from "../../router";
 import { deviceStoreMapped } from "../../store";
 import DeviceActivity from "./activity/DeviceActivity.vue";
@@ -38,11 +39,15 @@ export default defineComponent({
     onMounted(async () => {
       try {
         await deviceStoreMapped.connectDevice(
-          router.currentRoute.value.params.inputId as string,
+          router.currentRoute.value.params.outputId as string,
         );
       } catch (err) {
         router.push({ name: "home" });
       }
+    });
+
+    onUnmounted(() => {
+      deviceStoreMapped.closeConnection();
     });
 
     return {

@@ -2,7 +2,7 @@
   <Section>
     <!-- Aviailable devices -->
     <div class="mx-auto max-w-sm my-24 md:my-48 text-left">
-      <h3 v-if="!inputs.length" class="p-4 text-xl text-center">
+      <h3 v-if="!outputs.length" class="p-4 text-xl text-center">
         No OpenDeck board found. Please connect the board in order to use the
         interface.
       </h3>
@@ -11,19 +11,19 @@
         class="text-gray-700 bg-gray-800 rounded text-left capitalize font-medium shadow-lg"
       >
         <router-link
-          v-for="(input, idx) in inputs"
-          :key="input.id"
-          :to="{ name: 'device', params: { inputId: input.id } }"
+          v-for="(output, idx) in outputs"
+          :key="output.id"
+          :to="{ name: 'device', params: { outputId: output.id } }"
           class="block p-4 hover:bg-yellow-500 hover:text-gray-800 cursor-pointer"
           :class="{
             'rounded-t': idx === 0,
-            'rounded-b': idx === inputs.length - 1,
-            'border-gray-400 border-b': idx < inputs.length - 1,
+            'rounded-b': idx === outputs.length - 1,
+            'border-gray-400 border-b': idx < outputs.length - 1,
           }"
         >
-          <span>{{ input.manufacturer || "unknown manufacturer" }}</span>
+          <span>{{ output.manufacturer || "unknown manufacturer" }}</span>
           <br />
-          <strong>{{ input.name }}</strong>
+          <strong>{{ output.name }}</strong>
         </router-link>
       </div>
     </div>
@@ -38,7 +38,7 @@ export default defineComponent({
   name: "AppDeviceSelect",
   setup() {
     return {
-      inputs: midiStore.state.inputs,
+      outputs: midiStore.state.outputs,
     };
   },
 });

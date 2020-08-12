@@ -20,7 +20,7 @@ const routes = [
     component: AppDeviceSelect,
   },
   {
-    path: "/device/:inputId",
+    path: "/device/:outputId",
     name: "device",
     component: Device,
     redirect: { name: "device-global" },

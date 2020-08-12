@@ -29,7 +29,7 @@ export interface IStackedRequest extends IBusRequestConfig {
 // State
 
 export type IDeviceState = {
-  inputId: string;
+  outputId: string;
   input: Input;
   output: Output;
   connectionState: DeviceConnectionState;
@@ -51,7 +51,7 @@ export type IDeviceState = {
 // State
 
 export const defaultState: IDeviceState = {
-  inputId: (null as unknown) as string,
+  outputId: (null as unknown) as string,
   input: (null as unknown) as Input,
   output: (null as unknown) as Output,
   connectionState: (null as unknown) as DeviceConnectionState,

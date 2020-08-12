@@ -1,6 +1,11 @@
 import semverGt from "semver/functions/gt";
 import marked from "marked";
-import { state, IDeviceState, DeviceConnectionState } from "./state";
+import {
+  state,
+  defaultState,
+  IDeviceState,
+  DeviceConnectionState,
+} from "./state";
 import {
   SysExCommand,
   IDeviceComponentCounts,
@@ -13,7 +18,10 @@ import {
   Boards,
 } from "../../../definitions";
 import { sendMessage, handleSysExEvent } from "./device-promise-qeueue";
-import { attachMidiEventHandlers } from "./midi-event-handlers";
+import {
+  attachMidiEventHandlers,
+  detachMidiEventHandlers,
+} from "./midi-event-handlers";
 import { Input, Output } from "webmidi";
 import { midiStore } from "../midi";
 import { logger, arrayEqual } from "../../../util";
@@ -32,17 +40,17 @@ const connectionWatcher = async (): Promise<void> => {
   stopDeviceConnectionWatcher();
 
   try {
-    if (!state.inputId) {
+    if (!state.outputId) {
       return router.push({ name: "home" });
     }
 
-    const { input } = await midiStore.actions.findInputOutput(state.inputId);
-    if (!input) {
+    const output = await midiStore.actions.findOutputById(state.outputId);
+    if (!output) {
       return router.push({ name: "home" });
     }
 
     if (state.connectionState !== DeviceConnectionState.Open) {
-      await connectDevice(state.inputId);
+      await connectDevice(state.outputId);
     }
   } catch (err) {
     logger.error("Device connection watcher error", err);
@@ -62,16 +70,18 @@ const stopDeviceConnectionWatcher = (): Promise<void> => {
 };
 
 export const connectDeviceStoreToInput = async (
-  inputId: string,
+  outputId: string,
 ): Promise<any> => {
   await midiStore.actions.loadMidi();
-  const { input, output } = await midiStore.actions.findInputOutput(inputId);
+  const { input, output } = await midiStore.actions.matchInputOutput(outputId);
 
-  state.inputId = inputId;
+  state.outputId = outputId;
   state.input = input as Input;
   state.output = output as Output;
 
-  state.input.removeListener("sysex"); // make sure we don't duplicate listeners
+  state.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
+  detachMidiEventHandlers(state.input);
+
   state.input.addListener("sysex", "all", handleSysExEvent);
   attachMidiEventHandlers(state.input);
 
@@ -100,9 +110,9 @@ export const connectDeviceStoreToInput = async (
   await loadDeviceInfo();
 };
 
-const connectDevice = async (inputId: string): Promise<void> => {
-  if (typeof inputId !== "string") {
-    throw new Error("MISSING OR INVALID DEVICE INPUT ID");
+const connectDevice = async (outputId: string): Promise<void> => {
+  if (typeof outputId !== "string") {
+    throw new Error("MISSING OR INVALID DEVICE OUTPUT ID");
   }
 
   if (state.connectionPromise) {
@@ -111,18 +121,24 @@ const connectDevice = async (inputId: string): Promise<void> => {
   state.connectionState = DeviceConnectionState.Pending;
 
   // All subsequent connect attempts should receive the same promise as response
-  state.connectionPromise = connectDeviceStoreToInput(inputId);
+  state.connectionPromise = connectDeviceStoreToInput(outputId);
 
   return state.connectionPromise;
 };
 
 export const closeConnection = async (): Promise<any> => {
   stopDeviceConnectionWatcher();
+  if (state.input) {
+    state.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
+    detachMidiEventHandlers(state.input);
+    sendMessage({
+      command: SysExCommand.CloseConnection,
+      handler: () => (state.connectionState = DeviceConnectionState.Closed),
+    });
+  }
+
   state.connectionState = DeviceConnectionState.Closed;
-  await sendMessage({
-    command: SysExCommand.CloseConnection,
-    handler: () => (state.connectionState = DeviceConnectionState.Closed),
-  });
+  Object.assign(state, defaultState);
 };
 
 export const ensureConnection = async (): Promise<any> => {
@@ -370,7 +386,7 @@ export const setComponentSectionValue = async (
 
 export interface IDeviceActions {
   setInfo: (data: Partial<IDeviceState>) => void;
-  connectDevice: (inputId: string) => Promise<void>;
+  connectDevice: (outputId: string) => Promise<void>;
   closeConnection: () => Promise<void>;
   ensureConnection: () => Promise<void>;
   loadDeviceInfo: () => Promise<void>;

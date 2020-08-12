@@ -3,7 +3,7 @@ import { state, MidiConnectionState, ControlDisableType } from "./state";
 import { isConnected, isConnecting } from "./computed";
 import { logger } from "../../../util";
 import router from "../../../router";
-import { IBlockDefinition } from "../../../definitions";
+import { openDeckManufacturerId, IBlockDefinition } from "../../../definitions";
 
 // Local states
 
@@ -32,11 +32,11 @@ const connectionWatcher = async (): Promise<void> => {
     );
 
     // If only one input is available, open it right away
-    if (state.inputs.length === 1 && !isDevicePageOpen) {
+    if (state.outputs.length === 1 && !isDevicePageOpen) {
       router.push({
         name: "device",
         params: {
-          inputId: state.inputs[0].id,
+          outputId: state.outputs[0].id,
         },
       });
     }
@@ -56,34 +56,61 @@ const stopMidiConnectionWatcher = (): Promise<void> => {
   }
 };
 
-const filterByName = (input: Input) => input.name.startsWith("OpenDeck");
-
 const assignInputs = () => {
-  state.inputs = WebMidi.inputs.filter(filterByName);
-  state.outputs = WebMidi.outputs;
+  state.inputs = WebMidi.inputs.filter((input: Input) =>
+    input.name.startsWith("OpenDeck"),
+  );
+  state.outputs = WebMidi.outputs.filter((output: Output) =>
+    output.name.startsWith("OpenDeck"),
+  );
 };
 
 // Actions
 
-export const findInputOutput = async (
-  inputId: string,
+export const findOutputById = (outputId: string): Output => {
+  return WebMidi.outputs.find((output: Output) => output.id === outputId);
+};
+
+export const matchInputOutput = async (
+  outputId: string,
 ): Promise<{ input: Input; output: Output }> => {
   await loadMidi();
 
-  const input = WebMidi.inputs.find((input: Input) => input.id === inputId);
-  if (!input) {
-    // @TODO: show alert warning
-    throw new Error(`CANNOT FIND INPUT ${inputId}`);
-  }
   const output = WebMidi.outputs.find(
-    (output: Output) => output.name === input.name,
+    (output: Output) => output.id === outputId,
   );
   if (!output) {
-    // @TODO: show alert warning
-    throw new Error(`CANNOT FIND OUTPUT FOR INPUT ${inputId}`);
+    throw new Error(`CANNOT FIND INPUT ${outputId}`);
   }
 
-  return { input, output };
+  const inputs = WebMidi.inputs.filter(
+    (input: Input) => input.name === output.name,
+  );
+  if (!inputs.length) {
+    throw new Error(`CANNOT FIND INPUT FOR OUTPUT FOR ${outputId}`);
+  }
+
+  return new Promise((resolve) => {
+    let input;
+
+    const handleInitialHandShake = (event: InputEventBase<"sysex">): void => {
+      input = event.target;
+
+      inputs.forEach((input: Input) => {
+        input.removeListener("sysex", "all");
+      });
+
+      resolve({ input, output });
+    };
+
+    inputs.forEach((input: Input) => {
+      input.removeListener("sysex", "all");
+      input.addListener("sysex", "all", handleInitialHandShake);
+    });
+
+    // Send HandShake to find which input will reply
+    output.sendSysex(openDeckManufacturerId, [0, 0, 1]);
+  });
 };
 
 export const loadMidi = async (): Promise<void> => {
@@ -145,8 +172,8 @@ const disableControl = (
 
 export interface IMidiActions {
   loadMidi: () => Promise<void>;
-  findInputOutput: (
-    inputId: string,
+  matchInputOutput: (
+    outputId: string,
   ) => Promise<{ input: Input; output: Output }>;
   disableControl: (def: IBlockDefinition, type: ControlDisableType) => void;
   isControlDisabled: (
@@ -159,7 +186,8 @@ export interface IMidiActions {
 
 export const midiStoreActions: IMidiActions = {
   loadMidi,
-  findInputOutput,
+  matchInputOutput,
+  findOutputById,
   disableControl,
   isControlDisabled,
   startMidiConnectionWatcher,

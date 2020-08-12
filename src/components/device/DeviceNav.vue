@@ -7,7 +7,7 @@
       v-for="link in links"
       :key="link.name"
       class="relative block clearfix py-3 lg:w-full lg:text-center xl:text-left text-gray-500 font-bold cursor-pointer"
-      :to="{ name: link.name, params: { inputId } }"
+      :to="{ name: link.name, params: { outputId } }"
       :class="{
         'border-transparent': !link.active,
         'text-yellow-500': link.active,
@@ -56,7 +56,7 @@ export default defineComponent({
       buttons,
       LEDs,
       encoders,
-      inputId,
+      outputId,
       isConnected,
     } = deviceStoreMapped;
 
@@ -119,7 +119,7 @@ export default defineComponent({
       isConnected,
       links,
       routeName,
-      inputId,
+      outputId,
     };
   },
 });

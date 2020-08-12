@@ -15,7 +15,7 @@
         :to="{
           name: routeName,
           params: {
-            inputId,
+            outputId,
             componentIndex: componentIndex - 1,
           },
         }"

@@ -36,10 +36,10 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     options: (): any => {
       const count = deviceStore.state.supportedPresetsCount || 1;
       const options = [];
-      for (let value = 1; value <= count; value++) {
+      for (let value = 0; value < count; value++) {
         options.push({
           value,
-          text: String(value),
+          text: String(value + 1),
         });
       }
       return options;

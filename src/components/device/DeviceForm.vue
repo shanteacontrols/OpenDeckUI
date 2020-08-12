@@ -19,7 +19,7 @@
             'cursor-pointer': componentIndex > 0,
             'text-yellow-700': componentIndex === 0,
           }"
-          :to="{ params: { inputId, componentIndex: componentIndex - 1 } }"
+          :to="{ params: { outputId, componentIndex: componentIndex - 1 } }"
         >
           <Chevron type="left" class="inline fill-current h-6 w-6" />
           <small>previous</small>
@@ -32,7 +32,7 @@
             'cursor-pointer': componentIndex < componentCount,
             'text-yellow-700': componentIndex === componentCount - 1,
           }"
-          :to="{ params: { inputId, componentIndex: componentIndex + 1 } }"
+          :to="{ params: { outputId, componentIndex: componentIndex + 1 } }"
         >
           <small>next</small>
           <Chevron type="right" class="inline fill-current h-6 w-6" />
@@ -166,7 +166,7 @@ export default defineComponent({
     };
 
     return {
-      inputId: deviceStoreMapped.inputId,
+      outputId: deviceStoreMapped.outputId,
       form: {
         ...toRefs(form),
       },
