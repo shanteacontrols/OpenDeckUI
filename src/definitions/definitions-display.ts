@@ -88,11 +88,11 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
       },
       {
         value: 120,
-        text: "0X78 (120)",
+        text: "0x78 (120)",
       },
       {
         value: 122,
-        text: "0X7A (122)",
+        text: "0x7A (122)",
       },
     ],
     label: "I2C address",
@@ -129,7 +129,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     settingIndex: 3,
     component: FormInputComponent.Toggle,
     label: "Alternate MIDI note Display",
-    helpText: `If enabled, MIDI note data will be displayed like C#4, where the number represents octave. If disabled, MIDI note number will be displayed instead.`,
+    helpText: `If enabled, MIDI note data will be displayed in note-key format (ie. C#4). If disabled, MIDI note number will be displayed instead.`,
   },
   MidiEventRetentionTime: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
@@ -166,7 +166,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
       },
     ],
     label: "MIDI event time",
-    helpText: `Timeout after which any message on display will be cleared (if data retention option is disabled).`,
+    helpText: `Timeout after which any message on display will be cleared. If set to 0, message stays on display until new event occurs.`,
   },
   OctaveNormalizationValue: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,

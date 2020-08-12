@@ -43,7 +43,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     section: 0,
     component: FormInputComponent.Toggle,
     label: "Enabled",
-    helpText: `Enables or disables encoder. All encoders are disabled by default.`,
+    helpText: `Enabling the encoder disables two digital inputs (buttons).`,
   },
   InvertState: {
     block: Block.Encoder,
@@ -52,7 +52,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     section: 1,
     component: FormInputComponent.Toggle,
     label: "Invert",
-    helpText: `When enabled, encoder will send inverted MIDI CC messages in different directions. Default option is disabled for all encoders.`,
+    helpText: ``,
   },
   EncodingMode: {
     block: Block.Encoder,
@@ -78,7 +78,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
       { value: EncodingMode.NRPN7, text: "NRPN/14-bit" },
     ],
     label: "Encoding mode",
-    helpText: `Denotes encoder encoding mode. Default option is 7Fh01h for all encoders.`,
+    helpText: ``,
   },
   MidiIdLSB: {
     isLsb: true,
@@ -90,7 +90,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 0,
     max: 127,
     label: "MIDI ID (LSB)",
-    helpText: "MIDI LSB channel for current component",
+    helpText: "",
   },
   MidiChannel: {
     block: Block.Encoder,
@@ -101,7 +101,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 1,
     max: 16,
     label: "MIDI channel",
-    helpText: "Denotes the MIDI CC number for each encoder.",
+    helpText: "",
   },
   PulsesPerStep: {
     block: Block.Encoder,
@@ -115,7 +115,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
       { value: 4, text: "4" },
     ],
     label: "Pulses per step",
-    helpText: `Amount of pulses encoder generates for single step.`,
+    helpText: `Amount of pulses encoder must generate in order for firmware to register it as single step.`,
   },
   Acceleration: {
     showIf: (formState: FormState): boolean =>
@@ -132,7 +132,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
       { value: 3, text: "Fast" },
     ],
     label: "Acceleration",
-    helpText: `-`,
+    helpText: ``,
   },
   MidiIdMSB: {
     isMsb: true,
@@ -144,7 +144,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 0,
     max: 127,
     label: "MIDI ID (MSB)",
-    helpText: "MIDI MSB channel for current component",
+    helpText: "",
   },
   RemoteSync: {
     block: Block.Encoder,
@@ -153,6 +153,8 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     section: 8,
     component: FormInputComponent.Toggle,
     label: "Remote sync",
-    helpText: "-",
+    helpText: `Used only in continuous CC mode or pitch bend mode.
+    If enabled, CC/pitch bend value received via MIDI IN will be applied to the encoder with same MIDI ID and MIDI channel,
+    so that next encoder turn increments or decrements received value instead of the last value it sent.`,
   },
 };

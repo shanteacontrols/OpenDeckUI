@@ -81,7 +81,7 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
       Type can be momentary, which means that note off is sent as soon as
       button is released, or latching, which means that note off is sent on
       second button press. All buttons are configured as momentary by
-      default.`,
+      default. Depending on message type this setting can be ignored.`,
   },
   MidiMessage: {
     key: "midiMessage",
@@ -131,10 +131,7 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
       },
     ],
     label: "MIDI message",
-    helpText: `Specifies which MIDI message the buttons send. Default option
-      is Note. If Program Change message is selected, button will send
-      program change event on successive presses (momentary/latching modes
-      are ignored`,
+    helpText: ``,
     block: Block.Button,
   },
   // @TODO: remove this field?
@@ -148,7 +145,7 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 0,
     max: 127,
     label: "MIDI ID",
-    helpText: "Denotes note/program change MIDI number",
+    helpText: "",
     block: Block.Button,
   },
   OnVelocity: {
@@ -172,7 +169,7 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
     max: 16,
     component: FormInputComponent.Input,
     label: "MIDI channel",
-    helpText: "MIDI channel for current component.",
+    helpText: "",
     block: Block.Button,
   },
 };
