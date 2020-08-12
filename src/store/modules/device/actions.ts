@@ -289,6 +289,11 @@ const loadDeviceInfo = async (): Promise<any> => {
     command: SysExCommand.GetBootLoaderSupport,
     handler: (bootLoaderSupport: string) => setInfo({ bootLoaderSupport }),
   });
+  await sendMessage({
+    command: SysExCommand.GetNumberOfSupportedPresets,
+    handler: (supportedPresetsCount: number) =>
+      setInfo({ supportedPresetsCount }),
+  });
 };
 
 export const getComponentSettings = async (
@@ -322,6 +327,9 @@ export const getComponentSettings = async (
 
       const handler = (result: number[]) => {
         settings[definition.key] = result[0];
+        if (definition.onLoad) {
+          definition.onLoad(result[0]);
+        }
       };
 
       return sendMessage({

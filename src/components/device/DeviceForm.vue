@@ -118,10 +118,12 @@ export default defineComponent({
       key,
       value,
       section,
+      onLoad,
     }: {
       key: string;
       value: number;
       section: number;
+      onLoad?: (value: number) => void;
     }) => {
       if (loading.value) {
         return;
@@ -131,6 +133,9 @@ export default defineComponent({
       const onSuccess = () => {
         form[key] = value;
         setTimeout(() => (loading.value = false), 100);
+        if (onLoad) {
+          onLoad.value(value);
+        }
       };
 
       // Fix for unreliable value (ref.value vs value)

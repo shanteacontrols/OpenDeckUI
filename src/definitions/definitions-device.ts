@@ -39,15 +39,17 @@ export interface ISelectOption {
   text: string;
 }
 
+type genericMethod = (value?: number) => void;
+
 interface IBlockDefinitionBase {
   block: Block;
   component: FormInputComponent;
   key: string;
   section: number;
-  // validators: Array<validator>;
   label: string;
   helpText: string;
-  options?: Array<ISelectOption>;
+  options?: Array<ISelectOption> | genericMethod;
+  onLoad?: genericMethod;
   min?: number;
   max?: number;
   isLsb?: boolean;

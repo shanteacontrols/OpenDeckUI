@@ -40,6 +40,8 @@ export type IDeviceState = {
   firmwareFileLocation: string;
   firmwareVersion: string;
   bootLoaderSupport: boolean;
+  activePreset: number;
+  supportedPresetsCount: number;
   buttons: number;
   encoders: number;
   analogInputs: number;
@@ -60,6 +62,8 @@ export const defaultState: IDeviceState = {
   firmwareFileLocation: (null as unknown) as string,
   firmwareVersion: (null as unknown) as string,
   bootLoaderSupport: false,
+  activePreset: (null as unknown) as number,
+  supportedPresetsCount: (null as unknown) as number,
   buttons: 0,
   encoders: 0,
   analogInputs: 0,

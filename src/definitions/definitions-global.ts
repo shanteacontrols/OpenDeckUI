@@ -1,5 +1,6 @@
 import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
 import { Block } from "./definitions-device";
+import { deviceStore } from "../store";
 
 export const defaultGlobalData: Dictionary<number> = {
   preservePresetState: (null as unknown) as number,
@@ -29,21 +30,22 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     section: 2,
     settingIndex: 0,
     component: FormInputComponent.Select,
-    // @TODO: read supported preset count from state
-    options: [
-      {
-        value: 0,
-        text: "1",
-      },
-      {
-        value: 1,
-        text: "2",
-      },
-      {
-        value: 3,
-        text: "3",
-      },
-    ],
+    // Note: Read supported preset count from state
+    options: (): any => {
+      const count = deviceStore.state.supportedPresetsCount || 1;
+      const options = [];
+      for (let value = 1; value <= count; value++) {
+        options.push({
+          value,
+          text: String(value),
+        });
+      }
+      return options;
+    },
+    // Note: update separate state property (different UI segment than the form) when loading value
+    onLoad: (value: number): void => {
+      deviceStore.state.activePreset = value;
+    },
     label: "Active preset",
     helpText: `Sets active preset.`,
   },

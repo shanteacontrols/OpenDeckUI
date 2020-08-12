@@ -10,6 +10,9 @@
       <strong class="font-bold text-gray-400">
         Board: {{ boardName }}
         <small v-if="firmwareVersion">- Firmware {{ firmwareVersion }} </small>
+        <small v-if="activePreset" class="ml-2"
+          >(preset {{ activePreset }})</small
+        >
       </strong>
     </template>
 
@@ -91,7 +94,12 @@ export default defineComponent({
   setup() {
     midiStoreMapped.loadMidi();
     midiStoreMapped.startMidiConnectionWatcher();
-    const { inputId, boardName, firmwareVersion } = deviceStoreMapped;
+    const {
+      inputId,
+      boardName,
+      firmwareVersion,
+      activePreset,
+    } = deviceStoreMapped;
     const isHomePage = computed(
       () => router.currentRoute.value.name === "home",
     );
@@ -110,6 +118,7 @@ export default defineComponent({
       isConnecting,
       boardName,
       firmwareVersion,
+      activePreset,
     };
   },
 });

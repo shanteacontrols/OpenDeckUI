@@ -57,11 +57,13 @@ export default defineComponent({
       value,
       section,
       settingIndex,
+      onLoad,
     }: {
       key: string;
       value: number;
       section: number;
       settingIndex: number;
+      onLoad?: (value: number) => void;
     }) => {
       if (loading.value) {
         return;
@@ -71,6 +73,9 @@ export default defineComponent({
       const onSuccess = () => {
         form[key] = value;
         loading.value = false;
+        if (onLoad) {
+          onLoad.value(value);
+        }
       };
       return deviceStore.actions
         .setComponentSectionValue(

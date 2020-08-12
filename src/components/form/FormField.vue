@@ -101,7 +101,7 @@ const getValidatorForDefinition = (definition: IBlockDefinition) => {
       break;
 
     case FormInputComponent.Select:
-      if (definition.options) {
+      if (definition.options && Array.isArray(definition.options)) {
         validators.push(
           allowedValues(definition.options.map((opt) => opt.value)),
         );
@@ -147,6 +147,7 @@ export default defineComponent({
       min,
       max,
       options,
+      onLoad,
     } = toRefs(props.fieldDefinition);
 
     const settingIndex = (props.fieldDefinition as IBlockSettingDefinition)
@@ -177,6 +178,7 @@ export default defineComponent({
           value: Number(value),
           section: section.value,
           settingIndex, // defined for settings only
+          onLoad, // handles storing value to special store sections (ie active preset)
         });
       }
     };
@@ -193,7 +195,8 @@ export default defineComponent({
     } as any;
 
     if (props.fieldDefinition.component === FormInputComponent.Select) {
-      componentProps.options = options;
+      componentProps.options =
+        typeof options.value === "function" ? computed(options.value) : options;
     }
 
     return {

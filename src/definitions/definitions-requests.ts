@@ -91,12 +91,6 @@ export interface IRequestDefinition {
   // Flag for priority messages needed for preparing data communication
   isConnectionInfoRequest?: boolean;
   expectsNoResponse?: boolean;
-  // predefinedBytes?: {
-  //   messageStatus: MessageStatus;
-  //   messagePart: 0; // @TODO: calculate on the fly
-  //   wish: Wish;
-  //   amount: Amount;
-  // };
   getPayload?: (config?: any) => number[];
   parser?: (response: number[]) => any;
 }
@@ -176,13 +170,6 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: SysExCommand.GetHardwareUid,
     type: RequestKind.Custom,
     specialRequestId: 66, // Hex: 42
-    // parser: (value: number[]): string => {
-    //   const board = Boards.find(
-    //     (b: any) =>
-    //       arrayEqual(b.id, value) || (b.oldId && arrayEqual(b.oldId, value)),
-    //   );
-    //   return board ? board.name : "UNKNOWN BOARD";
-    // },
   },
   [SysExCommand.GetFirmwareVersionAndHardwareUid]: {
     key: SysExCommand.GetFirmwareVersionAndHardwareUid,
@@ -205,6 +192,8 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: SysExCommand.GetNumberOfSupportedPresets,
     type: RequestKind.Custom,
     specialRequestId: 80, // Hex: 50
+    isConnectionInfoRequest: true,
+    parser: (response: number[]): number => response[0],
   },
   [SysExCommand.Reboot]: {
     key: SysExCommand.Reboot,
@@ -248,12 +237,6 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [SysExCommand.GetValue]: {
     key: SysExCommand.GetValue,
     type: RequestKind.Configuration,
-    // predefinedBytes: {
-    //   messageStatus: MessageStatus.Request,
-    //   messagePart: 0, // @TODO: calculate on the fly
-    //   wish: Wish.Get,
-    //   amount: Amount.Single,
-    // },
     getPayload: (config: {
       block: number;
       section: number;
@@ -271,12 +254,6 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [SysExCommand.SetValue]: {
     key: SysExCommand.SetValue,
     type: RequestKind.Configuration,
-    // predefinedBytes: {
-    //   messageStatus: MessageStatus.Request,
-    //   messagePart: 0, // @TODO: calculate on the fly
-    //   wish: Wish.Set,
-    //   amount: Amount.Single,
-    // },
     getPayload: (config: {
       block: number;
       section: number;
