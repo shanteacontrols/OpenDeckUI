@@ -49,6 +49,7 @@ interface IBlockDefinitionBase {
   label: string;
   helpText: string;
   options?: Array<ISelectOption> | genericMethod;
+  showIf: (formState: Dictionary<number>) => boolean;
   onLoad?: genericMethod;
   min?: number;
   max?: number;

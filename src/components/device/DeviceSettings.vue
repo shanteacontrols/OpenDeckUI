@@ -3,7 +3,11 @@
     <div v-if="loading" class="absolute flex inset-0 opacity-75 bg-gray-900">
       <Spinner class="self-center" />
     </div>
-    <slot :form="form" :onSettingChange="onSettingChange"></slot>
+    <slot
+      :form="form"
+      :onSettingChange="onSettingChange"
+      :showField="showField"
+    ></slot>
   </form>
 </template>
 
@@ -33,8 +37,10 @@ export default defineComponent({
   },
   setup(props) {
     const form = reactive(props.defaultData);
-    // @TODO: show spinner while loading
     const loading = ref(true);
+
+    const showField = (definition: IBlockDefinition) =>
+      !definition.showIf || definition.showIf(form);
 
     const loadData = async () => {
       loading.value = true;
@@ -99,6 +105,7 @@ export default defineComponent({
       form: {
         ...toRefs(form),
       },
+      showField,
       loading,
       onSettingChange,
     };

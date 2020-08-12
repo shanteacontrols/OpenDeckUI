@@ -63,6 +63,8 @@ export const HideMidiIdOnTypes = [
   MidiMessageType.MmcPause,
 ];
 
+type FormState = typeof defaultButtonData;
+
 export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
   Type: {
     block: Block.Button,
@@ -137,6 +139,8 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
   },
   // @TODO: remove this field?
   MidiId: {
+    showIf: (formState: FormState): boolean =>
+      !HideMidiIdOnTypes.includes(formState.midiMessage),
     key: "midiId",
     type: DefinitionType.ComponentValue,
     section: 2,
@@ -148,6 +152,8 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
     block: Block.Button,
   },
   OnVelocity: {
+    showIf: (formState: FormState): boolean =>
+      !HideVelocityOnTypes.includes(formState.midiMessage),
     key: "onVelocity",
     type: DefinitionType.ComponentValue,
     section: 3,

@@ -33,6 +33,8 @@ export const defaultEncoderData: Dictionary<number> = {
   remoteSync: (null as unknown) as number,
 };
 
+type FormState = typeof defaultEncoderData;
+
 export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
   Enabled: {
     block: Block.Encoder,
@@ -79,6 +81,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Denotes encoder encoding mode. Default option is 7Fh01h for all encoders.`,
   },
   MidiIdLSB: {
+    isLsb: true,
     block: Block.Encoder,
     key: "midiIdLSB",
     type: DefinitionType.ComponentValue,
@@ -115,6 +118,8 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Amount of pulses encoder generates for single step.`,
   },
   Acceleration: {
+    showIf: (formState: FormState): boolean =>
+      ShowAccelerationOnTypes.includes(formState.encodingMode),
     block: Block.Encoder,
     key: "acceleration",
     type: DefinitionType.ComponentValue,
@@ -130,6 +135,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `-`,
   },
   MidiIdMSB: {
+    isMsb: true,
     block: Block.Encoder,
     key: "midiIdMSB",
     type: DefinitionType.ComponentValue,

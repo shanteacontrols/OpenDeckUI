@@ -12,6 +12,8 @@ export const defaultGlobalData: Dictionary<number> = {
   dinMidiState: (null as unknown) as number,
 };
 
+type FormState = typeof defaultGlobalData;
+
 export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
   PreservePresetState: {
     block: Block.Global,
@@ -60,6 +62,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `When disabled, Note On with velocity 0 will be sent as note off. If enabled, true Note Off event will be sent instead.`,
   },
   RunningStatus: {
+    showIf: (formState: FormState): boolean => !!formState.dinMidiState,
     block: Block.Global,
     key: "runningStatus",
     type: DefinitionType.Setting,
@@ -80,6 +83,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Enable or disable DIN MIDI input and output.`,
   },
   MidiMergeEnable: {
+    showIf: (formState: FormState): boolean => !!formState.dinMidiState,
     block: Block.Global,
     key: "midiMergeEnable",
     type: DefinitionType.Setting,
@@ -90,6 +94,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `When enabled, all data received via DIN MIDI can be forwarded to USB, DIN MIDI out or both interfaces.`,
   },
   MidiMergeType: {
+    showIf: (formState: FormState): boolean => !!formState.midiMergeEnable,
     block: Block.Global,
     key: "midiMergeType",
     type: DefinitionType.Setting,

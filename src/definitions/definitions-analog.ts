@@ -25,6 +25,8 @@ export enum AnalogType {
   ControlChange14Bit = 7,
 }
 
+type formState = typeof defaultAnalogData;
+
 export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
   Enabled: {
     block: Block.Analog,
@@ -36,6 +38,8 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: ``,
   },
   Invert: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
     key: "invert",
     type: DefinitionType.ComponentValue,
     section: 1,
@@ -64,6 +68,8 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     block: Block.Analog,
   },
   MidiIdLSB: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
     key: "midiIdLSB",
     type: DefinitionType.ComponentValue,
     section: 3,
@@ -76,6 +82,8 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     isLsb: true,
   },
   MidiIdMSB: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
     isMsb: true,
     key: "midiIdMSB",
     type: DefinitionType.ComponentValue,
@@ -88,6 +96,8 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     block: Block.Analog,
   },
   LowerCCLimitLSB: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
     isLsb: true,
     key: "lowerCCLimitLSB",
     type: DefinitionType.ComponentValue,
@@ -100,6 +110,8 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     block: Block.Analog,
   },
   LowerCCLimitMSB: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
     isMsb: true,
     key: "lowerCCLimitMSB",
     type: DefinitionType.ComponentValue,
@@ -112,6 +124,9 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     block: Block.Analog,
   },
   UpperCCLimitLSB: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
+    isLsb: true,
     key: "upperCCLimitLSB",
     type: DefinitionType.ComponentValue,
     section: 7,
@@ -121,9 +136,10 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     label: "Upper CC limit (LSB)",
     helpText: "",
     block: Block.Analog,
-    isLsb: true,
   },
   UpperCCLimitMSB: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
     isMsb: true,
     key: "upperCCLimitMSB",
     type: DefinitionType.ComponentValue,
@@ -136,6 +152,8 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     block: Block.Analog,
   },
   MidiChannel: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Button,
     key: "midiChannel",
     type: DefinitionType.ComponentValue,
     section: 9,

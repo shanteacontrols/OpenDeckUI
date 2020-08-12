@@ -6,22 +6,25 @@
       :component-definition="LedSectionDefinitions"
       :default-data="defaultLedSettingsData"
     >
-      <template #default="{ form, onSettingChange }">
+      <template #default="{ form, showField, onSettingChange }">
         <Section title="Global" class="border-b border-gray-900">
           <div
             class="w-full grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10"
           >
             <FormField
+              v-if="showField(LedSectionDefinitions.BlinkWithMidiClock)"
               :value="form.blinkWithMidiClock"
               :field-definition="LedSectionDefinitions.BlinkWithMidiClock"
               @modified="onSettingChange"
             />
             <FormField
+              v-if="showField(LedSectionDefinitions.FadeSpeed)"
               :value="form.fadeSpeed"
               :field-definition="LedSectionDefinitions.FadeSpeed"
               @modified="onSettingChange"
             />
             <FormField
+              v-if="showField(LedSectionDefinitions.StartupAnimation)"
               :value="form.startupAnimation"
               :field-definition="LedSectionDefinitions.StartupAnimation"
               @modified="onSettingChange"

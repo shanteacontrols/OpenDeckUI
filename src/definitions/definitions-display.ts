@@ -13,6 +13,8 @@ export const defaultDisplayData: Dictionary<number> = {
   octaveNormalizationValue: (null as unknown) as number,
 };
 
+type FormState = typeof defaultDisplayData;
+
 export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
   // Features
   EnableDisplay: {
@@ -26,6 +28,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Enables or disables display.`,
   },
   DisplayController: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "displayController",
     type: DefinitionType.Setting,
@@ -46,6 +49,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: ``,
   },
   DisplayResolution: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "displayResolution",
     type: DefinitionType.Setting,
@@ -70,6 +74,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: ``,
   },
   I2CAddress: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "i2CAddress",
     type: DefinitionType.Setting,
@@ -94,6 +99,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: ``,
   },
   WelcomeMessage: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "welcomeMessage",
     type: DefinitionType.Setting,
@@ -104,6 +110,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Enable or disable welcome message on display when the board is powered on.`,
   },
   ShowVersionsOnStartup: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "showVersionsOnStartup",
     type: DefinitionType.Setting,
@@ -114,6 +121,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Enable or disable version info on display when the board is powered on. This info is shown after welcome message.`,
   },
   AlternateMidiNoteDisplay: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "alternateMidiNoteDisplay",
     type: DefinitionType.Setting,
@@ -124,6 +132,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `If enabled, MIDI note data will be displayed like C#4, where the number represents octave. If disabled, MIDI note number will be displayed instead.`,
   },
   MidiEventRetentionTime: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "midiEventRetentionTime",
     type: DefinitionType.Setting,
@@ -160,6 +169,7 @@ export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
     helpText: `Timeout after which any message on display will be cleared (if data retention option is disabled).`,
   },
   OctaveNormalizationValue: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "octaveNormalizationValue",
     type: DefinitionType.Setting,

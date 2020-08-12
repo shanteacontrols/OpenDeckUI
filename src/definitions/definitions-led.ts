@@ -16,6 +16,9 @@ export const defaultLedComponentData: Dictionary<number> = {
   midiChannel: (null as unknown) as number,
 };
 
+type FormStateSettings = typeof defaultLedSettingsData;
+type FormStateComponent = typeof defaultLedComponentData;
+
 export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
   // Settings definitions
   BlinkWithMidiClock: {

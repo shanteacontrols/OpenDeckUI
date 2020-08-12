@@ -44,7 +44,11 @@
       <Spinner class="self-center" />
     </div>
 
-    <slot :form="form" :onValueChange="onValueChange"></slot>
+    <slot
+      :form="form"
+      :showField="showField"
+      :onValueChange="onValueChange"
+    ></slot>
   </form>
 </template>
 
@@ -95,6 +99,9 @@ export default defineComponent({
     const loading = ref(true);
     const form = reactive(props.defaultData);
     const index = toRefs(props).componentIndex;
+
+    const showField = (definition: IBlockDefinition) =>
+      !definition.showIf || definition.showIf(form);
 
     const loadData = async () => {
       loading.value = true;
@@ -163,6 +170,7 @@ export default defineComponent({
       form: {
         ...toRefs(form),
       },
+      showField,
       loading,
       onValueChange,
     };
