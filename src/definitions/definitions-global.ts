@@ -23,7 +23,9 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
     settingIndex: 1,
     component: FormInputComponent.Toggle,
     label: "Preserve preset setting",
-    helpText: `When disabled, first preset will always be loaded on board power on. Otherwise, preset configured here is remembered.`,
+    helpText: `When disabled, first preset will always be loaded on board power on.
+    Otherwise, preset index configured here is remembered. This is not related to saving of configuration
+    to specified preset - the configuration data is always retained even after power off.`,
   },
   ActivePreset: {
     block: Block.Global,
@@ -49,7 +51,7 @@ export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
       deviceStore.state.activePreset = value;
     },
     label: "Active preset",
-    helpText: `Sets active preset.`,
+    helpText: ``,
   },
   StandardNoteOff: {
     block: Block.Global,

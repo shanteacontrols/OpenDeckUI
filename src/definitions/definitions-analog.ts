@@ -77,7 +77,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 0,
     max: 127,
     label: "MIDI ID (LSB)",
-    helpText: "MIDI LSB channel for current component",
+    helpText: "",
     block: Block.Analog,
     isLsb: true,
   },
@@ -92,7 +92,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 0,
     max: 127,
     label: "MIDI ID (MSB)",
-    helpText: "MIDI MSB channel for current component",
+    helpText: "",
     block: Block.Analog,
   },
   LowerCCLimitLSB: {
@@ -161,7 +161,7 @@ export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 0,
     max: 16,
     label: "MIDI channel",
-    helpText: "Denotes the MIDI CC number for each analog component.",
+    helpText: "",
     block: Block.Analog,
   },
 };

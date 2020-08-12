@@ -29,7 +29,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     settingIndex: 0,
     component: FormInputComponent.Toggle,
     label: "Blink with MIDI clock",
-    helpText: `Enables or disables LED blinking via MIDI clock. When enabled, MIDI clock is used to toggle LED state.`,
+    helpText: `Enables or disables LED blinking via MIDI clock. When enabled, MIDI clock is used to toggle LED state. Otherwise, internal timer is used.`,
   },
   FadeSpeed: {
     key: "fadeSpeed",
@@ -51,7 +51,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
       { value: 10, text: "On - speed 10" },
     ],
     label: "Fade speed",
-    helpText: `Speed at which LEDs transition between on and off state. Default value is 0, which means fading is disabled by default.`,
+    helpText: `Speed at which LEDs transition between on and off state. Default value is 0, which means fading is disabled.`,
     block: Block.Led,
   },
   StartupAnimation: {
@@ -61,7 +61,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     settingIndex: 2,
     component: FormInputComponent.Toggle,
     label: "Start-up animation",
-    helpText: `Enables or disables LED animation. If animation is enabled, all LEDS will slowly turn on and off when board is powered.`,
+    helpText: `Enables or disables LED animation. If animation is enabled, all LEDS will slowly turn on and off when the board is powered.`,
     block: Block.Led,
   },
   // Component definitions
@@ -144,7 +144,7 @@ export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
     min: 1,
     max: 16,
     label: "MIDI channel",
-    helpText: "Denotes note/program change MIDI number",
+    helpText: "",
     block: Block.Led,
   },
 };
