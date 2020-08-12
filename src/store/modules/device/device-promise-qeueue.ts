@@ -251,6 +251,7 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
     ) {
       activityLog.actions.addMidi({
         type: MidiEventTypeMMC[event.data[4]],
+        data: [event.data[4]],
       });
       return;
     }
