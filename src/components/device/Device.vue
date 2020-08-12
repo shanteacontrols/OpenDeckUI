@@ -27,6 +27,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted } from "vue";
 import router from "../../router";
+import { logger } from "../../util";
 import { deviceStoreMapped } from "../../store";
 import DeviceActivity from "./activity/DeviceActivity.vue";
 
@@ -42,7 +43,7 @@ export default defineComponent({
           router.currentRoute.value.params.outputId as string,
         );
       } catch (err) {
-        router.push({ name: "home" });
+        logger.error(err);
       }
     });
 
