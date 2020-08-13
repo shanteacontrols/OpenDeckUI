@@ -3,43 +3,14 @@ import { addError } from "./log-type-error";
 import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
 import { addInfo } from "./log-type-info";
-import { debounce } from "lodash-es";
 
 // Actions
 
-const delayShort = 100;
-const delayLong = 700;
-const bufferSlowdownRequests = 30;
 const keepInfoLogsForMs = 250;
-
-let lastBufferPushTime = new Date();
-const midiBuffer = [] as ILogEntry[];
-let delayMs = delayShort;
 
 export const getFilteredLogs = (
   filterBy: (log: ILogEntry) => boolean,
 ): ILogEntry[] => state.stack.filter(filterBy);
-
-const pushBufferToStack = () => {
-  const now = new Date();
-  const lastPush = lastBufferPushTime.valueOf();
-
-  if (lastPush > now.valueOf() - delayMs) {
-    return;
-  }
-
-  lastBufferPushTime = now;
-
-  // Adjust buffer delay
-  if (midiBuffer.length > bufferSlowdownRequests) {
-    delayMs = delayLong;
-  } else {
-    delayMs = delayShort;
-  }
-
-  state.stack.push(...midiBuffer);
-  midiBuffer.length = 0;
-};
 
 const pruneInfoLogsForAnimation = (log: ILogEntry) => {
   const now = new Date().valueOf();
@@ -49,26 +20,11 @@ const pruneInfoLogsForAnimation = (log: ILogEntry) => {
   return true;
 };
 
-const pruneOld = () => {
-  setTimeout(() => debouncedPrune(), 300);
-  const lengthBefore = state.stack.length;
-  if (lengthBefore === 0) {
-    return;
-  }
+export const addBuffered = (logEntry: ILogEntry): void => {
+  state.stack.push(logEntry);
 
   const filtered = state.stack.filter(pruneInfoLogsForAnimation).slice(-100);
-
-  state.prunedCount = state.prunedCount + lengthBefore - filtered.length;
   state.stack = Array.from(filtered);
-};
-
-const debouncedPush = debounce(pushBufferToStack, 50, { maxWait: 500 });
-const debouncedPrune = debounce(pruneOld, 250, { maxWait: 1000 });
-
-export const addBuffered = (logEntry: ILogEntry): void => {
-  midiBuffer.push(logEntry);
-  debouncedPush();
-  debouncedPrune();
 };
 
 // Export
