@@ -6,6 +6,10 @@
         No OpenDeck board found. Please connect the board in order to use the
         interface.
       </h3>
+      <h3 v-else-if="outputs.length > 1" class="p-4 text-xl text-center">
+        Multiple OpenDeck boards detected. Please connect one board at the time
+        in order to use configurator.
+      </h3>
       <div
         v-else
         class="text-gray-700 bg-gray-800 rounded text-left capitalize font-medium shadow-lg"
