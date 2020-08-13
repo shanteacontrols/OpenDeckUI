@@ -5,11 +5,19 @@
         >real time:</span
       >
       {{ MidiEventTypeLabel[logEntry.eventType] }}
+      <template v-if="['noteon', 'noteoff'].includes(logEntry.eventType)">
+        {{ logEntry.data[1] }}
+      </template>
     </strong>
     <span v-if="logEntry.channel" class="mr-2">
       channel {{ logEntry.channel }}
     </span>
-    <span v-if="logEntry.value" class="mr-2"> value {{ logEntry.value }} </span>
+    <span
+      v-if="logEntry.value && logEntry.eventType !== 'controlchange'"
+      class="mr-2"
+    >
+      value {{ logEntry.value }}
+    </span>
     <span v-if="logEntry.controller && logEntry.controller.number" class="mr-2">
       controller {{ logEntry.controller.number }}
     </span>
