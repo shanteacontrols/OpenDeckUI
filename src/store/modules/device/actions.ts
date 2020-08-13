@@ -301,10 +301,19 @@ const loadDeviceInfo = async (): Promise<any> => {
     command: SysExCommand.GetNumberOfSupportedComponents,
     handler: (components: IDeviceComponentCounts) => setInfo(components),
   });
-  await sendMessage({
-    command: SysExCommand.GetBootLoaderSupport,
-    handler: (bootLoaderSupport: string) => setInfo({ bootLoaderSupport }),
-  });
+  try {
+    await sendMessage({
+      command: SysExCommand.GetBootLoaderSupport,
+      handler: (bootLoaderSupport: string) => setInfo({ bootLoaderSupport }),
+    });
+  } catch (err) {
+    logger.error(
+      "Error while checking for bootloader support, setting to false",
+      err,
+    );
+    setInfo({ bootLoaderSupport: false });
+  }
+
   await sendMessage({
     command: SysExCommand.GetNumberOfSupportedPresets,
     handler: (supportedPresetsCount: number) =>
