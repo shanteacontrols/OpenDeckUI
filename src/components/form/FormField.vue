@@ -13,7 +13,7 @@
           : label
       }}
       <small v-if="min || max" class="ml-2 text-gray-700"
-        >{{ min }} - {{ max }}</small
+        >{{ min }} - {{ (!showMsbControls && maxMsb) || max }}</small
       >
     </label>
     <div v-if="!isDisabled">
@@ -93,8 +93,8 @@ const getValidatorForDefinition = (definition: IBlockDefinition) => {
       if (definition.max !== undefined) {
         // For newer versions with 2-byte data protocol values can be bigger
         let maxSize =
-          definition.isLsb && deviceStoreMapped.showMsbControls
-            ? 16383
+          definition.maxMsb && deviceStoreMapped.showMsbControls
+            ? definition.maxMsb
             : definition.max;
         validators.push(maxValue(maxSize));
       }
@@ -146,6 +146,7 @@ export default defineComponent({
       isLsb,
       min,
       max,
+      maxMsb,
       options,
       onLoad,
     } = toRefs(props.fieldDefinition);
@@ -216,6 +217,7 @@ export default defineComponent({
       isLsb,
       min,
       max,
+      maxMsb,
       ...midiStoreMapped,
     };
   },

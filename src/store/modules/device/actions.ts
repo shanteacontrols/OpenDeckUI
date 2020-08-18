@@ -335,10 +335,13 @@ export const getComponentSettings = async (
     definition.type === definitionType;
   const removeDisabled = (def: IBlockDefinition) =>
     !midiStore.actions.isControlDisabled(def);
+  const removeMsb = (def: IBlockDefinition) =>
+    state.valueSize === 1 || !def.isMsb;
 
   const tasks = convertDefinitionsToArray(componentDefinition)
     .filter(filterByType)
     .filter(removeDisabled)
+    .filter(removeMsb)
     .map((definition) => {
       const index =
         typeof componentIndex === "number"

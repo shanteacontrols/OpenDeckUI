@@ -93,6 +93,7 @@ export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
+    maxMsb: 16383,
     label: "MIDI ID (LSB)",
     helpText: "",
   },
