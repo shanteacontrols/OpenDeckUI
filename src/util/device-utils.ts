@@ -11,14 +11,47 @@ export const convertToHex = (value: number | number[]): string | string[] => {
 // Byte conversion
 
 export const convertDataValuesToSingleByte = (values: number[]): number[] => {
-  const convertedValues: number[] = [];
+  const converted: number[] = [];
 
   for (let index = 0; index < values.length / 2; index++) {
     const pos = index * 2;
-    convertedValues.push(values[pos] + values[pos + 1]);
+    converted.push(mergeTo14bit(values[pos], values[pos + 1]));
   }
 
-  return convertedValues;
+  return converted;
+};
+
+const mergeTo14bit = (high: number, low: number): void => {
+  if (high & 0x01) {
+    low |= 1 << 7;
+  } else {
+    low &= ~(1 << 7);
+  }
+
+  high >>= 1;
+
+  let joined = high;
+
+  joined <<= 8;
+  joined |= low;
+
+  return joined;
+};
+
+export const convertValueToDoubleByte = (value: number): number[] => {
+  let newHigh = (value >> 8) & 0xff;
+  let newLow = value & 0xff;
+
+  newHigh = (newHigh << 1) & 0x7f;
+
+  if ((newLow >> 7) & 0x01) {
+    newHigh |= 0x01;
+  } else {
+    newHigh &= ~0x01;
+  }
+
+  newLow &= 0x7f;
+  return [newHigh, newLow];
 };
 
 // Arrays & serialization

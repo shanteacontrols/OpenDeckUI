@@ -1,5 +1,11 @@
 import { MessageStatus, Wish, Amount } from ".";
-import { IRequestConfig } from "../store/modules/device/state";
+import { IRequestConfig, IDeviceState } from "../store/modules/device/state";
+import { IQueuedRequest } from "../store/modules/device/device-promise-qeueue";
+import {
+  arrayEqual,
+  convertValueToDoubleByte,
+  convertDataValuesToSingleByte,
+} from "../util";
 
 export enum RequestType {
   Predefined = "predefined",
@@ -15,6 +21,8 @@ export interface IRequestDefinition {
   isConnectionInfoRequest?: boolean;
   expectsNoResponse?: boolean;
   getPayload?: (config?: any) => number[];
+  responseHandler?: (response: number[], valueSize?: number) => any;
+  decode?: (response: number[]) => any;
   parser?: (response: number[]) => any;
 }
 
@@ -23,6 +31,7 @@ export interface IDeviceComponentCounts {
   encoders: number;
   analogInputs: number;
   LEDs: number;
+  touchscreens: number;
 }
 
 export enum Request {
@@ -33,7 +42,7 @@ export enum Request {
   GetValuesPerMessage = "GetValuesPerMessage",
   // Custom
   GetFirmwareVersion = "GetFirmwareVersion",
-  GetHardwareUid = "GetHardwareUid",
+  IdentifyBoard = "IdentifyBoard",
   GetFirmwareVersionAndHardwareUid = "GetFirmwareVersionAndHardwareUid",
   GetNumberOfSupportedComponents = "GetNumberOfSupportedComponents",
   GetNumberOfSupportedPresets = "GetNumberOfSupportedPresets",
@@ -69,14 +78,23 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Predefined,
     isConnectionInfoRequest: true,
     specialRequestId: 2,
-    parser: (response: number[]): number => response[0],
+    parser: (response: number[]): number => {
+      // Response is either [1] in single byte protocol or
+      // [2, 0, 2] in double byte protocol
+      if (response.length === 3) {
+        return convertDataValuesToSingleByte(response.slice(1))[0];
+      }
+
+      return response[0] || 1;
+    },
   },
   [Request.GetValuesPerMessage]: {
     key: Request.GetValuesPerMessage,
     type: RequestType.Predefined,
     isConnectionInfoRequest: true,
     specialRequestId: 3,
-    parser: (response: number[]): number[] => response,
+    decode: convertDataValuesToSingleByte,
+    parser: (response: number[]): number => response[0],
   },
 
   // Custom
@@ -86,13 +104,16 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Custom,
     specialRequestId: 86, // Hex: 56
     isConnectionInfoRequest: true,
+    decode: convertDataValuesToSingleByte,
     parser: (response: number[]): string =>
       "v" + response[0] + "." + response[1] + "." + response[2],
   },
-  [Request.GetHardwareUid]: {
-    key: Request.GetHardwareUid,
+  [Request.IdentifyBoard]: {
+    key: Request.IdentifyBoard,
     type: RequestType.Custom,
     specialRequestId: 66, // Hex: 42
+    decode: convertDataValuesToSingleByte,
+    parser: (response: number[]): number[] => response.slice(0, 4),
   },
   [Request.GetFirmwareVersionAndHardwareUid]: {
     key: Request.GetFirmwareVersionAndHardwareUid,
@@ -104,11 +125,13 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.GetNumberOfSupportedComponents,
     type: RequestType.Custom,
     specialRequestId: 77, // Hex: 4D
+    decode: convertDataValuesToSingleByte,
     parser: (response: number[]): IDeviceComponentCounts => ({
       buttons: response[0],
       encoders: response[1],
       analogInputs: response[2],
       LEDs: response[3],
+      touchscreens: response[4],
     }),
   },
   [Request.GetNumberOfSupportedPresets]: {
@@ -116,6 +139,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Custom,
     specialRequestId: 80, // Hex: 50
     isConnectionInfoRequest: true,
+    decode: convertDataValuesToSingleByte,
     parser: (response: number[]): number => response[0],
   },
   [Request.Reboot]: {
@@ -129,6 +153,8 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.GetBootLoaderSupport,
     type: RequestType.Custom,
     specialRequestId: 81, // Hex: 51
+    decode: convertDataValuesToSingleByte,
+    parser: (response: number[]): number => response[0],
   },
   [Request.BootloaderMode]: {
     key: Request.BootloaderMode,
@@ -160,28 +186,64 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [Request.GetValue]: {
     key: Request.GetValue,
     type: RequestType.Configuration,
-    getPayload: (config: IRequestConfig): number[] => [
-      MessageStatus.Request,
-      0, // msg part
-      Wish.Get,
-      Amount.Single,
-      config.block,
-      config.section,
-      config.index,
-    ],
+    decode: (response: number[], request: IQueuedRequest): number[] => {
+      const expectedEmbed = [1, ...request.payload.slice(1)];
+      const foundEmbed = response.slice(0, expectedEmbed.length);
+      const data = response.slice(expectedEmbed.length);
+
+      if (!arrayEqual(expectedEmbed, foundEmbed)) {
+        throw new Error("EMBEDDED RESPONSE MISMATCH");
+      }
+
+      return convertDataValuesToSingleByte(data);
+    },
+    getPayload: (config: IRequestConfig, state: IDeviceState): number[] => {
+      const payload = [
+        MessageStatus.Request,
+        0, // msg part
+        Wish.Get,
+        Amount.Single,
+        config.block,
+        config.section,
+      ];
+
+      if (state.valueSize === 1) {
+        payload.push(config.index); // Two byte protocol requires value to be sent
+      } else {
+        payload.push(
+          ...convertValueToDoubleByte(config.index), // 2 byte index
+          0, // new value MSB (unused, but required)
+          0, // new value LSB (unused, but required)
+        );
+      }
+
+      return payload;
+    },
   },
   [Request.SetValue]: {
     key: Request.SetValue,
     type: RequestType.Configuration,
-    getPayload: (config: IRequestConfig): number[] => [
-      MessageStatus.Request,
-      0, // msg part
-      Wish.Set,
-      Amount.Single,
-      config.block,
-      config.section,
-      config.index,
-      config.value,
-    ],
+    decode: (response: number[]): number[] =>
+      convertDataValuesToSingleByte(response.slice(-2)),
+    getPayload: (config: IRequestConfig, state: IDeviceState): number[] => {
+      const payload = [
+        MessageStatus.Request,
+        0, // msg part
+        Wish.Set,
+        Amount.Single,
+        config.block,
+        config.section,
+      ];
+
+      if (state.valueSize === 1) {
+        payload.push(config.index, config.value); // Two byte protocol requires value to be sent
+      } else {
+        payload.push(
+          ...convertValueToDoubleByte(config.index), // 2 byte index
+          ...convertValueToDoubleByte(config.value), // 2 byte value
+        );
+      }
+      return payload;
+    },
   },
 };

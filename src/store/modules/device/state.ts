@@ -68,6 +68,7 @@ export const defaultState: IDeviceState = {
   encoders: 0,
   analogInputs: 0,
   LEDs: 0,
+  touchscreens: 0,
 };
 
 export const state = reactive(defaultState);
