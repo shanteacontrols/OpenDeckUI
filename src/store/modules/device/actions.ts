@@ -85,14 +85,22 @@ export const connectDeviceStoreToInput = async (
   state.input.addListener("sysex", "all", handleSysExEvent);
   attachMidiEventHandlers(state.input);
 
+  // Handshake is required before any communication
   await sendMessage({
     command: Request.Handshake,
     handler: () => ({}),
   });
-  await sendMessage({
-    command: Request.GetValueSize,
-    handler: (valueSize: number) => setInfo({ valueSize }),
-  });
+
+  try {
+    await sendMessage({
+      command: Request.GetValueSize,
+      handler: (valueSize: number) => setInfo({ valueSize }),
+    });
+  } catch (err) {
+    setInfo({ valueSize: 1 });
+    logger.error("Failed to read valueSize, assuming 1", err);
+  }
+
   await sendMessage({
     command: Request.GetValuesPerMessage,
     handler: (valuesPerMessageRequest: number) =>
