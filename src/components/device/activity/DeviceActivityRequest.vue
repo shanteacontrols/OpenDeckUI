@@ -32,11 +32,31 @@
     </small>
     <template v-if="request.payload">
       <br />
-      <span class="">Sent {{ request.payload }} </span>
+      <span class=""
+        >Sent {{ [240, 0, 84, 67, ...request.payload, 247] }}
+      </span>
     </template>
     <template v-if="request.responseData">
       <br />
-      <span class="">Received {{ request.responseData }} </span>
+      <span class=""
+        >Received [ 240, 0, 84, 67,
+        <template v-if="request.messageStatus !== undefined">
+          {{ request.messageStatus }},
+        </template>
+        <template v-if="request.messagePart !== undefined">
+          {{ request.messagePart }},
+        </template>
+        <template v-if="request.specialRequestId !== undefined">
+          {{ request.specialRequestId }},
+        </template>
+        <span v-for="(val, idx) in request.responseData" :key="idx">
+          {{ val }},
+        </span>
+        247]
+      </span>
+      <span v-if="request.parsed" class="ml-2"
+        >Parsed {{ request.parsed }}
+      </span>
     </template>
     <template v-if="request.errorMessage">
       <br />
@@ -50,7 +70,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import {
-  IRequestInProcess,
+  IQueuedRequest,
   RequestState,
 } from "../../../store/modules/device/device-promise-qeueue";
 import { Block, DefinitionType } from "../../../definitions";
@@ -63,7 +83,7 @@ export default defineComponent({
   props: {
     request: {
       required: true,
-      type: Object as () => IRequestInProcess,
+      type: Object as () => IQueuedRequest,
     },
   },
   setup() {
