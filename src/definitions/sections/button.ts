@@ -1,5 +1,9 @@
-import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
-import { Block } from "./definitions-device";
+import {
+  IBlockDefinition,
+  FormInputComponent,
+  DefinitionType,
+} from "../device";
+import { Block } from "../constants";
 
 export const defaultButtonData: Dictionary<number> = {
   Type: (null as unknown) as number,

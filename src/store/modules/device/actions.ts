@@ -7,7 +7,7 @@ import {
   DeviceConnectionState,
 } from "./state";
 import {
-  SysExCommand,
+  Request,
   IDeviceComponentCounts,
   IBlockDefinition,
   IBoardDefinition,
@@ -25,7 +25,7 @@ import {
 import { Input, Output } from "webmidi";
 import { midiStore } from "../midi";
 import { logger, arrayEqual } from "../../../util";
-import { SysExCommand } from "../../../definitions/definitions-requests.ts";
+import { Request } from "../../../definitions";
 import router from "../../../router";
 
 // Actions
@@ -86,20 +86,20 @@ export const connectDeviceStoreToInput = async (
   attachMidiEventHandlers(state.input);
 
   await sendMessage({
-    command: SysExCommand.Handshake,
+    command: Request.Handshake,
     handler: () => ({}),
   });
   await sendMessage({
-    command: SysExCommand.GetValueSize,
+    command: Request.GetValueSize,
     handler: (valueSize: number) => setInfo({ valueSize }),
   });
   await sendMessage({
-    command: SysExCommand.GetValuesPerMessage,
+    command: Request.GetValuesPerMessage,
     handler: (valuesPerMessageRequest: number) =>
       setInfo({ valuesPerMessageRequest }),
   });
   await sendMessage({
-    command: SysExCommand.GetFirmwareVersion,
+    command: Request.GetFirmwareVersion,
     handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
   });
   state.connectionState = DeviceConnectionState.Open;
@@ -132,7 +132,7 @@ export const closeConnection = async (): Promise<any> => {
     state.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
     detachMidiEventHandlers(state.input);
     sendMessage({
-      command: SysExCommand.CloseConnection,
+      command: Request.CloseConnection,
       handler: () => (state.connectionState = DeviceConnectionState.Closed),
     });
   }
@@ -147,7 +147,7 @@ export const ensureConnection = async (): Promise<any> => {
   }
 
   await sendMessage({
-    command: SysExCommand.Handshake,
+    command: Request.Handshake,
     handler: () => ({}),
   });
   state.connectionState = DeviceConnectionState.Open;
@@ -155,7 +155,7 @@ export const ensureConnection = async (): Promise<any> => {
 
 export const startBootLoaderMode = async (): Promise<any> => {
   await sendMessage({
-    command: SysExCommand.BootloaderMode,
+    command: Request.BootloaderMode,
     handler: () => logger.log("Bootloader mode started"),
   });
 };
@@ -250,22 +250,22 @@ export const startUpdatesCheck = async (): Promise<Array<IOpenDeckRelease>> => {
 
 export const startFactoryReset = async (): Promise<any> => {
   const handler = () => logger.log("Bootloader mode started");
-  await sendConnectionAffectingMessage(SysExCommand.FactoryReset, handler);
+  await sendConnectionAffectingMessage(Request.FactoryReset, handler);
 };
 
 export const startReboot = async (): Promise<any> => {
   const handler = () => logger.log("Reboot mode started");
-  await sendConnectionAffectingMessage(SysExCommand.Reboot, handler);
+  await sendConnectionAffectingMessage(Request.Reboot, handler);
 };
 
 const sendConnectionAffectingMessage = async (
-  command: SysExCommand,
+  command: Request,
   handler: () => void,
 ): Promise<any> => {
   state.connectionState = DeviceConnectionState.Pending;
 
   await sendMessage({
-    command: SysExCommand.Handshake,
+    command: Request.Handshake,
     handler: () => ({}),
   });
 
@@ -288,7 +288,7 @@ const getBoardDefinition = (value: number[]): IBoardDefinition => {
 
 const loadDeviceInfo = async (): Promise<any> => {
   await sendMessage({
-    command: SysExCommand.GetHardwareUid,
+    command: Request.GetHardwareUid,
     handler: (value: number[]) => {
       const board = getBoardDefinition(value);
       const boardName = (board && board.name) || "UNKNOWN BOARD";
@@ -298,12 +298,12 @@ const loadDeviceInfo = async (): Promise<any> => {
     },
   });
   await sendMessage({
-    command: SysExCommand.GetNumberOfSupportedComponents,
+    command: Request.GetNumberOfSupportedComponents,
     handler: (components: IDeviceComponentCounts) => setInfo(components),
   });
   try {
     await sendMessage({
-      command: SysExCommand.GetBootLoaderSupport,
+      command: Request.GetBootLoaderSupport,
       handler: (bootLoaderSupport: string) => setInfo({ bootLoaderSupport }),
     });
   } catch (err) {
@@ -315,7 +315,7 @@ const loadDeviceInfo = async (): Promise<any> => {
   }
 
   await sendMessage({
-    command: SysExCommand.GetNumberOfSupportedPresets,
+    command: Request.GetNumberOfSupportedPresets,
     handler: (supportedPresetsCount: number) =>
       setInfo({ supportedPresetsCount }),
   });
@@ -358,7 +358,7 @@ export const getComponentSettings = async (
       };
 
       return sendMessage({
-        command: SysExCommand.GetValue,
+        command: Request.GetValue,
         handler,
         config,
       }).catch((error) =>
@@ -383,7 +383,7 @@ export const setComponentSectionValue = async (
   handler: (val: any) => void,
 ): Promise<any> =>
   sendMessage({
-    command: SysExCommand.SetValue,
+    command: Request.SetValue,
     handler,
     config: {
       ...config,

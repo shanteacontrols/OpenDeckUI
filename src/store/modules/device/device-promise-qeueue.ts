@@ -8,15 +8,15 @@ import {
 } from "./state";
 import { logger, convertDataValuesToSingleByte } from "../../../util";
 import {
-  RequestKind,
+  RequestType,
   requestDefinitions,
   openDeckManufacturerId,
   getErrorDefinition,
-  SysExCommand,
+  Request,
   IRequestDefinition,
   ErrorCode,
 } from "../../../definitions";
-import { findDefinitionByRequestConfig } from "../../../definitions/definition-map";
+import { findDefinitionByRequestConfig } from "../../../definitions";
 import { activityLog, MidiEventTypeMMC } from "../activity-log";
 import { midiStore } from "../midi";
 import { ControlDisableType } from "../midi/state";
@@ -34,7 +34,7 @@ export enum RequestState {
 export interface IRequestInProcess {
   id: number;
   state: RequestState;
-  command: SysExCommand;
+  command: Request;
   promiseResolve: () => void;
   promiseReject: (code?: ErrorCode) => void;
   config?: IRequestConfig;
@@ -274,7 +274,7 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   // Ensure we are working with array of single byte values
   const responseData =
-    state.valueSize === 2 && definition.type !== RequestKind.Predefined
+    state.valueSize === 2 && definition.type !== RequestType.Predefined
       ? convertDataValuesToSingleByte(data)
       : data;
 
@@ -296,7 +296,7 @@ const prepareRequestPayload = (
   definition: IRequestDefinition,
   config?: IRequestConfig,
 ) => {
-  if ([RequestKind.Custom, RequestKind.Predefined].includes(definition.type)) {
+  if ([RequestType.Custom, RequestType.Predefined].includes(definition.type)) {
     if (definition.specialRequestId === undefined) {
       throw new Error(
         `Missing specialRequestId for definition ${definition.key}`,

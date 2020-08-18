@@ -1,6 +1,6 @@
 import { reactive } from "vue";
 import { Input, Output } from "webmidi";
-import { SysExCommand } from "../../../definitions";
+import { Request } from "../../../definitions";
 
 export enum DeviceConnectionState {
   Closed = "closed",
@@ -16,7 +16,7 @@ export interface IRequestConfig {
 }
 
 export interface IBusRequestConfig {
-  command: SysExCommand;
+  command: Request;
   config?: IRequestConfig;
   handler: (data: any) => void;
 }

@@ -54,7 +54,7 @@ import {
   RequestState,
 } from "../../../store/modules/device/device-promise-qeueue";
 import { Block, DefinitionType } from "../../../definitions";
-import { findDefinitionByRequestConfig } from "../../../definitions/definition-map";
+import { findDefinitionByRequestConfig } from "../../../definitions";
 import { getDifferenceInMs } from "../../../util";
 import { IRequestConfig } from "../../../store/modules/device/state";
 

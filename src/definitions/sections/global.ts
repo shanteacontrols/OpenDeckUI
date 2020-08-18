@@ -1,6 +1,10 @@
-import { IBlockDefinition, FormInputComponent, DefinitionType } from ".";
-import { Block } from "./definitions-device";
-import { deviceStore } from "../store";
+import {
+  IBlockDefinition,
+  FormInputComponent,
+  DefinitionType,
+} from "../device";
+import { Block } from "../constants";
+import { deviceStore } from "../../store";
 
 export const defaultGlobalData: Dictionary<number> = {
   preservePresetState: (null as unknown) as number,

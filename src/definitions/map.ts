@@ -1,16 +1,17 @@
-import { GlobalDefinitions } from "./definitions-global";
-import { ButtonSectionDefinitions } from "./definitions-button";
-import { EncoderSectionDefinitions } from "./definitions-encoder";
-import { AnalogSectionDefinitions } from "./definitions-analog";
-import { LedSectionDefinitions } from "./definitions-led";
-import { DisplayDefinitions } from "./definitions-display";
-
 import {
-  Block,
+  GlobalDefinitions,
+  ButtonSectionDefinitions,
+  EncoderSectionDefinitions,
+  AnalogSectionDefinitions,
+  LedSectionDefinitions,
+  DisplayDefinitions,
+} from "./sections";
+import {
   DefinitionType,
   IBlockDefinition,
   IBlockSettingDefinition,
-} from "./definitions-device";
+} from "./device";
+import { Block } from "./constants";
 import { IRequestConfig } from "../store/modules/device/state";
 
 const DefinitionMap = {
