@@ -296,7 +296,7 @@ const getBoardDefinition = (value: number[]): IBoardDefinition => {
 
 const loadDeviceInfo = async (): Promise<any> => {
   await sendMessage({
-    command: Request.GetHardwareUid,
+    command: Request.IdentifyBoard,
     handler: (value: number[]) => {
       const board = getBoardDefinition(value);
       const boardName = (board && board.name) || "UNKNOWN BOARD";
