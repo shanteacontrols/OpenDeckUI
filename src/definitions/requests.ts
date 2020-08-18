@@ -80,8 +80,8 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     specialRequestId: 2,
     parser: (response: number[]): number => {
       // Response is either [1] in single byte protocol or
-      // [2, 0, 2] in double byte protocol
-      if (response.length === 3) {
+      // [0, 2] in double byte protocol
+      if (response.length > 1) {
         return convertDataValuesToSingleByte(response.slice(1))[0];
       }
 
