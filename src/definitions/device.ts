@@ -28,7 +28,7 @@ interface IBlockDefinitionBase {
   onLoad?: genericMethod;
   min?: number;
   max?: number;
-  maxMsb?: number;
+  max2Byte?: number;
   isLsb?: boolean;
   isMsb?: boolean;
 }

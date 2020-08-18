@@ -138,7 +138,6 @@ export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
     helpText: ``,
     block: Block.Button,
   },
-  // @TODO: remove this field?
   MidiId: {
     showIf: (formState: FormState): boolean =>
       !HideMidiIdOnTypes.includes(formState.midiMessage),
