@@ -6,7 +6,7 @@ import {
   IBusRequestConfig,
   IRequestConfig,
 } from "./state";
-import { logger } from "../../../util";
+import { logger, convertDataValuesToSingleByte } from "../../../util";
 import {
   RequestType,
   requestDefinitions,
@@ -281,13 +281,33 @@ const parseEventDataDoubleByte = (
   };
 };
 
+const procesInfoMessage = (eventData: Uint8Array): boolean => {
+  if (eventData[6] !== componentInfoMessageId) {
+    return false;
+  }
+
+  const block = eventData[7];
+  const index =
+    state.valueSize === 2
+      ? convertDataValuesToSingleByte(eventData.slice(8, 9))[0]
+      : eventData[8];
+
+  activityLog.actions.addInfo({
+    block,
+    index,
+    payload: eventData,
+  });
+
+  return true;
+};
+
+const parseEventData = (eventData: Uint8Array, request: IQueuedRequest) =>
+  state.valueSize === 2
+    ? parseEventDataDoubleByte(eventData, request)
+    : parseEventDataSingleByte(eventData, request);
+
 export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
-  if (event.data[6] === componentInfoMessageId) {
-    activityLog.actions.addInfo({
-      block: event.data[1],
-      index: event.data[2],
-      payload: event.data,
-    });
+  if (procesInfoMessage(event.data)) {
     return;
   }
 
@@ -307,16 +327,19 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
     activityLog.actions.addError({
       errorCode: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
-      payload: data,
+      payload: event.data,
     });
     return;
   }
 
   const { handler, expectedResponseCount } = request;
-  const { messageStatus, messagePart, specialRequestId, data, parsed } =
-    state.valueSize === 2
-      ? parseEventDataDoubleByte(event.data, request)
-      : parseEventDataSingleByte(event.data, request);
+  const {
+    messageStatus,
+    messagePart,
+    specialRequestId,
+    data,
+    parsed,
+  } = parseEventData(event.data, request);
 
   request.responseCount++;
 

@@ -3,35 +3,46 @@ import { addError } from "./log-type-error";
 import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
 import { addInfo } from "./log-type-info";
+import { saveToStorage } from "../../store-util";
 
 // Actions
-
-const keepInfoLogsForMs = 250;
 
 export const getFilteredLogs = (
   filterBy: (log: ILogEntry) => boolean,
 ): ILogEntry[] => state.stack.filter(filterBy);
 
-const pruneInfoLogsForAnimation = (log: ILogEntry) => {
-  const now = new Date().valueOf();
-  if (LogType.Info === log.type) {
-    return log.time.valueOf() > now - keepInfoLogsForMs;
-  }
-  return true;
+export const toggleLogFilter = (type: LogType): void => {
+  state.logFilter[type] = !state.logFilter[type];
+  saveToStorage("logFilter", state.logFilter);
+};
+
+export const toggleLog = (): void => {
+  state.showActivityLog = !state.showActivityLog;
+  saveToStorage("showActivityLog", state.showActivityLog);
 };
 
 export const addBuffered = (logEntry: ILogEntry): void => {
-  state.stack.push(logEntry);
+  // Add highlights
+  const { type, block, index, time } = logEntry;
+  if (type === LogType.Info) {
+    const blockHighlights = state.highlights[block];
+    if (!blockHighlights) {
+      logger.error(`Unknown highlight block with id ${block}`);
+      return;
+    }
 
-  const filtered = state.stack.filter(pruneInfoLogsForAnimation).slice(-100);
-  state.stack = Array.from(filtered);
+    blockHighlights[index] = time.getTime();
+  }
+
+  // Push to log stack
+  state.stack.push(logEntry);
+  state.stack = state.stack.slice(-99);
 };
 
 // Export
 
 export const activityLogActions = {
   clear: (): void => {
-    state.prunedCount = state.prunedCount + state.stack.length;
     state.stack = [];
   },
   getFilteredLogs,
@@ -39,6 +50,8 @@ export const activityLogActions = {
   addInfo,
   addError,
   addMidi,
+  toggleLogFilter,
+  toggleLog,
 };
 
 export type IActivityLogActions = typeof activityLogActions;

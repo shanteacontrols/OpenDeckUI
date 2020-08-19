@@ -3,10 +3,18 @@
     <template #title>
       <Heading preset="section-title">
         Activity
+
+        <FormToggle
+          class="float-right"
+          :value="showActivityLog"
+          @changed="toggleLog"
+        >
+          {{ (showActivityLog ? "hide" : "show") }}
+        </FormToggle>
       </Heading>
     </template>
 
-    <div class="clearfix">
+    <div v-show="showActivityLog" class="clearfix">
       <button
         class="mr-4 py-1 px-2 float-left rounded-full text-xs focus:outline-none focus:shadow-outline"
         :class="{
@@ -22,8 +30,8 @@
           v-for="(type, idx) in LogType"
           :key="idx"
           class="inline-block float-left md:float-right mr-2 mb-2 z-0"
-          :value="logTypeFilter.includes(type)"
-          @changed="() => toggleFilterType(type)"
+          :value="logFilter[type]"
+          @changed="() => toggleLogFilter(type)"
         >
           {{ type }}
         </FormToggle>
@@ -107,7 +115,6 @@ import {
   LogType,
   ILogEntry,
 } from "../../../store/modules/activity-log";
-import { Block } from "../../../definitions";
 import { formatDate } from "../../../util";
 
 import DeviceActivityError from "./DeviceActivityError.vue";
@@ -126,39 +133,31 @@ export default defineComponent({
     FormToggle,
   },
   setup() {
-    const toggleFilterType = (type: LogType) => {
-      const pos = activityLog.state.logTypeFilter.indexOf(type);
-      if (pos !== -1) {
-        activityLog.state.logTypeFilter.splice(pos, 1);
-      } else {
-        activityLog.state.logTypeFilter.push(type);
-      }
-    };
-
+    const showActivityLog = computed(() => activityLog.state.showActivityLog);
     const filteredLog = computed(() => {
-      const filter = activityLog.state.logTypeFilter;
+      const filter = activityLog.state.logFilter;
       return activityLog.state.stack
-        .filter((log: ILogEntry) => filter && filter.includes(log.type))
+        .filter((log: ILogEntry) => filter && filter[log.type])
         .reverse();
     });
-    const prunedCount = computed(() => activityLog.state.prunedCount);
 
     const clear = () => {
       activityLog.actions.clear();
       purgeFinishedRequests();
     };
 
+    const { toggleLogFilter, toggleLog } = activityLog.actions;
+
     return {
       clear,
       requestStack,
       filteredLog,
-      activityLog,
-      logTypeFilter: activityLog.state.logTypeFilter,
-      prunedCount,
-      Block,
+      showActivityLog,
+      logFilter: activityLog.state.logFilter,
       formatDate,
       LogType,
-      toggleFilterType,
+      toggleLogFilter,
+      toggleLog,
     };
   },
 });

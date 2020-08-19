@@ -32,3 +32,9 @@ export const mapStore = <S extends IStoreState, C, A>(
     ...store.actions,
   };
 };
+
+export const readFromStorage = (key: string): any =>
+  JSON.parse(localStorage.getItem(key));
+
+export const saveToStorage = (key: string, value: any): any =>
+  localStorage.setItem(key, JSON.stringify(value));

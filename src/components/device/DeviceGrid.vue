@@ -3,25 +3,17 @@
     <div
       class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 -ml-4 text-center"
     >
-      <router-link
+      <DeviceGridButton
         v-for="componentIndex in (count || 0)"
         :key="componentIndex"
-        class="px-1 py-1 mb-4 ml-4 select-none cursor-pointer border border-gray-700 text-gray-600 bg-gray-900 hover:bg-yellow-400 hover:text-gray-800 rounded-full transition-colors duration-100"
-        :class="{
-          'bg-yellow-500': (highlights[block] || []).includes(
-            componentIndex - 1,
-          ),
-        }"
-        :to="{
-          name: routeName,
-          params: {
-            outputId,
-            componentIndex: componentIndex - 1,
-          },
-        }"
+        :output-id="outputId"
+        :route-name="routeName"
+        :index="componentIndex - 1"
+        :block="String(block)"
+        :highlight="highlights[block][componentIndex - 1]"
       >
         <span class="text-xl font-bold">{{ componentIndex - 1 }}</span>
-      </router-link>
+      </DeviceGridButton>
     </div>
   </Section>
 </template>
@@ -29,10 +21,14 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { defaultTheme, Block } from "./../../definitions";
-import { deviceStoreMapped, activityLogMapped, LogType } from "../../store";
+import { deviceStoreMapped, activityLogMapped } from "../../store";
+import DeviceGridButton from "./DeviceGridButton.vue";
 
 export default defineComponent({
   name: "DeviceGrid",
+  components: {
+    DeviceGridButton,
+  },
   props: {
     title: {
       default: "",
@@ -53,7 +49,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      LogType,
       defaultTheme,
       ...deviceStoreMapped,
       ...activityLogMapped,

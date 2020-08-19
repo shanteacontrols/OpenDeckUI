@@ -1,8 +1,10 @@
-import { ref, reactive } from "vue";
+import { reactive } from "vue";
 import { ILogEntryError } from "./log-type-error";
 import { ILogEntryRequest } from "./log-type-request";
 import { ILogEntryMidi } from "./log-type-midi";
 import { ILogEntryInfo } from "./log-type-info";
+import { Block } from "../../../definitions";
+import { readFromStorage } from "../../store-util";
 
 export enum LogType {
   Info = "info",
@@ -25,18 +27,36 @@ export type ILogEntry =
 
 // State
 
+type blockHighlights = Record<number, number>;
+
 export type IActivityLogState = {
   stack: Array<ILogEntry>;
-  prunedCount: number;
-  logTypeFilter: Array<LogType>;
+  highlights: Record<Block, blockHighlights>;
+  logFilter: Array<LogType>;
+};
+
+const defaultLogFilter = {
+  [LogType.Midi]: true,
 };
 
 export const defaultState: IActivityLogState = {
   stack: [] as Array<ILogEntry>,
-  prunedCount: 0,
-  logTypeFilter: [LogType.Midi] as Array<LogType>,
+  highlights: {
+    [Block.Global]: {},
+    [Block.Button]: {},
+    [Block.Encoder]: {},
+    [Block.Analog]: {},
+    [Block.Led]: {},
+    [Block.Display]: {},
+  },
+  logFilter: defaultLogFilter,
+  showActivityLog: false,
 };
 
-export const state = reactive<IActivityLogState>(defaultState);
+const loadStateFromStorage = (): IActivityLogState => ({
+  ...defaultState,
+  logFilter: readFromStorage("logFilter") || defaultLogFilter,
+  showActivityLog: readFromStorage("showActivityLog") || false,
+});
 
-export const stack = ref([] as Array<ILogEntry>);
+export const state = reactive<IActivityLogState>(loadStateFromStorage());
