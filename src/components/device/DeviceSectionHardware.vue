@@ -5,12 +5,9 @@
         <label class="block mb-2 text-sm font-bold text-gray-400">
           Reboot
         </label>
-        <button
-          class="my-3 py-2 px-3 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-          @click.prevent="startReboot"
-        >
+        <Button @click.prevent="startReboot">
           Reboot the device
-        </button>
+        </Button>
         <p class="text-sm leading-5 text-gray-500">
           Rebooting the device will make the UI temporarily unavailable.
         </p>
@@ -20,12 +17,9 @@
         <label class="block mb-2 text-sm font-bold text-gray-400">
           Factory reset
         </label>
-        <button
-          class="my-3 py-2 px-3 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-          @click.prevent="startFactoryReset"
-        >
+        <Button @click.prevent="startFactoryReset">
           Reset to factory settings
-        </button>
+        </Button>
         <p class="text-sm leading-5 text-gray-500">
           Reset your board to it's factory settings.
         </p>
@@ -35,12 +29,9 @@
         <label class="block mb-2 text-sm font-bold text-gray-400">
           Bootloader
         </label>
-        <button
-          class="my-3 py-2 px-3 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-          @click.prevent="startBootLoaderMode"
-        >
+        <Button @click.prevent="startBootLoaderMode">
           Start bootloader mode
-        </button>
+        </Button>
         <p class="text-sm leading-5 text-gray-500">
           Starting bootloader mode is required for manual firmware updates. The
           UI may become unresponsive in bootloader mode.
@@ -51,12 +42,9 @@
         <label class="block mb-2 text-sm font-bold text-gray-400">
           Firmware update
         </label>
-        <router-link
-          class="my-3 inline-block py-2 px-3 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-          :to="{ name: 'device-firmware-update' }"
-        >
+        <ButtonLink :to="{ name: 'device-firmware-update' }">
           Open firmware update page
-        </router-link>
+        </ButtonLink>
         <p class="text-sm leading-5 text-gray-500">
           Check if for newer firmware versions. If updates are available and
           supported you can update the firmware here.

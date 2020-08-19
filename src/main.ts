@@ -5,6 +5,8 @@ import App from "./components/App.vue";
 
 import Icon from "./components/elements/Icon.vue";
 import Heading from "./components/elements/Heading.vue";
+import Button from "./components/elements/Button.vue";
+import ButtonLink from "./components/elements/ButtonLink.vue";
 import Section from "./components/elements/Section.vue";
 import Spinner from "./components/icons/Spinner.vue";
 import FormField from "./components/form/FormField.vue";
@@ -16,6 +18,8 @@ app.component("Heading", Heading);
 app.component("Section", Section);
 app.component("FormField", FormField);
 app.component("Spinner", Spinner);
+app.component("Button", Button);
+app.component("ButtonLink", ButtonLink);
 
 app.use(router);
 app.mount("#app");

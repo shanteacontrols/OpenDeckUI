@@ -13,13 +13,9 @@
           Check for newer firmware versions. If updates are available and
           supported you can update the firmware here.
         </p>
-        <button
-          class="my-3 py-2 px-3 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-          :disabled="loading"
-          @click.prevent="checkForUpdates"
-        >
+        <Button :disabled="loading" @click.prevent="checkForUpdates">
           Check for available updates
-        </button>
+        </Button>
       </div>
     </div>
   </Section>
