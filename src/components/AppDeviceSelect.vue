@@ -35,14 +35,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { midiStore } from "../store";
+import { defineComponent, onMounted } from "vue";
+import { midiStoreMapped } from "../store";
 
 export default defineComponent({
   name: "AppDeviceSelect",
   setup() {
+    onMounted(() => {
+      midiStoreMapped.assignInputs();
+      midiStoreMapped.startMidiConnectionWatcher();
+    });
+
     return {
-      outputs: midiStore.state.outputs,
+      outputs: midiStoreMapped.outputs,
     };
   },
 });

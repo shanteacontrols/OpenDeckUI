@@ -79,7 +79,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, onUnmounted } from "vue";
+import { defineComponent, computed, onMounted, onUnmounted } from "vue";
 import { midiStoreMapped, deviceStoreMapped } from "../store";
 import router from "../router";
 import Layout from "./layout/Layout.vue";
@@ -92,8 +92,6 @@ export default defineComponent({
     DeviceNav,
   },
   setup() {
-    midiStoreMapped.loadMidi();
-    midiStoreMapped.startMidiConnectionWatcher();
     const {
       outputId,
       boardName,
@@ -105,6 +103,10 @@ export default defineComponent({
     );
 
     const { isConnected, isConnecting } = midiStoreMapped;
+
+    onMounted(() => {
+      midiStoreMapped.loadMidi();
+    });
 
     onUnmounted(() => {
       deviceStoreMapped.closeConnection();

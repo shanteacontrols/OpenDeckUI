@@ -140,6 +140,7 @@ const startRequest = async (id: number) => {
   if (definition.expectsNoResponse) {
     requestProcessor.activeRequestId.value = null;
     request.state = RequestState.Done;
+    request.promiseResolve();
   }
 };
 

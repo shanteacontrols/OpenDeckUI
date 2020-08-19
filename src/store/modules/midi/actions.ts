@@ -1,7 +1,7 @@
 import WebMidi, { Input, Output } from "webmidi";
 import { state, MidiConnectionState, ControlDisableType } from "./state";
 import { isConnected, isConnecting } from "./computed";
-import { logger } from "../../../util";
+import { logger, delay } from "../../../util";
 import router from "../../../router";
 import { openDeckManufacturerId, IBlockDefinition } from "../../../definitions";
 
@@ -44,7 +44,7 @@ const connectionWatcher = async (): Promise<void> => {
     logger.error("MIDI Connection watcher error", err);
   }
 
-  connectionWatcherTimer = setTimeout(connectionWatcher, 1000);
+  connectionWatcherTimer = setTimeout(connectionWatcher, 250);
 };
 
 const startMidiConnectionWatcher = (): Promise<void> => connectionWatcher();
@@ -56,7 +56,7 @@ const stopMidiConnectionWatcher = (): Promise<void> => {
   }
 };
 
-const assignInputs = () => {
+export const assignInputs = async (): Promise<void> => {
   state.inputs = WebMidi.inputs.filter((input: Input) =>
     input.name.startsWith("OpenDeck"),
   );
@@ -71,26 +71,8 @@ export const findOutputById = (outputId: string): Output => {
   return WebMidi.outputs.find((output: Output) => output.id === outputId);
 };
 
-export const matchInputOutput = async (
-  outputId: string,
-): Promise<{ input: Input; output: Output }> => {
-  await loadMidi();
-
-  const output = WebMidi.outputs.find(
-    (output: Output) => output.id === outputId,
-  );
-  if (!output) {
-    throw new Error(`CANNOT FIND INPUT ${outputId}`);
-  }
-
-  const inputs = WebMidi.inputs.filter(
-    (input: Input) => input.name === output.name,
-  );
-  if (!inputs.length) {
-    throw new Error(`CANNOT FIND INPUT FOR OUTPUT FOR ${outputId}`);
-  }
-
-  return new Promise((resolve) => {
+const pingOutput = async (output: Output, inputs: Inputs[]) => {
+  return new Promise((resolve, reject) => {
     let input;
 
     const handleInitialHandShake = (event: InputEventBase<"sysex">): void => {
@@ -110,7 +92,31 @@ export const matchInputOutput = async (
 
     // Send HandShake to find which input will reply
     output.sendSysex(openDeckManufacturerId, [0, 0, 1]);
+
+    return delay(250).then(() => reject("TIMED OUT"));
+  }).catch(() => pingOutput(output, inputs));
+};
+
+export const matchInputOutput = async (
+  outputId: string,
+): Promise<{ input: Input; output: Output }> => {
+  await loadMidi();
+
+  const output = WebMidi.outputs.find((output: Output) => {
+    return output.id === outputId;
   });
+  if (!output) {
+    return delay(250).then(() => matchInputOutput(outputId));
+  }
+
+  const inputs = WebMidi.inputs.filter(
+    (input: Input) => input.name === output.name,
+  );
+  if (!inputs.length) {
+    return delay(250).then(() => matchInputOutput(outputId));
+  }
+
+  return pingOutput(output, inputs);
 };
 
 export const loadMidi = async (): Promise<void> => {
@@ -172,6 +178,7 @@ const disableControl = (
 
 export interface IMidiActions {
   loadMidi: () => Promise<void>;
+  assignInputs: () => Promise<void>;
   matchInputOutput: (
     outputId: string,
   ) => Promise<{ input: Input; output: Output }>;
@@ -187,6 +194,7 @@ export interface IMidiActions {
 export const midiStoreActions: IMidiActions = {
   loadMidi,
   matchInputOutput,
+  assignInputs,
   findOutputById,
   disableControl,
   isControlDisabled,

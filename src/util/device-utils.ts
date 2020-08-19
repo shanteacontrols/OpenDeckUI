@@ -77,3 +77,11 @@ export const formatDate = (date?: Date): string => {
 
   return `${padZeros(h)}:${m}:${s}`;
 };
+
+// Use a simple delay that respects a promise chain
+
+export const delay = (ms: number): Promise<any> => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+};

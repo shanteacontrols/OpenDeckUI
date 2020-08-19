@@ -24,7 +24,7 @@ import {
 } from "./midi-event-handlers";
 import { Input, Output } from "webmidi";
 import { midiStore } from "../midi";
-import { logger, arrayEqual } from "../../../util";
+import { logger, arrayEqual, delay } from "../../../util";
 import { Request } from "../../../definitions";
 import router from "../../../router";
 
@@ -72,17 +72,17 @@ const stopDeviceConnectionWatcher = (): Promise<void> => {
 export const connectDeviceStoreToInput = async (
   outputId: string,
 ): Promise<any> => {
-  await midiStore.actions.loadMidi();
-  const { input, output } = await midiStore.actions.matchInputOutput(outputId);
+  const matched = await midiStore.actions.matchInputOutput(outputId);
+  const { input, output } = matched;
 
   state.outputId = outputId;
   state.input = input as Input;
   state.output = output as Output;
 
-  state.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
-  detachMidiEventHandlers(state.input);
-
+  // make sure we don't duplicate listeners
+  state.input.removeListener("sysex", "all");
   state.input.addListener("sysex", "all", handleSysExEvent);
+  detachMidiEventHandlers(state.input);
   attachMidiEventHandlers(state.input);
 
   // Handshake is required before any communication
@@ -144,8 +144,6 @@ export const closeConnection = async (): Promise<any> => {
       handler: () => (state.connectionState = DeviceConnectionState.Closed),
     });
   }
-
-  state.connectionState = DeviceConnectionState.Closed;
   Object.assign(state, defaultState);
 };
 
@@ -258,15 +256,15 @@ export const startUpdatesCheck = async (): Promise<Array<IOpenDeckRelease>> => {
 
 export const startFactoryReset = async (): Promise<any> => {
   const handler = () => logger.log("Bootloader mode started");
-  await sendConnectionAffectingMessage(Request.FactoryReset, handler);
+  await sendMessageAndRebootUi(Request.FactoryReset, handler);
 };
 
 export const startReboot = async (): Promise<any> => {
   const handler = () => logger.log("Reboot mode started");
-  await sendConnectionAffectingMessage(Request.Reboot, handler);
+  await sendMessageAndRebootUi(Request.Reboot, handler);
 };
 
-const sendConnectionAffectingMessage = async (
+const sendMessageAndRebootUi = async (
   command: Request,
   handler: () => void,
 ): Promise<any> => {
@@ -277,12 +275,14 @@ const sendConnectionAffectingMessage = async (
     handler: () => ({}),
   });
 
-  await sendMessage({
+  sendMessage({
     command,
     handler,
   });
 
-  // Note: connection watcher will handle reconnecting after restart/factory reset
+  closeConnection();
+
+  return delay(200).then(() => router.push({ name: "home" }));
 };
 
 const getBoardDefinition = (value: number[]): IBoardDefinition => {
