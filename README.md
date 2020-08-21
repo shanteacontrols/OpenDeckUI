@@ -1,15 +1,14 @@
-# opendeck-ui
+# OpenDeck Web UI
 
-This project uses Vue, Vite, Tailwind and Typescript
+This is the web configurator tool for OpenDeck boards. It is used to configure all the available parameters on board.
 
-To get started just install using
+This project uses Vue, Vite, Tailwind and Typescript.
 
-```bash
-yarn
+## Development
+
+To get started use the following commands:
+
 ```
-
-then to run
-
-```bash
+yarn
 yarn dev
 ```
