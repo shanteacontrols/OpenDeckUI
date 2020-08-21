@@ -1,0 +1,17 @@
+name: Ping
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  webui-push:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Dispatch push info to OpenDeck repository
+        run: |
+          curl -X POST https://api.github.com/repos/paradajz/OpenDeck/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.DISPATCH_TOKEN }} \
+          --data '{"event_type": "WebUI push", "client_payload": { "repository": "'"$GITHUB_REPOSITORY"'" }}'
