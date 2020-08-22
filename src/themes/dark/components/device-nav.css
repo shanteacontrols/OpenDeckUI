@@ -1,0 +1,82 @@
+.device-nav {
+  @apply grid grid-flow-row grid-cols-3 gap-y-0 pb-6 pt-2 capitalize;
+}
+
+.device-nav .item {
+  @apply relative block px-4 pt-4 ml-2 border-transparent;
+  @apply font-bold cursor-pointer text-gray-500;
+}
+
+/* icon */
+
+.device-nav .item > .icon-wrapper {
+  @apply relative inline-block mx-2 rounded-full;
+  @apply border-gray-800 border-2;
+}
+.device-nav .item > .icon-wrapper svg {
+  @apply relative inline-block w-8 h-8 rounded-full;
+  @apply border-black border-2;
+}
+.device-nav .icon-wrapper > .icon-label {
+  @apply absolute left-0 top-0 -ml-5;
+  @apply text-xs bg-gray-900 font-medium;
+}
+
+/* adjust icons */
+
+.device-nav .device-displays > .icon-wrapper svg {
+}
+
+/* active */
+
+.device-nav .active {
+  @apply text-gray-800;
+}
+.device-nav .active .label {
+  @apply text-yellow-500;
+}
+.device-nav .active > .icon-wrapper .icon-label {
+  @apply text-yellow-500;
+}
+.device-nav .active > .icon-wrapper {
+  @apply bg-yellow-400;
+}
+.device-nav .active > .icon-wrapper svg {
+  @apply border-black text-black;
+}
+.device-nav .item.active:hover > .icon-wrapper svg {
+  @apply border-yellow-400 text-black;
+}
+
+/* reactive */
+
+.device-nav .item:hover > .icon-wrapper svg {
+  @apply border-yellow-400 text-yellow-400;
+}
+
+/* highlighted nav items */
+
+.device-nav .item.btn-highlight .label,
+.device-nav .item.btn-highlight .icon-label,
+.device-nav .item.btn-highlight > .icon-wrapper svg,
+.device-nav .item.btn-highlight:hover > .icon-wrapper svg {
+  @apply text-green-400;
+}
+
+/* responsive */
+
+@screen md {
+  .device-nav {
+    @apply grid-cols-none pb-0 flex items-stretch mx-auto text-center justify-center;
+  }
+  .device-nav .label {
+    @apply block w-full pt-2;
+  }
+}
+@screen lg {
+  .device-nav {
+    @apply text-center;
+  }
+}
+@screen xl {
+}

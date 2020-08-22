@@ -1,0 +1,75 @@
+.app,
+body {
+  @apply w-full h-full surface-neutral;
+}
+
+/* header */
+
+.app-header {
+  @apply w-full flex flex-wrap surface-neutral border-b;
+}
+.app-brand {
+  @apply w-full block padder font-bold;
+}
+.app-board-info {
+  @apply w-full block padder;
+}
+.app-board-info * {
+  @apply mr-1;
+}
+.app-board-info strong {
+  @apply text-gray-400;
+}
+
+/* main */
+
+.app-main {
+  @apply w-full;
+}
+
+/* footer */
+
+.app-footer {
+  @apply w-full pb-8 self-end surface-neutral;
+}
+.app-footer-wrap {
+  @apply max-w-6xl mx-auto flex;
+}
+.app-footer .heading {
+  @apply font-bold pb-4;
+}
+.app-about {
+  @apply w-full padder;
+}
+.app-resources {
+  @apply w-full padder text-right;
+}
+.app-resources .list {
+  @apply text-xs;
+}
+
+/* responsive */
+
+@screen md {
+  .app-header,
+  .app-footer {
+    @apply flex;
+  }
+
+  .app-brand {
+    @apply w-1/3;
+  }
+  .app-board-info {
+    @apply w-2/3 text-right;
+  }
+  .app-board-info * {
+    @apply mr-0 ml-1;
+  }
+
+  .app-about {
+    @apply w-1/2;
+  }
+  .app-resources {
+    @apply w-1/2;
+  }
+}

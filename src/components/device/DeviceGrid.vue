@@ -1,10 +1,8 @@
 <template>
   <Section :title="title">
-    <div
-      class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 -ml-4 text-center"
-    >
+    <div class="device-grid">
       <DeviceGridButton
-        v-for="componentIndex in (count || 0)"
+        v-for="componentIndex in (numberOfComponents[block] || 0)"
         :key="componentIndex"
         :output-id="outputId"
         :route-name="routeName"
@@ -20,7 +18,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { defaultTheme, Block } from "./../../definitions";
+import { Block } from "./../../definitions";
 import { deviceStoreMapped, activityLogMapped } from "../../store";
 import DeviceGridButton from "./DeviceGridButton.vue";
 
@@ -34,10 +32,6 @@ export default defineComponent({
       default: "",
       type: String,
     },
-    count: {
-      default: 0,
-      type: Number,
-    },
     block: {
       required: true,
       type: Number as () => Block,
@@ -48,10 +42,13 @@ export default defineComponent({
     },
   },
   setup() {
+    const { numberOfComponents, outputId } = deviceStoreMapped;
+    const { highlights } = activityLogMapped;
+
     return {
-      defaultTheme,
-      ...deviceStoreMapped,
-      ...activityLogMapped,
+      outputId,
+      numberOfComponents,
+      highlights,
     };
   },
 });

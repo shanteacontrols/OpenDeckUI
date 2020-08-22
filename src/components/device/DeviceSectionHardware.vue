@@ -1,53 +1,41 @@
 <template>
-  <Section title="Hardware settings" class="w-full">
-    <div class="w-full pb-8 grid gap-6 md:grid-cols-2 xl:gap-10">
+  <Section title="Hardware settings">
+    <div class="form-grid">
       <div class="form-field">
-        <label class="block mb-2 text-sm font-bold text-gray-400">
-          Reboot
-        </label>
         <Button @click.prevent="startReboot">
-          Reboot the device
+          Reboot
         </Button>
-        <p class="text-sm leading-5 text-gray-500">
+        <p class="help-text">
           Rebooting the device will make the UI temporarily unavailable.
         </p>
       </div>
 
       <div class="form-field">
-        <label class="block mb-2 text-sm font-bold text-gray-400">
-          Factory reset
-        </label>
         <Button @click.prevent="startFactoryReset">
           Reset to factory settings
         </Button>
-        <p class="text-sm leading-5 text-gray-500">
+        <p class="help-text">
           Reset your board to it's factory settings.
         </p>
       </div>
 
       <div v-if="bootLoaderSupport" class="form-field">
-        <label class="block mb-2 text-sm font-bold text-gray-400">
-          Bootloader
-        </label>
-        <Button @click.prevent="startBootLoaderMode">
-          Start bootloader mode
-        </Button>
-        <p class="text-sm leading-5 text-gray-500">
-          Starting bootloader mode is required for manual firmware updates. The
-          UI may become unresponsive in bootloader mode.
+        <ButtonLink :to="{ name: 'device-firmware-update' }">
+          Firmware update
+        </ButtonLink>
+        <p class="help-text">
+          Check if for newer firmware versions. If updates are available and
+          supported you can update the firmware here.
         </p>
       </div>
 
       <div v-if="bootLoaderSupport" class="form-field">
-        <label class="block mb-2 text-sm font-bold text-gray-400">
-          Firmware update
-        </label>
-        <ButtonLink :to="{ name: 'device-firmware-update' }">
-          Open firmware update page
-        </ButtonLink>
-        <p class="text-sm leading-5 text-gray-500">
-          Check if for newer firmware versions. If updates are available and
-          supported you can update the firmware here.
+        <Button @click.prevent="startBootLoaderMode">
+          Bootloader mode
+        </Button>
+        <p class="help-text">
+          Starting bootloader mode is required for manual firmware updates. The
+          UI may become unresponsive in bootloader mode.
         </p>
       </div>
     </div>

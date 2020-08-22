@@ -1,0 +1,14 @@
+.form-grid {
+  @apply pb-8 grid grid-cols-1 gap-x-6 gap-y-4;
+}
+
+@screen md {
+  .form-grid {
+    @apply grid-cols-2;
+  }
+}
+@screen lg {
+  .form-grid {
+    @apply grid-cols-3 gap-16 gap-y-4;
+  }
+}

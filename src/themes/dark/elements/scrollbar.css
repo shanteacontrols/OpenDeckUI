@@ -1,0 +1,26 @@
+/* Force scrollbar to always be visible
+   to prevent content jumping on navigation */
+body {
+  overflow-y: scroll;
+}
+
+/* The emerging W3C standard
+   that is currently Firefox-only */
+* {
+  scrollbar-color: gray black;
+}
+
+/* Works on Chrome/Edge/Safari */
+*::-webkit-scrollbar {
+  width: 14px;
+}
+
+*::-webkit-scrollbar-track {
+  @apply bg-black;
+  @apply pl-2;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply bg-gray-800;
+  @apply rounded;
+}

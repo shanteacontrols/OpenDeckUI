@@ -1,0 +1,58 @@
+/* heading */
+
+.activity-log .section-heading {
+  @apply pb-2;
+}
+
+/* main */
+
+.activity-log-main {
+  @apply overflow-y-scroll text-sm;
+  max-height: 500px;
+}
+
+/* table */
+
+.activity-table {
+  @apply mt-2 mb-4 border-gray-800 border-b;
+}
+.activity-table .table-head {
+  @apply font-bold;
+}
+.activity-table .table-body {
+}
+.activity-table .table-head th {
+  @apply px-4 py-2;
+}
+.activity-table .table-row td {
+  @apply px-4 py-2 border-gray-900 border-b;
+}
+.activity-table .table-row:last-child td {
+  @apply border-none;
+}
+
+/* table elements */
+
+.activity-command {
+  @apply mr-1;
+}
+.activity-config {
+  @apply mr-1;
+}
+.activity-status {
+  @apply ml-4 text-xs;
+}
+.activity-status.done .status {
+  @apply text-green-400;
+}
+.activity-status > .timing {
+  @apply ml-2;
+}
+.activity-status > .timing > strong {
+}
+.status-label {
+  @apply mr-2 inline-block;
+}
+.sysex-label {
+  @apply mr-4 inline-block w-16;
+}

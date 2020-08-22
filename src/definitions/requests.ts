@@ -1,6 +1,7 @@
 import { MessageStatus, Wish, Amount } from ".";
 import { IRequestConfig, IDeviceState } from "../store/modules/device/state";
 import { IQueuedRequest } from "../store/modules/device/device-promise-qeueue";
+import { Block } from "./constants";
 import {
   arrayEqual,
   convertValueToDoubleByte,
@@ -127,11 +128,10 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     specialRequestId: 77, // Hex: 4D
     decode: convertDataValuesToSingleByte,
     parser: (response: number[]): IDeviceComponentCounts => ({
-      buttons: response[0],
-      encoders: response[1],
-      analogInputs: response[2],
-      LEDs: response[3],
-      touchscreens: response[4],
+      [Block.Button]: response[0],
+      [Block.Encoder]: response[1],
+      [Block.Analog]: response[2],
+      [Block.Led]: response[3],
     }),
   },
   [Request.GetNumberOfSupportedPresets]: {

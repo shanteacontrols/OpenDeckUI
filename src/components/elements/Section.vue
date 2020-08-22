@@ -1,12 +1,14 @@
 <template>
-  <div class="section w-full" :class="`${section}`">
+  <div class="section">
     <slot name="title">
-      <Heading v-if="title" preset="section-title">
-        {{ title }}
-      </Heading>
+      <h3 v-if="title" class="section-heading">
+        <div class="section-heading-inner">
+          {{ title }}
+        </div>
+      </h3>
     </slot>
 
-    <div class="section-content" :class="`${sectionContent}`">
+    <div v-if="showContent" class="section-content">
       <slot name="default"></slot>
     </div>
   </div>
@@ -14,7 +16,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
   name: "Section",
@@ -23,11 +24,10 @@ export default defineComponent({
       type: String,
       default: null,
     },
-  },
-  setup() {
-    return {
-      ...defaultTheme,
-    };
+    showContent: {
+      type: Boolean,
+      default: true,
+    },
   },
 });
 </script>

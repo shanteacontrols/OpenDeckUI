@@ -1,0 +1,69 @@
+.toggle {
+  @apply w-auto align-text-top inline-block;
+  @apply transition ease-in duration-200 select-none cursor-pointer;
+}
+
+.toggle label {
+  @apply inline-block relative leading-none;
+}
+
+.toggle-label {
+  @apply inline-block leading-none;
+}
+
+.toggle .toggle-track {
+  @apply inline-block h-6 w-10 overflow-hidden border rounded-full;
+  @apply bg-black border-gray-700 text-gray-700;
+}
+
+.toggle input.toggle-checkbox {
+  @apply absolute z-0 block w-6 h-6 appearance-none outline-none;
+  @apply border-2 cursor-pointer rounded-full;
+  @apply bg-gray-800 border-gray-700 text-gray-700;
+}
+
+/* Sm */
+
+.toggle-sm {
+  @apply text-sm;
+}
+.toggle-sm .toggle-track {
+  @apply h-5 w-8;
+}
+.toggle-sm input.toggle-checkbox {
+  @apply h-5 w-5;
+}
+
+/* Labeled */
+
+.toggle.labeled {
+  @apply flex items-center;
+}
+.toggle.labeled label {
+  @apply flex-1;
+}
+.toggle.labeled .toggle-label {
+  @apply flex-1 px-2 items-center leading-none cursor-pointer;
+}
+
+/* Active */
+
+.toggle.active .toggle-track {
+  @apply text-gray-500;
+}
+.toggle.active input.toggle-checkbox {
+  @apply bg-green-400 border-green-600 right-0;
+}
+
+/* Hover, Focus */
+
+.toggle:hover .toggle-checkbox {
+  @apply border-yellow-400;
+}
+.toggle.active:hover .toggle-checkbox {
+  @apply bg-green-300 border-yellow-400;
+}
+
+.toggle .toggle-checkbox:focus {
+  @apply shadow-outline border-blue-300;
+}

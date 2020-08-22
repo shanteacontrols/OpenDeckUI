@@ -6,25 +6,26 @@
     :default-data="defaultGlobalData"
   >
     <template #default="{ form, showField, onSettingChange }">
-      <Section title="Presets" class="w-full">
-        <div class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2">
-          <FormField
-            v-if="showField(GlobalDefinitions.PreservePresetState)"
-            :value="form.preservePresetState"
-            :field-definition="GlobalDefinitions.PreservePresetState"
-            @modified="onSettingChange"
-          />
+      <Section title="Presets">
+        <div class="form-grid">
           <FormField
             v-if="showField(GlobalDefinitions.ActivePreset)"
             :value="form.activePreset"
             :field-definition="GlobalDefinitions.ActivePreset"
             @modified="onSettingChange"
           />
+          <FormField
+            v-if="showField(GlobalDefinitions.PreservePresetState)"
+            class="col-span-2"
+            :value="form.preservePresetState"
+            :field-definition="GlobalDefinitions.PreservePresetState"
+            @modified="onSettingChange"
+          />
         </div>
       </Section>
 
-      <Section title="MIDI" class="w-full border-t-2 border-gray-900">
-        <div class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2">
+      <Section title="MIDI">
+        <div class="form-grid">
           <FormField
             v-if="showField(GlobalDefinitions.StandardNoteOff)"
             :value="form.standardNoteOff"
@@ -58,7 +59,7 @@
         </div>
       </Section>
 
-      <DeviceSectionHardware class="w-full border-t-2 border-gray-900" />
+      <DeviceSectionHardware class="w-full" />
     </template>
   </DeviceSettings>
 </template>
@@ -66,7 +67,6 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { Block, defaultGlobalData, GlobalDefinitions } from "../../definitions";
-import { defaultTheme } from "./../../definitions";
 import DeviceSettings from "./DeviceSettings.vue";
 import DeviceSectionHardware from "./DeviceSectionHardware.vue";
 
@@ -78,7 +78,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      ...defaultTheme,
       Block,
       defaultGlobalData,
       GlobalDefinitions,

@@ -7,10 +7,8 @@
       :default-data="defaultLedSettingsData"
     >
       <template #default="{ form, showField, onSettingChange }">
-        <Section title="Global" class="border-b border-gray-900">
-          <div
-            class="w-full grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:gap-10"
-          >
+        <Section title="Global">
+          <div class="form-grid">
             <FormField
               v-if="showField(LedSectionDefinitions.BlinkWithMidiClock)"
               :value="form.blinkWithMidiClock"
@@ -38,7 +36,6 @@
       class="w-full"
       route-name="device-leds-form"
       :block="Block.Led"
-      :count="count"
     />
   </div>
 </template>
@@ -51,7 +48,6 @@ import {
   defaultLedSettingsData,
   LedSectionDefinitions,
 } from "../../definitions";
-import { deviceStoreMapped } from "../../store";
 import DeviceSettings from "./DeviceSettings.vue";
 import DeviceGrid from "./DeviceGrid.vue";
 
@@ -63,7 +59,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      count: deviceStoreMapped.LEDs,
       Block,
       defaultLedComponentData,
       defaultLedSettingsData,

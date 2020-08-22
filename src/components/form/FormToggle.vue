@@ -1,29 +1,23 @@
 <template>
-  <div>
-    <label
-      class="relative inline-block w-auto align-middle select-none transition duration-200 ease-in"
-    >
+  <span
+    class="toggle"
+    :class="{
+      active: isChecked,
+    }"
+  >
+    <label>
       <input
         type="checkbox"
         :checked="isChecked"
-        class="toggle-checkbox absolute block w-6 h-6 rounded-full border-4 appearance-none cursor-pointer"
-        :class="{
-          'right-0 border-yellow-500 bg-yellow-500': isChecked,
-          'border-gray-700 hover:border-yellow-500 bg-gray-800': !isChecked,
-        }"
+        class="toggle-checkbox"
         @change="toggle"
       />
-      <span
-        class="toggle-label block border-2 border-gray-700 overflow-hidden h-6 px-3 text-xs font-bold leading-5 rounded-full cursor-pointer"
-        :class="{
-          'bg-gray-800 text-yellow-500 hover:text-gray-500 pr-8': isChecked,
-          'bg-gray-800 text-gray-500 hover:text-yellow-500 pl-8': !isChecked,
-        }"
-      >
-        <slot></slot>
-      </span>
+      <span class="toggle-track"></span>
     </label>
-  </div>
+    <span class="toggle-label" @click="toggle">
+      <slot></slot>
+    </span>
+  </span>
 </template>
 
 <script lang="ts">

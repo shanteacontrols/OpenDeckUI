@@ -1,8 +1,5 @@
 <template>
   <ButtonLink
-    :class="{
-      'btn-yellow': isHighlighted,
-    }"
     :to="{
       name: routeName,
       params: {
@@ -10,15 +7,18 @@
         componentIndex: index,
       },
     }"
+    :class="{
+      'btn-highlight': isHighlighted,
+    }"
   >
     <slot name="default"></slot>
   </ButtonLink>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, ref, toRefs } from "vue";
-import { Theme, Block } from "./../../definitions";
-import { delay } from "./../../util";
+import { defineComponent, toRefs } from "vue";
+import { Block } from "./../../definitions";
+import { useHighlightAnimation } from "./../../composables/use-highlight-animation";
 
 export default defineComponent({
   name: "DeviceGrid",
@@ -45,24 +45,10 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const refreshDelay = 10;
-    const retainHighlightMs = 250;
     const { highlight } = toRefs(props);
-    const now = ref(null);
-    const update = () => (now.value = new Date().getTime());
-
-    const isHighlighted = computed(() => {
-      const val =
-        highlight.value && now.value - highlight.value < retainHighlightMs;
-      if (val) {
-        delay(refreshDelay).then(update);
-      }
-      return val;
-    });
 
     return {
-      isHighlighted,
-      Theme,
+      ...useHighlightAnimation(highlight),
     };
   },
 });

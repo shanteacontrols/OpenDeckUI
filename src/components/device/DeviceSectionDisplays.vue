@@ -7,7 +7,7 @@
   >
     <template #default="{ form, showField, onSettingChange }">
       <Section title="Display Features" class="w-full">
-        <div class="w-full pb-8 grid gap-6 grid-col-1 md:grid-cols-2">
+        <div class="form-grid">
           <FormField
             v-if="showField(DisplayDefinitions.EnableDisplay)"
             :value="form.enableDisplay"
@@ -76,7 +76,6 @@ import {
   DisplayDefinitions,
 } from "../../definitions";
 import DeviceSettings from "./DeviceSettings.vue";
-import { defaultTheme } from "./../../definitions";
 
 export default defineComponent({
   name: "DeviceSectionDisplay",
@@ -85,7 +84,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      ...defaultTheme,
       Block,
       defaultDisplayData,
       DisplayDefinitions,

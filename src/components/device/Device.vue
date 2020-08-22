@@ -1,27 +1,16 @@
 <template>
-  <div
-    v-if="isConnecting"
-    class="lg:text-center relative"
-    style="min-height: 50vh;"
-  >
-    <div class="absolute flex inset-0 opacity-75 bg-gray-900">
-      <Spinner class="self-center" />
-    </div>
-  </div>
+  <Hero v-if="isConnecting" custom="h-64 relative">
+    <SpinnerOverlay />
+  </Hero>
 
-  <div v-else-if="isConnected">
+  <template v-else-if="isConnected">
+    <DeviceNav />
     <router-view></router-view>
-  </div>
+  </template>
 
-  <div v-else class="lg:text-center">
-    <p>No WebMidi device found</p>
-    <br />
-    <button @click="connectDevice">
-      Connect
-    </button>
-  </div>
+  <Hero v-else custom="h-64" title="No WebMidi device found." />
 
-  <DeviceActivity />
+  <Activity />
 </template>
 
 <script lang="ts">
@@ -29,17 +18,27 @@ import { defineComponent, onMounted, onUnmounted } from "vue";
 import router from "../../router";
 import { logger } from "../../util";
 import { deviceStoreMapped } from "../../store";
-import DeviceActivity from "./activity/DeviceActivity.vue";
+
+import Activity from "./activity/Activity.vue";
+import DeviceNav from "./DeviceNav.vue";
 
 export default defineComponent({
   name: "Device",
   components: {
-    DeviceActivity,
+    Activity,
+    DeviceNav,
   },
   setup() {
+    const {
+      connectDevice,
+      closeConnection,
+      isConnected,
+      isConnecting,
+    } = deviceStoreMapped;
+
     onMounted(async () => {
       try {
-        await deviceStoreMapped.connectDevice(
+        await connectDevice(
           router.currentRoute.value.params.outputId as string,
         );
       } catch (err) {
@@ -47,12 +46,11 @@ export default defineComponent({
       }
     });
 
-    onUnmounted(() => {
-      deviceStoreMapped.closeConnection();
-    });
+    onUnmounted(closeConnection);
 
     return {
-      ...deviceStoreMapped,
+      isConnected,
+      isConnecting,
     };
   },
 });

@@ -42,10 +42,7 @@ export type IDeviceState = {
   bootLoaderSupport: boolean;
   activePreset: number;
   supportedPresetsCount: number;
-  buttons: number;
-  encoders: number;
-  analogInputs: number;
-  LEDs: number;
+  numberOfComponents: Array<number>;
 };
 
 // State
@@ -64,11 +61,7 @@ export const defaultState: IDeviceState = {
   bootLoaderSupport: false,
   activePreset: (null as unknown) as number,
   supportedPresetsCount: (null as unknown) as number,
-  buttons: 0,
-  encoders: 0,
-  analogInputs: 0,
-  LEDs: 0,
-  touchscreens: 0,
+  numberOfComponents: [] as Array<number>,
 };
 
 export const state = reactive(defaultState);

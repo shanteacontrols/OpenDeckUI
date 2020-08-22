@@ -1,96 +1,94 @@
 <template>
-  <Layout :hide-sidebar="isHomePage">
-    <template #primary-header>
-      <router-link :to="{ name: 'home' }" class="font-bold">
+  <div class="app">
+    <nav class="app-header">
+      <router-link :to="{ name: 'home' }" class="app-brand">
         OpenDeck UI
       </router-link>
-    </template>
 
-    <template v-if="!isHomePage && boardName" #secondary-header>
-      <strong class="font-bold text-gray-400">
-        Board: {{ boardName }}
-        <small v-if="firmwareVersion">- Firmware {{ firmwareVersion }} </small>
-        <small v-if="activePreset !== null" class="ml-2"
-          >(preset {{ activePreset + 1 }})</small
-        >
-      </strong>
-    </template>
+      <span v-if="!isHomePage && boardName" class="app-board-info">
+        <small>Board</small>
+        <strong>{{ boardName }}</strong>
 
-    <template #sidebar>
-      <DeviceNav v-if="!isHomePage" />
-    </template>
+        <template v-if="firmwareVersion !== null">
+          <small>Firmware</small>
+          <strong>{{ firmwareVersion }}</strong>
+        </template>
 
-    <div class="w-full">
-      <Section
-        v-if="isConnecting"
-        class="h-screen"
-        title="Establishing connection"
-      >
-        <div
-          class="lg:text-center max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8"
+        <template v-if="activePreset !== null">
+          <small>Preset</small>
+          <strong>{{ activePreset + 1 }}</strong>
+        </template>
+      </span>
+    </nav>
+
+    <div class="app-main">
+      <div class="content">
+        <Section
+          v-if="isConnecting"
+          class="h-screen"
+          title="Establishing connection"
         >
-          <p>WebMidi connecting</p>
-        </div>
-        <div class="absolute flex inset-0 opacity-75 bg-gray-900">
-          <Spinner class="self-center" />
-        </div>
-      </Section>
-      <Section
-        v-else-if="!isConnected"
-        class="h-screen"
-        title="Problem connecting"
-      >
-        <div
-          class="lg:text-center max-w-screen-xl mx-auto px-4 pt-24 sm:px-6 lg:px-8"
+          <div
+            class="lg:text-center max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8"
+          >
+            <p>WebMidi connecting</p>
+          </div>
+          <div class="absolute flex inset-0 opacity-75 bg-gray-900">
+            <Spinner class="self-center" />
+          </div>
+        </Section>
+
+        <Section
+          v-else-if="!isConnected"
+          class="h-screen"
+          title="Problem connecting"
         >
-          <p>WebMidi failed to conect</p>
-        </div>
-      </Section>
-      <router-view v-else />
+          <div
+            class="lg:text-center max-w-screen-xl mx-auto px-4 pt-24 sm:px-6 lg:px-8"
+          >
+            <p>WebMidi failed to conect</p>
+          </div>
+        </Section>
+
+        <router-view v-else />
+      </div>
     </div>
 
-    <template #secondary-footer>
-      <h3 class="font-bold text-gray-500">About</h3>
-      <p class="py-4 text-gray-600 text-xs max-w-md">
-        OpenDeck is a platform suited both for prototyping and developing custom
-        MIDI controllers. Platform uses class-compliant USB MIDI which makes it
-        compatible with any MIDI software on any OS.
-      </p>
-    </template>
-
-    <template #primary-footer>
-      <h3 class="font-bold text-gray-500">Resources</h3>
-      <ul class="list-reset items-center text-xs pt-3">
-        <li>
-          <a
-            class="inline-block py-1"
-            href="https://github.com/paradajz/OpenDeck"
-            >OpenDeck GitHub repository</a
-          >
-        </li>
-        <li>
-          <a class="inline-block py-1" href="https://shanteacontrols.com/"
-            >Shantea Controls</a
-          >
-        </li>
-      </ul>
-    </template>
-  </Layout>
+    <div class="app-footer">
+      <div class="app-footer-wrap">
+        <nav class="app-about">
+          <h3 class="heading">About</h3>
+          <p class="text-sm">
+            OpenDeck is a platform suited both for prototyping and developing
+            custom MIDI controllers. Platform uses class-compliant USB MIDI
+            which makes it compatible with any MIDI software on any OS.
+          </p>
+        </nav>
+        <nav class="app-resources">
+          <h3 class="heading">Resources</h3>
+          <ul class="list">
+            <li>
+              <a href="https://github.com/paradajz/OpenDeck"
+                >OpenDeck GitHub repository</a
+              >
+            </li>
+            <li>
+              <a href="https://shanteacontrols.com/">Shantea Controls</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, onMounted, onUnmounted } from "vue";
 import { midiStoreMapped, deviceStoreMapped } from "../store";
 import router from "../router";
-import Layout from "./layout/Layout.vue";
-import DeviceNav from "./device/DeviceNav.vue";
 
 export default defineComponent({
   name: "App",
-  components: {
-    Layout,
-    DeviceNav,
-  },
   setup() {
     const {
       outputId,

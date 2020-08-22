@@ -1,0 +1,40 @@
+.device-grid {
+  @apply pb-10 grid grid-cols-4 gap-8 text-center;
+}
+
+/* buttons */
+
+.device-grid .btn {
+  @apply bg-gray-600 text-gray-900 border-black rounded-md;
+}
+
+.device-grid .btn:hover,
+.device-grid .btn:focus {
+  @apply bg-yellow-400 text-gray-800 shadow-outline outline-none;
+}
+
+/* highlighted buttons */
+
+.device-grid .btn-highlight,
+.device-grid .btn-highlight:hover,
+.device-grid .btn-highlight:focus {
+  @apply bg-green-400 border-green-600 shadow-outline;
+}
+
+/* responsive */
+
+@screen md {
+  .device-grid {
+    @apply grid-cols-5;
+  }
+}
+@screen lg {
+  .device-grid {
+    @apply grid-cols-8;
+  }
+}
+@screen xl {
+  .device-grid {
+    @apply grid-cols-10;
+  }
+}

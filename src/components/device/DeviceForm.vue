@@ -1,54 +1,37 @@
 <template>
-  <form class="relative" novalidate @submit.prevent="">
-    <Heading preset="section-title" class="flex w-full">
-      <router-link class="mr-6" :to="{ name: routeName }">
-        <h2>{{ componentName }}s</h2>
-      </router-link>
-      <span class="mr-6">&rsaquo;</span>
-      <h3 class="mr-6 text-gray-400">
-        {{ componentName }}
-        <strong>
-          {{ componentIndex }}
-        </strong>
-      </h3>
-      <div class="hidden md:block md:flex-grow text-right">
-        <router-link
-          v-if="componentIndex > 0"
-          class="ml-6"
-          :class="{
-            'cursor-pointer': componentIndex > 0,
-            'text-yellow-700': componentIndex === 0,
-          }"
-          :to="{ params: { outputId, componentIndex: componentIndex - 1 } }"
-        >
-          <Chevron type="left" class="inline fill-current h-6 w-6" />
-          <small>previous</small>
+  <form class="relative section" novalidate @submit.prevent="">
+    <h1 class="w-full section-heading">
+      <div class="section-heading-inner flex">
+        <router-link class="mr-6" :to="{ name: routeName }">
+          <h2>{{ componentName }}s</h2>
         </router-link>
-
-        <router-link
-          v-if="componentIndex < componentCount - 1"
-          class="ml-6"
-          :class="{
-            'cursor-pointer': componentIndex < componentCount,
-            'text-yellow-700': componentIndex === componentCount - 1,
-          }"
-          :to="{ params: { outputId, componentIndex: componentIndex + 1 } }"
-        >
-          <small>next</small>
-          <Chevron type="right" class="inline fill-current h-6 w-6" />
-        </router-link>
+        <span class="mr-6">&rsaquo;</span>
+        <div class="mr-6 text-gray-400">
+          {{ componentName }}
+          <strong>
+            {{ componentIndex }}
+          </strong>
+        </div>
+        <div class="hidden md:block md:flex-grow text-right">
+          <Siblinks
+            param-key="componentIndex"
+            :current="componentIndex"
+            :total="numberOfComponents[componentBlock]"
+            :params="{ outputId }"
+          />
+        </div>
       </div>
-    </Heading>
+    </h1>
 
-    <div v-if="loading" class="absolute flex inset-0 opacity-75 bg-gray-900">
-      <Spinner class="self-center" />
+    <SpinnerOverlay v-if="loading" />
+
+    <div class="section-content">
+      <slot
+        :form="form"
+        :showField="showField"
+        :onValueChange="onValueChange"
+      ></slot>
     </div>
-
-    <slot
-      :form="form"
-      :showField="showField"
-      :onValueChange="onValueChange"
-    ></slot>
   </form>
 </template>
 
@@ -61,19 +44,12 @@ import { logger } from "../../util";
 
 export default defineComponent({
   name: "DeviceForm",
-  components: {
-    Chevron,
-  },
   props: {
     componentBlock: {
-      type: Number,
       required: true,
+      type: Number as () => Block,
     },
     componentIndex: {
-      type: Number,
-      required: true,
-    },
-    componentCount: {
       type: Number,
       required: true,
     },
@@ -165,8 +141,11 @@ export default defineComponent({
         });
     };
 
+    const { numberOfComponents, outputId } = deviceStoreMapped;
+
     return {
-      outputId: deviceStoreMapped.outputId,
+      outputId,
+      numberOfComponents,
       form: {
         ...toRefs(form),
       },

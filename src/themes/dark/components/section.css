@@ -1,0 +1,12 @@
+.section {
+  @apply w-full surface-elevated border-t;
+}
+.section-heading {
+  @apply padder surface-neutral border-b font-bold;
+}
+.section-heading-inner {
+  @apply max-w-6xl mx-auto;
+}
+.section-content {
+  @apply px-8 pt-6 max-w-6xl mx-auto;
+}

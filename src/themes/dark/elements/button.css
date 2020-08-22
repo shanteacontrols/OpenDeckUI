@@ -1,0 +1,32 @@
+.btn {
+  @apply px-4 py-2 rounded-full;
+  @apply bg-gray-900 text-gray-500 border-gray-800 border-2;
+  @apply text-sm font-bold leading-tight;
+}
+
+a.btn {
+  @apply inline-block;
+}
+
+.btn-sm {
+  @apply text-sm;
+}
+
+.btn-xs {
+  @apply py-1;
+  @apply px-2;
+  @apply text-xs;
+}
+
+.btn-primary {
+  @apply bg-yellow-400;
+}
+
+.btn-primary:hover {
+  @apply bg-yellow-600;
+}
+
+.btn:hover,
+.btn:focus {
+  @apply bg-yellow-400 text-gray-800 shadow-outline outline-none;
+}

@@ -1,35 +1,31 @@
 <template>
-  <div v-if="(!isMsb || showMsbControls)" class="form-field">
-    <label
-      class="block mb-2 text-sm font-bold"
-      :class="{
-        'text-gray-600': isDisabled,
-        'text-gray-400': !isDisabled,
-      }"
-    >
+  <div
+    v-if="(!isMsb || showMsbControls)"
+    class="form-field"
+    :class="{
+      error: errors.length,
+      ['not-supported']: isDisabled,
+    }"
+  >
+    <label class="label">
       {{
         !showMsbControls && isLsb
           ? label.replace("(LSB)", "").replace("LSB", "")
           : label
       }}
-      <small v-if="min || max" class="ml-2 text-gray-700"
+      <small v-if="min || max" class="instructions"
         >{{ min }} - {{ (!showMsbControls && max2Byte) || max }}</small
       >
     </label>
-    <div v-if="!isDisabled">
-      <div class="mb-2">
-        <component
-          :is="fieldComponent"
-          :value="input"
-          v-bind="componentProps"
-          :class="{
-            'border-red-500 text-red-500': errors.length,
-          }"
-          @changed="onValueChange"
-        />
-      </div>
-    </div>
-    <p v-else class="text-red-500 text-sm mb-2">
+
+    <component
+      :is="fieldComponent"
+      v-if="!isDisabled"
+      :value="input"
+      v-bind="componentProps"
+      @changed="onValueChange"
+    />
+    <p v-else>
       <template v-if="isFirmwareOld">
         Not supported on current firmware. Consider updating the firmware.
       </template>
@@ -38,22 +34,15 @@
       </template>
     </p>
 
-    <FormErrorDisplay class="text-red-500" :errors="errors" />
-
-    <p
-      v-if="helpText"
-      class="text-sm leading-5"
-      :class="{
-        'text-gray-700': isDisabled,
-        'text-gray-500': !isDisabled,
-      }"
-    >
+    <p v-if="helpText" class="help-text">
       {{
         !showMsbControls && helpText
           ? helpText.replace("(LSB)", "").replace("LSB", "")
           : helpText
       }}
     </p>
+
+    <FormErrorDisplay class="error-message" :errors="errors" />
   </div>
 </template>
 

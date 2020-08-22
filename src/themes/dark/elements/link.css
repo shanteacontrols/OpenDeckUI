@@ -1,0 +1,7 @@
+a {
+  color: theme("colors.yellow.500");
+}
+
+a:hover {
+  color: theme("colors.yellow.400");
+}
