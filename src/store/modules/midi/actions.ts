@@ -3,7 +3,10 @@ import { state, MidiConnectionState, ControlDisableType } from "./state";
 import { isConnected, isConnecting } from "./computed";
 import { logger, delay } from "../../../util";
 import router from "../../../router";
-import { openDeckManufacturerId, IBlockDefinition } from "../../../definitions";
+import {
+  openDeckManufacturerId,
+  ISectionDefinition,
+} from "../../../definitions";
 
 // Local states
 
@@ -155,7 +158,7 @@ const newMidiLoadPromise = async (): Promise<void> =>
   });
 
 const isControlDisabled = (
-  def: IBlockDefinition,
+  def: ISectionDefinition,
   type?: ControlDisableType,
 ): boolean =>
   state.disableUiControls.some(
@@ -164,7 +167,7 @@ const isControlDisabled = (
   );
 
 const disableControl = (
-  def: IBlockDefinition,
+  def: ISectionDefinition,
   type: ControlDisableType,
 ): void => {
   const isDisabled = isControlDisabled(def);
@@ -182,9 +185,9 @@ export interface IMidiActions {
   matchInputOutput: (
     outputId: string,
   ) => Promise<{ input: Input; output: Output }>;
-  disableControl: (def: IBlockDefinition, type: ControlDisableType) => void;
+  disableControl: (def: ISectionDefinition, type: ControlDisableType) => void;
   isControlDisabled: (
-    def: IBlockDefinition,
+    def: ISectionDefinition,
     type?: ControlDisableType,
   ) => boolean;
   startMidiConnectionWatcher: () => void;

@@ -1,5 +1,5 @@
 import {
-  IBlockDefinition,
+  ISectionDefinition,
   FormInputComponent,
   DefinitionType,
 } from "../device";
@@ -31,7 +31,7 @@ export enum AnalogType {
 
 type formState = typeof defaultAnalogData;
 
-export const AnalogSectionDefinitions: Dictionary<IBlockDefinition> = {
+export const AnalogSectionDefinitions: Dictionary<ISectionDefinition> = {
   Enabled: {
     block: Block.Analog,
     key: "enabled",

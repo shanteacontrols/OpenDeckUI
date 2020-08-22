@@ -50,8 +50,8 @@
 import { defineComponent, toRefs, computed } from "vue";
 import {
   FormInputComponent,
-  IBlockDefinition,
-  IBlockSettingDefinition,
+  ISectionDefinition,
+  ISectionSetting,
 } from "../../definitions";
 import {
   required,
@@ -67,7 +67,7 @@ import FormErrorDisplay from "./FormErrorDisplay.vue";
 import { midiStoreMapped, deviceStoreMapped } from "../../store";
 import { ControlDisableType } from "../../store/modules/midi/state";
 
-const getValidatorForDefinition = (definition: IBlockDefinition) => {
+const getValidatorForDefinition = (definition: ISectionDefinition) => {
   const validators = [required()] as any[];
 
   switch (definition.component) {
@@ -120,7 +120,7 @@ export default defineComponent({
       type: [String, Number],
     },
     fieldDefinition: {
-      type: Object as () => IBlockDefinition,
+      type: Object as () => ISectionDefinition,
       required: true,
     },
   },
@@ -140,7 +140,7 @@ export default defineComponent({
       onLoad,
     } = toRefs(props.fieldDefinition);
 
-    const settingIndex = (props.fieldDefinition as IBlockSettingDefinition)
+    const settingIndex = (props.fieldDefinition as ISectionSetting)
       .settingIndex;
 
     const isNotSupported = computed(() =>

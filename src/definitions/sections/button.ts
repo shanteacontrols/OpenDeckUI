@@ -1,5 +1,5 @@
 import {
-  IBlockDefinition,
+  ISectionDefinition,
   FormInputComponent,
   DefinitionType,
 } from "../device";
@@ -69,7 +69,7 @@ export const HideMidiIdOnTypes = [
 
 type FormState = typeof defaultButtonData;
 
-export const ButtonSectionDefinitions: Dictionary<IBlockDefinition> = {
+export const ButtonSectionDefinitions: Dictionary<ISectionDefinition> = {
   Type: {
     block: Block.Button,
     key: "Type",

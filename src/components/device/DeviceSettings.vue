@@ -13,9 +13,8 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, ref, onMounted } from "vue";
-import { IBlockDefinition, DefinitionType } from "../../definitions";
+import { ISectionDefinition, DefinitionType } from "../../definitions";
 import { deviceStore } from "../../store";
-import { defaultTheme } from "./../../definitions";
 
 import { logger } from "../../util";
 
@@ -31,7 +30,7 @@ export default defineComponent({
       required: true,
     },
     componentDefinition: {
-      type: Object as () => Dictionary<IBlockDefinition>,
+      type: Object as () => Dictionary<ISectionDefinition>,
       required: true,
     },
   },
@@ -39,7 +38,7 @@ export default defineComponent({
     const form = reactive(props.defaultData);
     const loading = ref(true);
 
-    const showField = (definition: IBlockDefinition) =>
+    const showField = (definition: ISectionDefinition) =>
       !definition.showIf || definition.showIf(form);
 
     const loadData = async () => {
@@ -101,7 +100,6 @@ export default defineComponent({
     };
 
     return {
-      ...defaultTheme,
       form: {
         ...toRefs(form),
       },

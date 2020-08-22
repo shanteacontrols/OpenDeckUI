@@ -16,7 +16,7 @@ export interface ISelectOption {
 
 type genericMethod = (value?: number) => void;
 
-interface IBlockDefinitionBase {
+interface ISectionBase {
   block: Block;
   component: FormInputComponent;
   key: string;
@@ -33,24 +33,16 @@ interface IBlockDefinitionBase {
   isMsb?: boolean;
 }
 
-export interface IBlockComponentDefinition extends IBlockDefinitionBase {
+export interface ISectionComponent extends ISectionBase {
   type: DefinitionType.ComponentValue;
 }
 
-export interface IBlockSettingDefinition extends IBlockDefinitionBase {
+export interface ISectionSetting extends ISectionBase {
   type: DefinitionType.Setting;
   settingIndex: number;
 }
 
-export type IBlockDefinition =
-  | IBlockSettingDefinition
-  | IBlockComponentDefinition;
-
-export const convertDefinitionsToArray = (
-  definitions: Dictionary<IBlockDefinition>,
-): Array<IBlockDefinition> => {
-  return Object.keys(definitions).map((key: string) => definitions[key]);
-};
+export type ISectionDefinition = ISectionSetting | ISectionComponent;
 
 export interface IFormSelectOption {
   value: number;

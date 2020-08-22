@@ -1,5 +1,5 @@
 import {
-  IBlockDefinition,
+  ISectionDefinition,
   FormInputComponent,
   DefinitionType,
 } from "../device";
@@ -39,7 +39,7 @@ export const defaultEncoderData: Dictionary<number> = {
 
 type FormState = typeof defaultEncoderData;
 
-export const EncoderSectionDefinitions: Dictionary<IBlockDefinition> = {
+export const EncoderSectionDefinitions: Dictionary<ISectionDefinition> = {
   Enabled: {
     block: Block.Encoder,
     key: "enabled",

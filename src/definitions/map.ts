@@ -6,11 +6,7 @@ import {
   LedSectionDefinitions,
   DisplayDefinitions,
 } from "./sections";
-import {
-  DefinitionType,
-  IBlockDefinition,
-  IBlockSettingDefinition,
-} from "./device";
+import { DefinitionType, ISectionDefinition, ISectionSetting } from "./device";
 import { Block } from "./constants";
 import { IRequestConfig } from "../store/modules/device/state";
 
@@ -25,22 +21,21 @@ const DefinitionMap = {
 
 export const findDefinitionByRequestConfig = (
   config: IRequestConfig,
-): IBlockDefinition | undefined => {
+): ISectionDefinition | undefined => {
   const definitions = DefinitionMap[config.block];
   if (!definitions) {
     return;
   }
 
-  const matchSection = (def: IBlockDefinition) =>
+  const matchSection = (def: ISectionDefinition) =>
     def.section === config.section;
-  const isSettingType = (def: IBlockDefinition) =>
+  const isSettingType = (def: ISectionDefinition) =>
     def.type === DefinitionType.Setting;
-  const matchesSettingIndex = (def: IBlockSettingDefinition) =>
+  const matchesSettingIndex = (def: ISectionSetting) =>
     def.settingIndex === config.index;
   return Object.values(definitions).find(
     (def) =>
       matchSection(def) &&
-      (!isSettingType(def) ||
-        matchesSettingIndex(def as IBlockSettingDefinition)),
+      (!isSettingType(def) || matchesSettingIndex(def as ISectionSetting)),
   );
 };

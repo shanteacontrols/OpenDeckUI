@@ -62,7 +62,7 @@ export const arrayEqual = (a1: number[], a2: number[]): boolean =>
 // Date formatting
 
 export const getDifferenceInMs = (date1: Date, date2: Date): number =>
-  Math.abs(date2.getTime() - date1.getTime());
+  date1 && date2 && Math.abs(date2.getTime() - date1.getTime());
 
 export const padZeros = (input: number): string => `0000${input}`.slice(-2);
 
@@ -85,3 +85,9 @@ export const delay = (ms: number): Promise<any> => {
     setTimeout(resolve, ms);
   });
 };
+
+// Transform object members to array
+
+export const convertDefinitionsToArray = <T>(
+  definitions: Dictionary<T>,
+): Array<T> => Object.keys(definitions).map((key: string) => definitions[key]);

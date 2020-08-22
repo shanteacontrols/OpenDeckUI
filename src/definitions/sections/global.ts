@@ -1,5 +1,5 @@
 import {
-  IBlockDefinition,
+  ISectionDefinition,
   FormInputComponent,
   DefinitionType,
 } from "../device";
@@ -18,7 +18,7 @@ export const defaultGlobalData: Dictionary<number> = {
 
 type FormState = typeof defaultGlobalData;
 
-export const GlobalDefinitions: Dictionary<IBlockDefinition> = {
+export const GlobalDefinitions: Dictionary<ISectionDefinition> = {
   PreservePresetState: {
     block: Block.Global,
     key: "preservePresetState",

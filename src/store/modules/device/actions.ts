@@ -8,12 +8,10 @@ import {
 } from "./state";
 import {
   Request,
-  IDeviceComponentCounts,
-  IBlockDefinition,
+  ISectionDefinition,
   IBoardDefinition,
-  convertDefinitionsToArray,
   DefinitionType,
-  IBlockSettingDefinition,
+  ISectionSetting,
   Block,
   Boards,
 } from "../../../definitions";
@@ -24,7 +22,12 @@ import {
 } from "./midi-event-handlers";
 import { Input, Output } from "webmidi";
 import { midiStore } from "../midi";
-import { logger, arrayEqual, delay } from "../../../util";
+import {
+  logger,
+  arrayEqual,
+  delay,
+  convertDefinitionsToArray,
+} from "../../../util";
 import { Request } from "../../../definitions";
 import router from "../../../router";
 
@@ -307,7 +310,7 @@ const loadDeviceInfo = async (): Promise<any> => {
   });
   await sendMessage({
     command: Request.GetNumberOfSupportedComponents,
-    handler: (components: IDeviceComponentCounts) => setInfo(components),
+    handler: (numberOfComponents: array[]) => setInfo({ numberOfComponents }),
   });
   try {
     await sendMessage({
@@ -330,7 +333,7 @@ const loadDeviceInfo = async (): Promise<any> => {
 };
 
 export const getComponentSettings = async (
-  componentDefinition: Dictionary<IBlockDefinition>,
+  componentDefinition: Dictionary<ISectionDefinition>,
   block: number,
   definitionType: DefinitionType,
   componentIndex?: number,
@@ -339,11 +342,11 @@ export const getComponentSettings = async (
 
   const settings = {} as any;
 
-  const filterByType = (definition: IBlockDefinition) =>
+  const filterByType = (definition: ISectionDefinition) =>
     definition.type === definitionType;
-  const removeDisabled = (def: IBlockDefinition) =>
+  const removeDisabled = (def: ISectionDefinition) =>
     !midiStore.actions.isControlDisabled(def);
-  const removeMsb = (def: IBlockDefinition) =>
+  const removeMsb = (def: ISectionDefinition) =>
     state.valueSize === 1 || !def.isMsb;
 
   const tasks = convertDefinitionsToArray(componentDefinition)
@@ -354,7 +357,7 @@ export const getComponentSettings = async (
       const index =
         typeof componentIndex === "number"
           ? componentIndex
-          : (definition as IBlockSettingDefinition).settingIndex;
+          : (definition as ISectionSetting).settingIndex;
       const config = {
         block,
         section: definition.section,
@@ -418,7 +421,7 @@ export interface IDeviceActions {
   stopDeviceConnectionWatcher: () => void;
   startFirmwareUpdate: () => Promise<void>;
   getComponentSettings: (
-    definition: Dictionary<IBlockDefinition>,
+    definition: Dictionary<ISectionDefinition>,
     block: Block,
     definitionType: DefinitionType,
     customIndex?: number,

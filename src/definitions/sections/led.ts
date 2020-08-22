@@ -1,5 +1,5 @@
 import {
-  IBlockDefinition,
+  ISectionDefinition,
   FormInputComponent,
   DefinitionType,
 } from "../device";
@@ -23,7 +23,7 @@ export const defaultLedComponentData: Dictionary<number> = {
 type FormStateSettings = typeof defaultLedSettingsData;
 type FormStateComponent = typeof defaultLedComponentData;
 
-export const LedSectionDefinitions: Dictionary<IBlockDefinition> = {
+export const LedSectionDefinitions: Dictionary<ISectionDefinition> = {
   // Settings definitions
   BlinkWithMidiClock: {
     block: Block.Led,

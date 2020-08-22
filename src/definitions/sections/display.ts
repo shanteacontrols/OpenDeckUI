@@ -1,5 +1,5 @@
 import {
-  IBlockDefinition,
+  ISectionDefinition,
   FormInputComponent,
   DefinitionType,
 } from "../device";
@@ -19,7 +19,7 @@ export const defaultDisplayData: Dictionary<number> = {
 
 type FormState = typeof defaultDisplayData;
 
-export const DisplayDefinitions: Dictionary<IBlockDefinition> = {
+export const DisplayDefinitions: Dictionary<ISectionDefinition> = {
   // Features
   EnableDisplay: {
     block: Block.Display,

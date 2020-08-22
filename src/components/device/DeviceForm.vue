@@ -37,8 +37,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs, ref, onMounted, watch } from "vue";
-import { IBlockDefinition, DefinitionType } from "../../definitions";
-import Chevron from "../icons/Chevron.vue";
+import { ISectionDefinition, DefinitionType } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
 import { logger } from "../../util";
 
@@ -58,7 +57,7 @@ export default defineComponent({
       required: true,
     },
     componentDefinition: {
-      type: Object as () => Dictionary<IBlockDefinition>,
+      type: Object as () => Dictionary<ISectionDefinition>,
       required: true,
     },
     defaultData: {
@@ -76,7 +75,7 @@ export default defineComponent({
     const form = reactive(props.defaultData);
     const index = toRefs(props).componentIndex;
 
-    const showField = (definition: IBlockDefinition) =>
+    const showField = (definition: ISectionDefinition) =>
       !definition.showIf || definition.showIf(form);
 
     const loadData = async () => {
