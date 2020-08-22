@@ -7,6 +7,7 @@ import {
   IRequestDefinition,
   ISectionDefinition,
 } from "./interface";
+import { BlockMap } from "./block";
 import { IRequestConfig, IDeviceState, IQueuedRequest } from "./device";
 import {
   arrayEqual,

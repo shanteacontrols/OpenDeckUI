@@ -28,14 +28,17 @@ export const useDeviceForm = (
 
   const showField = (blockDef: ISectionDefinition): boolean =>
     blockDef && (!blockDef.showIf || blockDef.showIf(formData));
-  const indexVal =
-    sectionType === SectionType.Value && indexRef && indexRef.value;
 
   const loadData = async () => {
     loading.value = true;
+    const indexVal =
+      sectionType === SectionType.Value && indexRef
+        ? indexRef.value
+        : undefined;
+
     const componentConfig = await deviceStore.actions.getComponentSettings(
       block,
-      SectionType.Setting,
+      sectionType,
       indexVal,
     );
     Object.assign(formData, componentConfig);
@@ -113,13 +116,12 @@ export const useDeviceForm = (
 
     // Fix for unreliable value (ref.value vs value)
     const sectionValue = section.value || section;
-
-    return deviceStoreMapped
+    return deviceStore.actions
       .setComponentSectionValue(
         {
-          block: props.block,
+          block,
           section: sectionValue,
-          index: index.value,
+          index: indexRef.value,
         },
         value,
         onSuccess,
@@ -131,9 +133,9 @@ export const useDeviceForm = (
       });
   };
 
-  onMounted(loadData);
+  onMounted(() => loadData());
   if (indexRef) {
-    watch([indexRef], loadData);
+    watch([indexRef], () => loadData());
   }
 
   return {

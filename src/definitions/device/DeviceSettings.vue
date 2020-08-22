@@ -26,7 +26,7 @@ export default defineComponent({
   },
   setup(props) {
     return {
-      ...useDeviceForm(props.block, SectionType.Settings),
+      ...useDeviceForm(props.block, SectionType.Setting),
     };
   },
 });
