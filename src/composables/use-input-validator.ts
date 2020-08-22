@@ -9,7 +9,7 @@ interface InputValidatorObject {
   onValueChange: validationAction;
 }
 
-const useInputValidator = (
+export const useInputValidator = (
   startValue: Ref<validatorInputValue>,
   validators: validator[],
   onValidChange: validationAction,
@@ -44,5 +44,3 @@ const useInputValidator = (
     onValueChange,
   };
 };
-
-export default useInputValidator;

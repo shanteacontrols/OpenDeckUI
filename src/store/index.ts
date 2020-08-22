@@ -1,3 +1,3 @@
-export * from "./modules/midi";
-export * from "./modules/device";
-export * from "./modules/activity-log";
+export * from "../definitions/midi/midi-store";
+export * from "../definitions/device/device-store";
+export * from "../definitions/request-log/request-log-store";

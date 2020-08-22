@@ -1,0 +1,83 @@
+<template>
+  <DeviceSettings class="global flex flex-wrap flex-grow" :block="Block.Global">
+    <template #default="{ form, showField, onSettingChange }">
+      <Section title="Presets">
+        <div class="form-grid">
+          <FormField
+            v-if="showField(sections.PreservePresetState)"
+            class="col-span-2"
+            :value="form.preservePresetState"
+            :field-definition="sections.PreservePresetState"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.ActivePreset)"
+            :value="form.activePreset"
+            :field-definition="sections.ActivePreset"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
+
+      <Section title="MIDI">
+        <div class="form-grid">
+          <FormField
+            v-if="showField(sections.StandardNoteOff)"
+            :value="form.standardNoteOff"
+            :field-definition="sections.StandardNoteOff"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.DinMidiState)"
+            :value="form.dinMidiState"
+            :field-definition="sections.DinMidiState"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.MidiMergeEnable)"
+            :value="form.midiMergeEnable"
+            :field-definition="sections.MidiMergeEnable"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.RunningStatus)"
+            :value="form.runningStatus"
+            :field-definition="sections.RunningStatus"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.MidiMergeType)"
+            :value="form.midiMergeType"
+            :field-definition="sections.MidiMergeType"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
+
+      <GlobalHardware class="w-full" />
+    </template>
+  </DeviceSettings>
+</template>
+
+<script lang="ts">
+import { defineComponent } from "vue";
+import { Block } from "../../interface";
+import { GlobalBlock } from "./global";
+
+import GlobalHardware from "./GlobalHardware.vue";
+
+export default defineComponent({
+  name: "Global",
+  components: {
+    GlobalHardware,
+  },
+  setup() {
+    const { sections } = GlobalBlock;
+
+    return {
+      Block,
+      sections,
+    };
+  },
+});
+</script>

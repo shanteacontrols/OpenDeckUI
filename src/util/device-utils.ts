@@ -88,6 +88,5 @@ export const delay = (ms: number): Promise<any> => {
 
 // Transform object members to array
 
-export const convertDefinitionsToArray = <T>(
-  definitions: Dictionary<T>,
-): Array<T> => Object.keys(definitions).map((key: string) => definitions[key]);
+export const ObjectToArray = <T>(object: Dictionary<T>): Array<T> =>
+  Object.keys(object).map((key: string) => object[key]);

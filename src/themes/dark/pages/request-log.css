@@ -1,0 +1,58 @@
+/* heading */
+
+.request-log .section-heading {
+  @apply pb-2;
+}
+
+/* main */
+
+.request-log-main {
+  @apply overflow-y-scroll text-sm;
+  max-height: 500px;
+}
+
+/* table */
+
+.request-table {
+  @apply mt-2 mb-4 border-gray-800 border-b;
+}
+.request-table .table-head {
+  @apply font-bold;
+}
+.request-table .table-body {
+}
+.request-table .table-head th {
+  @apply px-4 py-2;
+}
+.request-table .table-row td {
+  @apply px-4 py-2 border-gray-900 border-b;
+}
+.request-table .table-row:last-child td {
+  @apply border-none;
+}
+
+/* table elements */
+
+.request-command {
+  @apply mr-1;
+}
+.request-config {
+  @apply mr-1;
+}
+.request-status {
+  @apply ml-4 text-xs;
+}
+.request-status.done .status {
+  @apply text-green-400;
+}
+.request-status > .timing {
+  @apply ml-2;
+}
+.request-status > .timing > strong {
+}
+.status-label {
+  @apply mr-2 inline-block;
+}
+.sysex-label {
+  @apply mr-4 inline-block w-16;
+}

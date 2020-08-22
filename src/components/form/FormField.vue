@@ -52,6 +52,9 @@ import {
   FormInputComponent,
   ISectionDefinition,
   ISectionSetting,
+  midiStoreMapped,
+  deviceStoreMapped,
+  ControlDisableType,
 } from "../../definitions";
 import {
   required,
@@ -59,13 +62,11 @@ import {
   maxValue,
   allowedValues,
 } from "../../composables/validators";
-import useInputValidator from "../../composables/use-input-validator";
+import { useInputValidator } from "../../composables";
 import FormSelect from "./FormSelect.vue";
 import FormToggle from "./FormToggle.vue";
 import FormInput from "./FormInput.vue";
 import FormErrorDisplay from "./FormErrorDisplay.vue";
-import { midiStoreMapped, deviceStoreMapped } from "../../store";
-import { ControlDisableType } from "../../store/modules/midi/state";
 
 const getValidatorForDefinition = (definition: ISectionDefinition) => {
   const validators = [required()] as any[];
