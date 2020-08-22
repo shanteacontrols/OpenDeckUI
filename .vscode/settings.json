@@ -23,5 +23,23 @@
   "eslint.enable": true,
   "eslint.alwaysShowStatus": true,
   "eslint.validate": ["vue", "typescript", "javascript"],
-  "eslint.packageManager": "yarn"
+  "eslint.packageManager": "yarn",
+  "files.associations": {
+    "*.css": "postcss"
+  },
+  "stylelint.config": {
+    "rules": {
+      "at-rule-no-unknown": [true, {
+        "ignoreAtRules": [
+          "tailwind",
+          "apply",
+          "variants",
+          "responsive",
+          "screen"
+        ]
+      }],
+      "declaration-block-trailing-semicolon": null,
+      "no-descending-specificity": null
+    }
+  }
 }
