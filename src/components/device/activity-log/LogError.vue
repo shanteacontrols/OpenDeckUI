@@ -16,7 +16,7 @@ import { Block, getErrorDefinition } from "../../../definitions";
 import { ILogEntryError } from "../../../store/modules/activity-log";
 
 export default defineComponent({
-  name: "DeviceActivityError",
+  name: "ActivityError",
   props: {
     logEntry: {
       required: true,

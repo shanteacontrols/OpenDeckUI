@@ -10,7 +10,7 @@
 
   <Hero v-else custom="h-64" title="No WebMidi device found." />
 
-  <Activity />
+  <ActivityLog />
 </template>
 
 <script lang="ts">
@@ -19,13 +19,13 @@ import router from "../../router";
 import { logger } from "../../util";
 import { deviceStoreMapped } from "../../store";
 
-import Activity from "./activity/Activity.vue";
+import ActivityLog from "./activity-log/ActivityLog.vue";
 import DeviceNav from "./DeviceNav.vue";
 
 export default defineComponent({
   name: "Device",
   components: {
-    Activity,
+    ActivityLog,
     DeviceNav,
   },
   setup() {

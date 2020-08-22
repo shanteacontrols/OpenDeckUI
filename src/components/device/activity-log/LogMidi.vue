@@ -32,8 +32,6 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { formatDate } from "../../../util";
-import { Block } from "../../../definitions";
 import {
   ILogEntryMidi,
   MidiEventTypeLabel,
@@ -41,7 +39,7 @@ import {
 } from "../../../store/modules/activity-log";
 
 export default defineComponent({
-  name: "DeviceActivityMidi",
+  name: "ActivityMidi",
   props: {
     logEntry: {
       required: true,
@@ -50,8 +48,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      Block,
-      formatDate,
       MidiEventTypeLabel,
       MidiRealtimeEvent,
     };

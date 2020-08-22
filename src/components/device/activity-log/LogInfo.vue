@@ -1,22 +1,17 @@
 <template>
-  <p class="p-2 border-b border-gray-800 last:border-b-0">
-    <span class="mr-2"> {{ formatDate(logEntry.time) }} </span>
-    <strong>
-      <span class="mr-2">
-        {{ logEntry }}
-      </span>
-    </strong>
+  <p class="">
+    <span v-if="logEntry.block" class="mr-2"> block {{ logEntry.block }} </span>
+    <span v-if="logEntry.index" class="mr-2"> # {{ logEntry.index }} </span>
   </p>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { ILogEntryInfo } from "../../../store/modules/activity-log";
-import { formatDate } from "../../../util";
 import { Block } from "../../../definitions";
 
 export default defineComponent({
-  name: "DeviceActivityInfo",
+  name: "ActivityInfo",
   props: {
     logEntry: {
       required: true,
@@ -26,7 +21,6 @@ export default defineComponent({
   setup() {
     return {
       Block,
-      formatDate,
     };
   },
 });
