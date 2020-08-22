@@ -36,5 +36,5 @@ export const mapStore = <S extends IStoreState, C, A>(
 export const readFromStorage = (key: string): any =>
   JSON.parse(localStorage.getItem(key));
 
-export const saveToStorage = (key: string, value: any): any =>
+export const saveToStorage = (key: string, value: unknown): any =>
   localStorage.setItem(key, JSON.stringify(value));
