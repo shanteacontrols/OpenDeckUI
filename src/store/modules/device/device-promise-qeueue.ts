@@ -262,14 +262,25 @@ const parseEventDataDoubleByte = (
     data = data.slice(2);
     const requestIdShifted = data.shift();
     if (requestIdShifted !== specialRequestId) {
-      throw new Error(
-        `Special Request ID mismatch ${specialRequestId} vs ${requestIdShifted}`,
-      );
+      activityLog.actions.addError({
+        errorCode: ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH,
+        message: `Special Request ID mismatch ${specialRequestId} vs ${requestIdShifted}`,
+        payload: event.data,
+      });
     }
   }
 
-  const decoded =
-    (definition.decode && definition.decode(data, request)) || data;
+  let decoded;
+  try {
+    decoded = (definition.decode && definition.decode(data, request)) || data;
+  } catch (error) {
+    activityLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQUEST_DECODE_ERROR,
+      message: "Failed to decode request data",
+      payload: data,
+      error,
+    });
+  }
   const parsed = definition.parser ? definition.parser(decoded) : decoded;
 
   return {

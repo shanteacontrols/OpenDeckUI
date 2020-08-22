@@ -17,6 +17,8 @@ export enum ErrorCode {
   UI_QUEUE_REQ_DATA_MISSING = 712,
   UI_QUEUE_REQ_ALREADY_ACTIVE = 713,
   UI_QUEUE_REQ_NONE_ACTIVE = 714,
+  UI_QUEUE_SPECIAL_REQ_ID_MISMATCH = 715,
+  UI_QUEUE_REQUEST_DECODE_ERROR = 716,
 }
 
 interface IErrorDefinition {
@@ -104,6 +106,14 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   [ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE]: {
     code: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
     description: "No Request active in Qeue upon receiving a MIDI response.",
+  },
+  [ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH]: {
+    code: ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH,
+    description: "Request did not match specialRequestId event data payload",
+  },
+  [ErrorCode.UI_QUEUE_REQUEST_DECODE_ERROR]: {
+    code: ErrorCode.UI_QUEUE_REQUEST_DECODE_ERROR,
+    description: "Failed to decode request data.",
   },
 };
 
