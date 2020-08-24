@@ -24,7 +24,7 @@ body {
 /* main */
 
 .app-main {
-  @apply w-full;
+  @apply w-full text-lg;
 }
 
 /* footer */
