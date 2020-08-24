@@ -10,7 +10,6 @@
           @click="clear"
         >
           clear
-          <small class="btn-icon">{{ stack.length }}</small>
         </button>
         <span v-if="showRequestLog" class="float-right mt-1 clearfix">
           <span
