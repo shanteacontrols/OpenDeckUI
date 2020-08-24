@@ -7,7 +7,6 @@ export const defaultState: IMidiState = {
   inputs: [] as Array<Input>,
   outputs: [] as Array<Output>,
   log: true,
-  disableUiControls: [],
 };
 
 export const midiState = reactive(defaultState);

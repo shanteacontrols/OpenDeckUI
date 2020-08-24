@@ -1,7 +1,8 @@
 import { Ref, ref } from "vue";
 import { InputEventBase } from "webmidi";
 import { deviceState } from "./state";
-import { DeviceConnectionState } from "./interface";
+import { DeviceConnectionState, ControlDisableType } from "./interface";
+import { disableControl } from "./actions";
 import { logger, convertDataValuesToSingleByte } from "../../../util";
 import {
   requestDefinitions,
@@ -20,7 +21,6 @@ import {
   requestLog,
   MidiEventTypeMMC,
 } from "../../request-log/request-log-store";
-import { midiStore, ControlDisableType } from "../../midi";
 import { ensureConnection } from "./actions";
 
 interface IRequestParams {
@@ -67,7 +67,7 @@ const getNextRequestId = () => {
   return requestQueue.nextRequestId;
 };
 
-export const requestStack = ref({} as Record<number, IQueuedRequest>);
+export const requestStack = ref<Record<number, IQueuedRequest>>({});
 
 const addToQueue = async (
   request: Omit<
@@ -190,7 +190,6 @@ const onRequestDone = (
     return;
   }
 
-  // Check response status
   if (messageStatus > 1) {
     request.state = RequestState.Error;
     const errorDefinition = getErrorDefinition(messageStatus);
@@ -207,17 +206,11 @@ const onRequestDone = (
       const definition = findRequestDefinitionByConfig(request.config);
       // Disable this control in UI if not supported
       if (definition && messageStatus === ErrorCode.NOT_SUPPORTED) {
-        midiStore.actions.disableControl(
-          definition,
-          ControlDisableType.NotSupported,
-        );
+        disableControl(definition, ControlDisableType.NotSupported);
       }
       // Show notice that firmware doesn't support this control
       if (definition && messageStatus === ErrorCode.INDEX) {
-        midiStore.actions.disableControl(
-          definition,
-          ControlDisableType.MissingIndex,
-        );
+        disableControl(definition, ControlDisableType.MissingIndex);
       }
     }
   } else {

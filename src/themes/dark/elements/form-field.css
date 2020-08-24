@@ -13,7 +13,6 @@
 .form-field.not-supported .help-text {
 }
 .form-field.error {
-  @apply text-red-500;
 }
 .form-field .error-message {
   @apply mt-3 text-sm;

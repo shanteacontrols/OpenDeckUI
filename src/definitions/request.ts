@@ -232,9 +232,9 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
 export const findRequestDefinitionByConfig = (
   config: IRequestConfig,
 ): ISectionDefinition | undefined => {
-  const definitions = BlockMap[config.block];
-  if (!definitions) {
-    return;
+  const blockDef = BlockMap[config.block];
+  if (!blockDef) {
+    throw new Error(`Missing block definition for block "${config.block}"`);
   }
 
   const matchSection = (def: ISectionDefinition) =>
@@ -243,7 +243,8 @@ export const findRequestDefinitionByConfig = (
     def.type === SectionType.Setting;
   const matchesSettingIndex = (def: ISectionSetting) =>
     def.settingIndex === config.index;
-  return Object.values(definitions).find(
+
+  return Object.values(blockDef.sections).find(
     (def) =>
       matchSection(def) &&
       (!isSettingType(def) || matchesSettingIndex(def as ISectionSetting)),

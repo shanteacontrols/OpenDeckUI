@@ -24,6 +24,7 @@ import {
   IDeviceState,
   IRequestConfig,
   DeviceConnectionState,
+  ControlDisableType,
 } from "./interface";
 import { deviceState, defaultState } from "./state";
 import { sendMessage, handleSysExEvent } from "./request-qeueue";
@@ -35,6 +36,15 @@ import {
 let connectionWatcherTimer = null;
 
 // Actions
+
+const isControlDisabled = (def: ISectionDefinition): boolean =>
+  deviceState.unsupportedComponents[def.block][def.key];
+
+export const disableControl = (
+  def: ISectionDefinition,
+  type: ControlDisableType,
+): void =>
+  (deviceState.unsupportedComponents[def.block][def.key] = type || !type);
 
 const reset = (): void => {
   if (deviceState.input) {
@@ -309,7 +319,7 @@ const filterSectionsByType = (
 ) => sectionDef.type === type;
 
 const filterOutDisabledSections = (sectionDef: ISectionDefinition) =>
-  !midiStore.actions.isControlDisabled(sectionDef);
+  !isControlDisabled(sectionDef);
 
 const filterOutMsbSections = (sectionDef: ISectionDefinition) =>
   deviceState.valueSize === 1 || !sectionDef.isMsb;
@@ -383,6 +393,8 @@ export interface IDeviceActions {
   startDeviceConnectionWatcher: () => void;
   stopDeviceConnectionWatcher: () => void;
   startFirmwareUpdate: () => Promise<void>;
+  isControlDisabled: (def: ISectionDefinition) => boolean;
+  disableControl: (def: ISectionDefinition) => void;
   getComponentSettings: (
     definition: Dictionary<ISectionDefinition>,
     block: Block,
@@ -410,6 +422,8 @@ export const deviceStoreActions: IDeviceActions = {
   stopDeviceConnectionWatcher,
   startFirmwareUpdate,
   loadDeviceInfo,
+  isControlDisabled,
+  disableControl,
   getComponentSettings,
   setComponentSectionValue,
 };

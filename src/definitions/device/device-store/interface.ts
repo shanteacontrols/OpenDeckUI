@@ -4,6 +4,11 @@ export enum DeviceConnectionState {
   Open = "open",
 }
 
+export enum ControlDisableType {
+  NotSupported = "not_supported",
+  MissingIndex = "missing_index",
+}
+
 export interface IRequestConfig {
   block: number;
   section: number;
@@ -26,4 +31,5 @@ export type IDeviceState = {
   activePreset: number;
   supportedPresetsCount: number;
   numberOfComponents: Array<number>;
+  unsupportedComponents: Record<number, Record<string, ControlDisableType>>; // block, key, type
 };

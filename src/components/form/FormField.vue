@@ -4,7 +4,6 @@
     class="form-field"
     :class="{
       error: errors.length,
-      ['not-supported']: isDisabled,
     }"
   >
     <label class="label">
@@ -25,11 +24,11 @@
       v-bind="componentProps"
       @changed="onValueChange"
     />
-    <p v-else>
-      <template v-if="isFirmwareOld">
+    <p v-else class="error-message text-red-500">
+      <template v-if="isDisabled === ControlDisableType.NotSupported">
         Not supported on current firmware. Consider updating the firmware.
       </template>
-      <template v-if="isNotSupported">
+      <template v-if="isDisabled === ControlDisableType.MissingIndex">
         Not supported on this board.
       </template>
     </p>
@@ -146,20 +145,8 @@ export default defineComponent({
     const settingIndex = (props.fieldDefinition as ISectionSetting)
       .settingIndex;
 
-    const isNotSupported = computed(() =>
-      midiStoreMapped.isControlDisabled(
-        props.fieldDefinition,
-        ControlDisableType.NotSupported,
-      ),
-    );
-    const isFirmwareOld = computed(() =>
-      midiStoreMapped.isControlDisabled(
-        props.fieldDefinition,
-        ControlDisableType.MissingIndex,
-      ),
-    );
-    const isDisabled = computed(
-      () => isFirmwareOld.value || isNotSupported.value,
+    const isDisabled = computed(() =>
+      deviceStoreMapped.isControlDisabled(props.fieldDefinition),
     );
 
     const valueRef = toRefs(props).value;
@@ -202,13 +189,12 @@ export default defineComponent({
       label,
       helpText,
       isDisabled,
-      isNotSupported,
-      isFirmwareOld,
       isMsb,
       isLsb,
       min,
       max,
       max2Byte,
+      ControlDisableType,
       ...midiStoreMapped,
     };
   },

@@ -1,12 +1,9 @@
 import WebMidi, { Input, Output } from "webmidi";
-import {
-  openDeckManufacturerId,
-  ISectionDefinition,
-} from "../../../definitions";
+import { openDeckManufacturerId } from "../../../definitions";
 import { logger, delay } from "../../../util";
 import router from "../../../router";
 
-import { MidiConnectionState, ControlDisableType } from "./interface";
+import { MidiConnectionState } from "./interface";
 import { midiState } from "./state";
 import { isConnected, isConnecting } from "./computed";
 
@@ -159,26 +156,6 @@ const newMidiLoadPromise = async (): Promise<void> =>
     }, true);
   });
 
-const isControlDisabled = (
-  def: ISectionDefinition,
-  type?: ControlDisableType,
-): boolean =>
-  midiState.disableUiControls.some(
-    (d) =>
-      d.key === def.key && d.block === def.block && (!type || d.type === type),
-  );
-
-const disableControl = (
-  def: ISectionDefinition,
-  type: ControlDisableType,
-): void => {
-  const isDisabled = isControlDisabled(def);
-  if (!isDisabled) {
-    const { block, key } = def;
-    midiState.disableUiControls.push({ block, key, type });
-  }
-};
-
 // Export
 
 export interface IMidiActions {
@@ -187,11 +164,6 @@ export interface IMidiActions {
   matchInputOutput: (
     outputId: string,
   ) => Promise<{ input: Input; output: Output }>;
-  disableControl: (def: ISectionDefinition, type: ControlDisableType) => void;
-  isControlDisabled: (
-    def: ISectionDefinition,
-    type?: ControlDisableType,
-  ) => boolean;
   startMidiConnectionWatcher: () => void;
   stopMidiConnectionWatcher: () => void;
 }
@@ -201,8 +173,6 @@ export const midiStoreActions: IMidiActions = {
   matchInputOutput,
   assignInputs,
   findOutputById,
-  disableControl,
-  isControlDisabled,
   startMidiConnectionWatcher,
   stopMidiConnectionWatcher,
 };

@@ -1,8 +1,18 @@
 import { reactive } from "vue";
 import { Input, Output } from "webmidi";
 import { DeviceConnectionState, IDeviceState } from "./interface";
+import { Block } from "../../interface";
 
 // State
+
+const unsupportedComponents = {
+  [Block.Global]: {},
+  [Block.Button]: {},
+  [Block.Encoder]: {},
+  [Block.Analog]: {},
+  [Block.Led]: {},
+  [Block.Display]: {},
+};
 
 export const defaultState: IDeviceState = {
   outputId: (null as unknown) as string,
@@ -19,6 +29,7 @@ export const defaultState: IDeviceState = {
   activePreset: (null as unknown) as number,
   supportedPresetsCount: (null as unknown) as number,
   numberOfComponents: [] as Array<number>,
+  unsupportedComponents,
 };
 
 export const deviceState = reactive(defaultState);
