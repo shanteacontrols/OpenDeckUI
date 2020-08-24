@@ -4,7 +4,7 @@ import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
 import { addInfo } from "./log-type-info";
 import { saveToStorage } from "../../../util";
-import debounce from "lodash-es/debounce";
+import { debounce } from "lodash-es";
 
 // Actions
 
