@@ -4,14 +4,14 @@
     :value="value"
     @change="emit('changed', $event.target.value)"
   >
-    <option v-for="(opt, idx) in options" :key="idx" :value="opt.value">{{
+    <option v-for="(opt, idx) in optionsArray" :key="idx" :value="opt.value">{{
       opt.text
     }}</option>
   </select>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 import { IFormSelectOption } from "../../definitions";
 
 export default defineComponent({
@@ -23,12 +23,18 @@ export default defineComponent({
     },
     options: {
       required: true,
-      type: Array as () => Array<IFormSelectOption>,
+      type: [Array as () => Array<IFormSelectOption>, Function],
     },
   },
-  setup(_, { emit }) {
+  setup(props, { emit }) {
+    const optionsArray =
+      props.options && typeof props.options === "function"
+        ? computed(() => props.options())
+        : props.options;
+
     return {
       emit,
+      optionsArray,
     };
   },
 });

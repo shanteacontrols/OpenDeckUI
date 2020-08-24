@@ -127,7 +127,9 @@ export default defineComponent({
   },
   emits: ["modified"],
   setup(props, { emit }) {
+    const { fieldDefinition } = toRefs(props);
     const {
+      component,
       key,
       section,
       label,
@@ -139,7 +141,7 @@ export default defineComponent({
       max2Byte,
       options,
       onLoad,
-    } = toRefs(props.fieldDefinition);
+    } = fieldDefinition.value;
 
     const settingIndex = (props.fieldDefinition as ISectionSetting)
       .settingIndex;
@@ -165,9 +167,9 @@ export default defineComponent({
     const valueChangeHandler = (value: any) => {
       if (Number(value) !== valueRef.value) {
         emit("modified", {
-          key: key.value,
+          key,
           value: Number(value),
-          section: section.value,
+          section,
           settingIndex, // defined for settings only
           onLoad, // handles storing value to special store sections (ie active preset)
         });
@@ -185,9 +187,8 @@ export default defineComponent({
       name: key,
     } as any;
 
-    if (props.fieldDefinition.component === FormInputComponent.Select) {
-      componentProps.options =
-        typeof options.value === "function" ? computed(options.value) : options;
+    if (component === FormInputComponent.Select) {
+      componentProps.options = options;
     }
 
     return {

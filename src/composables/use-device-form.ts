@@ -47,42 +47,26 @@ export const useDeviceForm = (
     delay(100).then(() => (loading.value = false));
   };
 
-  const onSettingChange = ({
-    key,
-    value,
-    section,
-    settingIndex,
-    onLoad,
-  }: {
-    key: string;
-    value: number;
-    section: number;
-    settingIndex: number;
-    onLoad?: (value: number) => void;
-  }) => {
+  const onChange = (
+    key: string,
+    config: IRequestConfig,
+    onLoad?: (value: number) => void,
+  ) => {
     if (loading.value) {
       return;
     }
     loading.value = true;
 
     const onSuccess = () => {
-      formData[key] = value;
-      loading.value = false;
+      formData[key] = config.value;
+      delay(100).then(() => (loading.value = false));
       if (onLoad) {
-        onLoad.value(value);
+        onLoad(config.value);
       }
     };
 
     return deviceStore.actions
-      .setComponentSectionValue(
-        {
-          block,
-          section,
-          index: settingIndex,
-        },
-        value,
-        onSuccess,
-      )
+      .setComponentSectionValue(config, onSuccess)
       .catch((error) => {
         logger.error("ERROR WHILE SAVING SETTING DATA", error);
         // Try reloading the formData to reinit without failed fields
@@ -90,47 +74,26 @@ export const useDeviceForm = (
       });
   };
 
-  const onValueChange = ({
-    key,
-    value,
-    section,
-    onLoad,
-  }: {
+  interface IValueChangeParams {
     key: string;
     value: number;
     section: number;
+    settingIndex: number;
     onLoad?: (value: number) => void;
-  }) => {
-    if (loading.value) {
-      return;
-    }
-    loading.value = true;
+  }
 
-    const onSuccess = () => {
-      formData[key] = value;
-      delay(100).then(() => (loading.value = false));
-      if (onLoad) {
-        onLoad.value(value);
-      }
-    };
+  const onSettingChange = (params: IValueChangeParams) => {
+    const { key, value, section, settingIndex, onLoad } = params;
+    const config = { block, section, index: settingIndex, value };
 
-    // Fix for unreliable value (ref.value vs value)
-    const sectionValue = section.value || section;
-    return deviceStore.actions
-      .setComponentSectionValue(
-        {
-          block,
-          section: sectionValue,
-          index: indexRef.value,
-        },
-        value,
-        onSuccess,
-      )
-      .catch((error) => {
-        logger.error("ERROR WHILE SAVING COMPONENT VALUE DATA", error);
-        // Try reloading the formData to reinit without failed fields
-        return loadData();
-      });
+    return onChange(key, config, onLoad);
+  };
+
+  const onValueChange = (params: IValueChangeParams) => {
+    const { key, value, section, onLoad } = params;
+    const config = { block, section, index: indexRef.value, value };
+
+    return onChange(key, config, onLoad);
   };
 
   onMounted(() => loadData());
