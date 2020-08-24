@@ -4,7 +4,7 @@
 
 .device-nav .item {
   @apply relative block px-4 pt-4 ml-2 border-transparent;
-  @apply font-bold cursor-pointer text-gray-500;
+  @apply font-bold cursor-pointer text-gray-400;
 }
 
 /* icon */
@@ -50,6 +50,9 @@
 
 /* reactive */
 
+.device-nav .item:hover {
+  @apply text-yellow-400;
+}
 .device-nav .item:hover > .icon-wrapper svg {
   @apply border-yellow-400 text-yellow-400;
 }

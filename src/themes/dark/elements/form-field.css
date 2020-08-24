@@ -1,5 +1,5 @@
 .form-field .label {
-  @apply block mb-3 font-bold;
+  @apply block mb-3 font-bold text-gray-300;
 }
 .form-field .instructions {
   @apply ml-2;

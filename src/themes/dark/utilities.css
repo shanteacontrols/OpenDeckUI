@@ -9,10 +9,13 @@
   @apply border-gray-800;
 }
 .surface-neutral {
-  @apply bg-gray-900 text-gray-500 surface-neutral-border;
+  @apply bg-gray-900 text-gray-400 surface-neutral-border;
 }
 .surface-neutral .faded {
-  @apply text-gray-700;
+  @apply text-gray-500;
+}
+.surface-neutral .text-promoted {
+  @apply text-gray-300;
 }
 
 /* surface elevated */
@@ -21,8 +24,11 @@
   @apply border-gray-800;
 }
 .surface-elevated {
-  @apply bg-black text-gray-500 surface-elevated-border;
+  @apply bg-black text-gray-400 surface-elevated-border;
 }
 .surface-elevated .faded {
-  @apply text-gray-700;
+  @apply text-gray-500;
+}
+.surface-elevated .text-promoted {
+  @apply text-gray-300;
 }
