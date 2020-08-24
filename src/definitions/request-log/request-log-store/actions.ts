@@ -4,6 +4,7 @@ import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
 import { addInfo } from "./log-type-info";
 import { saveToStorage } from "../../../util";
+import debounce from "lodash-es/debounce";
 
 // Actions
 
@@ -21,6 +22,26 @@ export const toggleLog = (): void => {
   saveToStorage("showRequestLog", state.showRequestLog);
 };
 
+const buffer = [];
+const maxStackSize = 50;
+
+const pushBuffer = () => {
+  if (!buffer.length) {
+    return;
+  }
+
+  state.stack.push(...buffer);
+  if (state.stack.length > maxStackSize) {
+    state.stack = state.stack.slice(-maxStackSize);
+  }
+};
+
+const debouncedLogUpdate = debounce(pushBuffer, 10, {
+  maxWait: 20,
+  leading: true,
+  trailing: false,
+});
+
 export const addBuffered = (logEntry: ILogEntry): void => {
   // Add highlights
   const { type, block, index, time } = logEntry;
@@ -35,8 +56,8 @@ export const addBuffered = (logEntry: ILogEntry): void => {
   }
 
   // Push to log stack
-  state.stack.push(logEntry);
-  state.stack = state.stack.slice(-99);
+  buffer.push(logEntry);
+  debouncedLogUpdate();
 };
 
 // Export
