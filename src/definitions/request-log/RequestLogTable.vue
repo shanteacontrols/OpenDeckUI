@@ -3,7 +3,6 @@
     <thead class="table-head">
       <tr class="text-left">
         <th class="w-1/12 text-center">Time</th>
-        <th class="w-1/12">ms</th>
         <th class="w-2/12">Type</th>
         <th class="w-8/12">Body</th>
       </tr>
@@ -15,11 +14,8 @@
         class="table-row"
         :class="{ 'text-red-500': logEntry.type === LogType.Error }"
       >
-        <td class="w-1/12 text-right">
-          {{ formatDate(logEntry.time) }}
-        </td>
-        <td class="w-1/12">
-          {{ logEntry.time.getMilliseconds() }}
+        <td class="w-2/12 text-right">
+          {{ formatDate(logEntry.time) }} {{ logEntry.time.getMilliseconds() }}
         </td>
         <td class="w-2/12 font-bold">
           <span v-if="logEntry.type === LogType.Request || logEntry.requestId">
