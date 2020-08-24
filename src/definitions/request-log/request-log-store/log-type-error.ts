@@ -21,7 +21,6 @@ interface ErrorParams {
 export const addError = (params: ErrorParams): void => {
   state.stack.push({
     type: LogType.Error,
-    time: new Date(),
     ...params,
   });
 

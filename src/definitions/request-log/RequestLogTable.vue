@@ -1,5 +1,5 @@
 <template>
-  <table v-if="filteredLog.length" class="table-auto request-table" colspan="2">
+  <table v-if="stack.length" class="table-auto request-table" colspan="2">
     <thead class="table-head">
       <tr class="text-left">
         <th class="w-1/12 text-center">Time</th>
@@ -9,13 +9,13 @@
     </thead>
     <tbody class="table-body">
       <tr
-        v-for="(logEntry, idx) in filteredLog"
+        v-for="(logEntry, idx) in stack"
         :key="idx"
         class="table-row"
         :class="{ 'text-red-500': logEntry.type === LogType.Error }"
       >
         <td class="w-2/12 text-right">
-          {{ formatDate(logEntry.time) }} {{ logEntry.time.getMilliseconds() }}
+          {{ formatDate(logEntry.time) }}
         </td>
         <td class="w-2/12 font-bold">
           <span v-if="logEntry.type === LogType.Request || logEntry.requestId">
@@ -37,15 +37,15 @@
             :log-entry="logEntry"
           />
           <LogRequest
-            v-if="logEntry.requestId && logEntry.type === LogType.Request"
+            v-else-if="logEntry.requestId && logEntry.type === LogType.Request"
             :request="requestStack[logEntry.requestId]"
           />
           <LogInfo
-            v-if="logEntry.type === LogType.Info"
+            v-else-if="logEntry.type === LogType.Info"
             :log-entry="logEntry"
           />
           <LogMidi
-            v-if="logEntry.type === LogType.Midi"
+            v-else-if="logEntry.type === LogType.Midi"
             :log-entry="logEntry"
           />
         </td>
@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent } from "vue";
 import { requestLogMapped, LogType } from "./request-log-store";
 import { formatDate } from "../../util";
 import { requestStack } from "../device/device-store/request-qeueue";
@@ -74,16 +74,11 @@ export default defineComponent({
     LogRequest,
   },
   setup() {
-    const filteredLog = computed(() => {
-      const filter = requestLogMapped.logFilter.value;
-      return requestLogMapped.stack.value
-        .filter((log: ILogEntry) => filter && filter[log.type])
-        .reverse();
-    });
+    const stack = { requestLogMapped };
 
     return {
       formatDate,
-      filteredLog,
+      stack,
       LogType,
       requestStack,
       ...requestLogMapped,

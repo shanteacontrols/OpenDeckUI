@@ -84,7 +84,6 @@ export const addMidi = (params: MidiEventParams): void => {
 
   const logEntry = {
     type: LogType.Midi,
-    time: new Date(),
     eventType: type,
     channel,
     data: dataArray,

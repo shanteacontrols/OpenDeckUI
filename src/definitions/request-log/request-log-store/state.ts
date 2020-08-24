@@ -15,6 +15,7 @@ export enum LogType {
 
 export interface ILogEntryBase {
   time: Date;
+  timeAbs: number;
   type: LogType;
   requestId?: number;
 }
@@ -33,6 +34,7 @@ export type IRequestLogState = {
   stack: Array<ILogEntry>;
   highlights: Record<Block, blockHighlights>;
   logFilter: Array<LogType>;
+  showRequestLog: boolean;
 };
 
 const defaultLogFilter = {

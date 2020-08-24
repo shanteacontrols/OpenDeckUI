@@ -22,29 +22,27 @@ export const toggleLog = (): void => {
   saveToStorage("showRequestLog", state.showRequestLog);
 };
 
-const buffer = [];
 const maxStackSize = 50;
+const trimDebounceMS = 10;
 
 const pushBuffer = () => {
-  if (!buffer.length) {
-    return;
-  }
-
-  state.stack.push(...buffer);
   if (state.stack.length > maxStackSize) {
-    state.stack = state.stack.slice(-maxStackSize);
+    state.stack = state.stack.slice(0, maxStackSize);
   }
 };
 
-const debouncedLogUpdate = debounce(pushBuffer, 10, {
-  maxWait: 20,
+const debouncedLogUpdate = debounce(pushBuffer, trimDebounceMS, {
   leading: true,
+  maxWait: trimDebounceMS,
   trailing: false,
 });
 
 export const addBuffered = (logEntry: ILogEntry): void => {
+  const { type, block, index } = logEntry;
+  const time = new Date();
+  const timeAbs = time.getTime();
+
   // Add highlights
-  const { type, block, index, time } = logEntry;
   if (type === LogType.Info) {
     const blockHighlights = state.highlights[block];
     if (!blockHighlights) {
@@ -52,11 +50,20 @@ export const addBuffered = (logEntry: ILogEntry): void => {
       return;
     }
 
-    blockHighlights[index] = time.getTime();
+    blockHighlights[index] = timeAbs;
+  }
+
+  // Skip log types not included in filter (better memory handling)
+  if (!state.showRequestLog || !state.logFilter[type]) {
+    return;
   }
 
   // Push to log stack
-  buffer.push(logEntry);
+  state.stack.unshift({
+    ...logEntry,
+    time,
+    timeAbs,
+  });
   debouncedLogUpdate();
 };
 

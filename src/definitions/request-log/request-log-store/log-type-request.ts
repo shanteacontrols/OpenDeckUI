@@ -1,12 +1,12 @@
-import { LogType, ILogEntryBase, state } from "./state";
+import { LogType, ILogEntryBase } from "./state";
+import { addBuffered } from "./actions";
 
 export interface ILogEntryRequest extends ILogEntryBase {
   type: LogType.Request;
 }
 
 export const addRequest = (requestId: number): void => {
-  state.stack.push({
-    time: new Date(),
+  addBuffered({
     type: LogType.Request,
     requestId,
   } as ILogEntryRequest);

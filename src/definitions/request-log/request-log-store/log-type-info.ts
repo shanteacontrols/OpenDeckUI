@@ -18,6 +18,5 @@ interface InfoParams {
 export const addInfo = (params: InfoParams): void =>
   addBuffered({
     type: LogType.Info,
-    time: new Date(),
     ...params,
   });

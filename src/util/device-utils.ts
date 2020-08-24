@@ -74,8 +74,9 @@ export const formatDate = (date?: Date): string => {
   const h = date.getHours();
   const m = padZeros(date.getMinutes());
   const s = padZeros(date.getSeconds());
+  const ms = date.getMilliseconds();
 
-  return `${padZeros(h)}:${m}:${s}`;
+  return `${padZeros(h)}:${m}:${s} ${ms}`;
 };
 
 // Use a simple delay that respects a promise chain
