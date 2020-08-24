@@ -19,6 +19,8 @@ export enum ErrorCode {
   UI_QUEUE_REQ_NONE_ACTIVE = 714,
   UI_QUEUE_SPECIAL_REQ_ID_MISMATCH = 715,
   UI_QUEUE_REQUEST_DECODE_ERROR = 716,
+  UI_QUEUE_REQUEST_SEND_ERROR = 717,
+  UI_QUEUE_REQ_DATA_INVALID = 718,
 }
 
 interface IErrorDefinition {
@@ -114,6 +116,14 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   [ErrorCode.UI_QUEUE_REQUEST_DECODE_ERROR]: {
     code: ErrorCode.UI_QUEUE_REQUEST_DECODE_ERROR,
     description: "Failed to decode request data.",
+  },
+  [ErrorCode.UI_QUEUE_REQUEST_SEND_ERROR]: {
+    code: ErrorCode.UI_QUEUE_REQUEST_SEND_ERROR,
+    description: "Failed to send request.",
+  },
+  [ErrorCode.UI_QUEUE_REQ_DATA_INVALID]: {
+    code: ErrorCode.UI_QUEUE_REQ_DATA_INVALID,
+    description: "Invalid request data.",
   },
 };
 

@@ -6,6 +6,7 @@ import {
   RequestType,
   IRequestDefinition,
   ISectionDefinition,
+  SectionType,
 } from "./interface";
 import { BlockMap } from "./block";
 import { IRequestConfig, IDeviceState, IQueuedRequest } from "./device";

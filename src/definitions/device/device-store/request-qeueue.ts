@@ -69,7 +69,7 @@ const getNextRequestId = () => {
 
 export const requestStack = ref({} as Record<number, IQueuedRequest>);
 
-const addToQueue = (
+const addToQueue = async (
   request: Omit<
     IQueuedRequest,
     "id" | "state" | "responseCount" | "responseData" | "time"
@@ -133,17 +133,26 @@ const startRequest = async (id: number) => {
     return;
   }
 
-  request.time.started = new Date();
-  deviceState.output.sendSysex(openDeckManufacturerId, request.payload);
+  try {
+    deviceState.output.sendSysex(openDeckManufacturerId, request.payload);
+    request.time.started = new Date();
+    requestQueue.activeRequestId.value = id;
+    request.state = RequestState.Sent;
 
-  requestQueue.activeRequestId.value = id;
-  request.state = RequestState.Sent;
-
-  const definition = requestDefinitions[request.command];
-  if (definition.expectsNoResponse) {
-    requestQueue.activeRequestId.value = null;
-    request.state = RequestState.Done;
-    request.promiseResolve();
+    const definition = requestDefinitions[request.command];
+    if (definition.expectsNoResponse) {
+      requestQueue.activeRequestId.value = null;
+      request.state = RequestState.Done;
+      request.promiseResolve();
+    }
+  } catch (error) {
+    requestLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQUEST_SEND_ERROR,
+      requestId: id,
+      error,
+    });
+    request.state = RequestState.Error;
+    request.promiseReject();
   }
 };
 
@@ -416,7 +425,7 @@ export const sendMessage = async (params: IRequestParams): Promise<any> => {
   return new Promise((resolve, reject) => {
     const payload = prepareRequestPayload(definition, config);
 
-    addToQueue({
+    return addToQueue({
       command,
       payload,
       handler,

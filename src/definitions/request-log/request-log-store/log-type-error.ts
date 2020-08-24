@@ -1,6 +1,7 @@
-import { LogType, ILogEntryBase, state } from "./state";
+import { LogType, ILogEntryBase } from "./state";
 import { ErrorCode, getErrorDefinition } from "../../../definitions";
 import { logger } from "../../../util";
+import { addBuffered } from "./actions";
 
 export interface ILogEntryError extends ILogEntryBase {
   type: LogType.Error;
@@ -19,7 +20,7 @@ interface ErrorParams {
 }
 
 export const addError = (params: ErrorParams): void => {
-  state.stack.push({
+  addBuffered({
     type: LogType.Error,
     ...params,
   });

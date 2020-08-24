@@ -36,6 +36,20 @@ let connectionWatcherTimer = null;
 
 // Actions
 
+const reset = (): void => {
+  if (deviceState.input) {
+    sendMessage({
+      command: Request.CloseConnection,
+      handler: () =>
+        (deviceState.connectionState = DeviceConnectionState.Closed),
+    });
+    deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
+    detachMidiEventHandlers(deviceState.input);
+  }
+
+  Object.assign(deviceState, defaultState);
+};
+
 const setInfo = (data: Partial<IDeviceState>): void => {
   Object.assign(deviceState, data);
 };
@@ -140,16 +154,7 @@ const connectDevice = async (outputId: string): Promise<void> => {
 
 export const closeConnection = async (): Promise<any> => {
   stopDeviceConnectionWatcher();
-  if (deviceState.input) {
-    deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
-    detachMidiEventHandlers(deviceState.input);
-    sendMessage({
-      command: Request.CloseConnection,
-      handler: () =>
-        (deviceState.connectionState = DeviceConnectionState.Closed),
-    });
-  }
-  Object.assign(deviceState, defaultState);
+  reset();
 };
 
 export const ensureConnection = async (): Promise<any> => {
@@ -255,9 +260,10 @@ const sendMessageAndRebootUi = async (
     handler,
   });
 
-  closeConnection();
+  // Note: router.push doesn't perform url change for some reason, so doing it the old way
+  window.location = "/";
 
-  return delay(200).then(() => router.push({ name: "home" }));
+  return delay(50).then(closeConnection);
 };
 
 const loadDeviceInfo = async (): Promise<any> => {
@@ -354,16 +360,12 @@ export const getComponentSettings = async (
 
 export const setComponentSectionValue = async (
   config: IRequestConfig,
-  value: number,
   handler: (val: any) => void,
 ): Promise<any> =>
   sendMessage({
     command: Request.SetValue,
     handler,
-    config: {
-      ...config,
-      value,
-    },
+    config,
   });
 
 // Export
@@ -395,6 +397,7 @@ export interface IDeviceActions {
 }
 
 export const deviceStoreActions: IDeviceActions = {
+  reset,
   setInfo,
   connectDevice,
   closeConnection,
