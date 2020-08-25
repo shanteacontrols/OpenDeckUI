@@ -3,10 +3,12 @@
     <SpinnerOverlay />
   </Hero>
 
-  <template v-else-if="isConnected">
+  <div v-else-if="isConnected" class="relative">
     <DeviceNav />
     <router-view></router-view>
-  </template>
+
+    <SpinnerOverlay v-if="isSystemOperationRunning" />
+  </div>
 
   <Hero v-else custom="h-64" title="No WebMidi device found." />
 
@@ -34,6 +36,7 @@ export default defineComponent({
       closeConnection,
       isConnected,
       isConnecting,
+      isSystemOperationRunning,
     } = deviceStoreMapped;
 
     onMounted(async () => {
@@ -51,6 +54,7 @@ export default defineComponent({
     return {
       isConnected,
       isConnecting,
+      isSystemOperationRunning,
     };
   },
 });

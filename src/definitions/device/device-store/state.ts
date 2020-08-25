@@ -30,6 +30,7 @@ export const defaultState: IDeviceState = {
   supportedPresetsCount: (null as unknown) as number,
   numberOfComponents: [] as Array<number>,
   unsupportedComponents,
+  isSystemOperationRunning: false,
 };
 
 export const deviceState = reactive(defaultState);

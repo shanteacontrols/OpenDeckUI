@@ -32,4 +32,5 @@ export type IDeviceState = {
   supportedPresetsCount: number;
   numberOfComponents: Array<number>;
   unsupportedComponents: Record<number, Record<string, ControlDisableType>>; // block, key, type
+  isSystemOperationRunning: boolean;
 };

@@ -3,11 +3,7 @@ import { InputEventBase } from "webmidi";
 import { deviceState } from "./state";
 import { DeviceConnectionState, ControlDisableType } from "./interface";
 import { disableControl } from "./actions";
-import {
-  logger,
-  arrayEqual,
-  convertDataValuesToSingleByte,
-} from "../../../util";
+import { arrayEqual, convertDataValuesToSingleByte } from "../../../util";
 import {
   requestDefinitions,
   Request,
@@ -154,13 +150,18 @@ const startRequest = async (id: number) => {
   }
 
   try {
+    const reqDef = getDefinition(request.command);
+
+    if (reqDef.isSystemOperation) {
+      deviceState.isSystemOperationRunning = true;
+    }
+
     deviceState.output.sendSysex(openDeckManufacturerId, request.payload);
     request.time.started = new Date();
     requestQueue.activeRequestId.value = id;
     request.state = RequestState.Sent;
 
-    const definition = getDefinition(request.command);
-    if (definition.expectsNoResponse) {
+    if (reqDef.expectsNoResponse) {
       requestQueue.activeRequestId.value = null;
       request.state = RequestState.Done;
       request.promiseResolve();
@@ -333,7 +334,6 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   if (!request) {
     requestLog.actions.addError({
       errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
-      requestId: id,
     });
     return;
   }
@@ -388,6 +388,10 @@ const onRequestDone = (
   request.time.finished = new Date();
 
   requestQueue.activeRequestId.value = (null as unknown) as number;
+
+  if (deviceState.isSystemOperationRunning) {
+    deviceState.isSystemOperationRunning = false;
+  }
 
   const nextId = request.id + 1;
   if (requestStack.value[nextId]) {

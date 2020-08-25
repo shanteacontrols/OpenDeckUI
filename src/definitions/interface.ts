@@ -151,6 +151,7 @@ export interface IRequestDefinition {
   specialRequestId?: number;
   // Flag for priority messages needed for preparing data communication
   isConnectionInfoRequest?: boolean;
+  isSystemOperation?: boolean;
   expectsNoResponse?: boolean;
   getPayload?: (config?: any) => number[];
   responseHandler?: (response: number[], valueSize?: number) => any;
