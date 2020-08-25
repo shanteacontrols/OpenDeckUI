@@ -11,6 +11,10 @@ export const convertToHex = (value: number | number[]): string | string[] => {
 // Byte conversion
 
 export const convertDataValuesToSingleByte = (values: number[]): number[] => {
+  if (values.length % 2 !== 0) {
+    throw new Error("CANNOT DECODE 2 BYTE VALUE: UNEVEN DATA VALUE LENGTH");
+  }
+
   const converted: number[] = [];
 
   for (let index = 0; index < values.length / 2; index++) {

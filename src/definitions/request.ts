@@ -9,9 +9,8 @@ import {
   SectionType,
 } from "./interface";
 import { BlockMap } from "./block";
-import { IRequestConfig, IDeviceState, IQueuedRequest } from "./device";
+import { IRequestConfig, IDeviceState } from "./device";
 import {
-  arrayEqual,
   convertValueToDoubleByte,
   convertDataValuesToSingleByte,
 } from "../util";
@@ -60,14 +59,14 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Predefined,
     isConnectionInfoRequest: true,
     specialRequestId: 2,
-    parser: (response: number[]): number => {
+    parser: (data: number[]): number => {
       // Response is either [1] in single byte protocol or
       // [0, 2] in double byte protocol
-      if (response.length > 1) {
-        return convertDataValuesToSingleByte(response.slice(1))[0];
+      if (data.length > 1) {
+        return convertDataValuesToSingleByte(data)[0];
       }
 
-      return response[0] || 1;
+      return data[0] || 1;
     },
   },
   [Request.GetValuesPerMessage]: {
@@ -75,7 +74,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Predefined,
     isConnectionInfoRequest: true,
     specialRequestId: 3,
-    decode: convertDataValuesToSingleByte,
+    decodeDoubleByte: true,
     parser: (response: number[]): number => response[0],
   },
 
@@ -86,7 +85,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Custom,
     specialRequestId: 86, // Hex: 56
     isConnectionInfoRequest: true,
-    decode: convertDataValuesToSingleByte,
+    decodeDoubleByte: true,
     parser: (response: number[]): string =>
       "v" + response[0] + "." + response[1] + "." + response[2],
   },
@@ -94,7 +93,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.IdentifyBoard,
     type: RequestType.Custom,
     specialRequestId: 66, // Hex: 42
-    decode: convertDataValuesToSingleByte,
+    decodeDoubleByte: true,
     parser: (response: number[]): number[] => response.slice(0, 4),
   },
   [Request.GetFirmwareVersionAndHardwareUid]: {
@@ -107,7 +106,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.GetNumberOfSupportedComponents,
     type: RequestType.Custom,
     specialRequestId: 77, // Hex: 4D
-    decode: convertDataValuesToSingleByte,
+    decodeDoubleByte: true,
     parser: (response: number[]): any => ({
       [Block.Button]: response[0],
       [Block.Encoder]: response[1],
@@ -120,7 +119,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Custom,
     specialRequestId: 80, // Hex: 50
     isConnectionInfoRequest: true,
-    decode: convertDataValuesToSingleByte,
+    decodeDoubleByte: true,
     parser: (response: number[]): number => response[0],
   },
   [Request.Reboot]: {
@@ -134,7 +133,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.GetBootLoaderSupport,
     type: RequestType.Custom,
     specialRequestId: 81, // Hex: 51
-    decode: convertDataValuesToSingleByte,
+    decodeDoubleByte: true,
     parser: (response: number[]): number => response[0],
   },
   [Request.BootloaderMode]: {
@@ -167,17 +166,8 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [Request.GetValue]: {
     key: Request.GetValue,
     type: RequestType.Configuration,
-    decode: (response: number[], request: IQueuedRequest): number[] => {
-      const expectedEmbed = [1, ...request.payload.slice(1)];
-      const foundEmbed = response.slice(0, expectedEmbed.length);
-      const data = response.slice(expectedEmbed.length);
-
-      if (!arrayEqual(expectedEmbed, foundEmbed)) {
-        throw new Error("EMBEDDED RESPONSE MISMATCH");
-      }
-
-      return convertDataValuesToSingleByte(data);
-    },
+    decodeDoubleByte: true,
+    responseEmbedsRequest: true,
     getPayload: (config: IRequestConfig, state: IDeviceState): number[] => {
       const payload = [
         MessageStatus.Request,
@@ -204,8 +194,8 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   [Request.SetValue]: {
     key: Request.SetValue,
     type: RequestType.Configuration,
-    decode: (response: number[]): number[] =>
-      convertDataValuesToSingleByte(response.slice(-2)),
+    decodeDoubleByte: true,
+    responseEmbedsRequest: true,
     getPayload: (config: IRequestConfig, state: IDeviceState): number[] => {
       const payload = [
         MessageStatus.Request,
@@ -229,7 +219,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   },
 };
 
-export const findRequestDefinitionByConfig = (
+export const findSectionDefinitionByConfig = (
   config: IRequestConfig,
 ): ISectionDefinition | undefined => {
   const blockDef = BlockMap[config.block];

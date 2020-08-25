@@ -85,7 +85,7 @@ import { RequestState } from "../interface";
 import {
   Block,
   SectionType,
-  findRequestDefinitionByConfig,
+  findSectionDefinitionByConfig,
 } from "../../definitions";
 import { getDifferenceInMs } from "../../util";
 
@@ -99,16 +99,16 @@ export default defineComponent({
   },
   setup() {
     const getDefinitionLabel = (config: IRequestConfig): string => {
-      const definition = findRequestDefinitionByConfig(config);
-      if (!definition) {
+      const sectionDef = findSectionDefinitionByConfig(config);
+      if (!sectionDef) {
         return "";
       }
 
       const indexString =
-        definition.type === SectionType.Setting ? " - " : `# ${config.index}`;
+        sectionDef.type === SectionType.Setting ? " - " : `# ${config.index}`;
 
       return `- ${Block[config.block]} ${indexString} ${
-        definition && definition.label
+        sectionDef && sectionDef.label
       }`;
     };
 

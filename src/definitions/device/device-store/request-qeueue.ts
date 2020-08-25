@@ -3,18 +3,23 @@ import { InputEventBase } from "webmidi";
 import { deviceState } from "./state";
 import { DeviceConnectionState, ControlDisableType } from "./interface";
 import { disableControl } from "./actions";
-import { logger, convertDataValuesToSingleByte } from "../../../util";
+import {
+  logger,
+  arrayEqual,
+  convertDataValuesToSingleByte,
+} from "../../../util";
 import {
   requestDefinitions,
   Request,
   IRequestDefinition,
-  findRequestDefinitionByConfig,
+  findSectionDefinitionByConfig,
 } from "../../request";
 import {
   RequestType,
   openDeckManufacturerId,
   ComponentInfoRequestID,
   RequestState,
+  IRequestDefinition,
 } from "../../interface";
 import { ErrorCode, getErrorDefinition } from "../../error";
 import {
@@ -27,6 +32,12 @@ interface IRequestParams {
   command: Request;
   config?: IRequestConfig;
   handler: (data: any) => void;
+}
+
+export interface IProcessedEventData {
+  data: number[];
+  messageStatus: number;
+  messagePart: number;
 }
 
 export interface IQueuedRequest {
@@ -57,6 +68,8 @@ interface IRequestQueue {
   nextRequestId: number;
 }
 
+export const requestStack = ref<Record<number, IQueuedRequest>>({});
+
 export const requestQueue: IRequestQueue = {
   activeRequestId: ref((null as unknown) as number),
   nextRequestId: 100, // Must be over 0 to avoid conflicts with boolean checks
@@ -67,7 +80,12 @@ const getNextRequestId = () => {
   return requestQueue.nextRequestId;
 };
 
-export const requestStack = ref<Record<number, IQueuedRequest>>({});
+const getDefinition = (command: Command): IRequestDefinition =>
+  requestDefinitions[command];
+
+const isEventMidiMMC = (event: InputEventBase<"sysex">) =>
+  event.data.length === 6 &&
+  Object.keys(MidiEventTypeMMC).includes(String(event.data[4]));
 
 const addToQueue = async (
   request: Omit<
@@ -85,9 +103,11 @@ const addToQueue = async (
     return;
   }
 
+  const { specialRequestId } = getDefinition(request.command);
   const requestToStore = {
     ...request,
     id,
+    specialRequestId,
     state: RequestState.Pending,
     responseCount: 0,
     time: {
@@ -139,7 +159,7 @@ const startRequest = async (id: number) => {
     requestQueue.activeRequestId.value = id;
     request.state = RequestState.Sent;
 
-    const definition = requestDefinitions[request.command];
+    const definition = getDefinition(request.command);
     if (definition.expectsNoResponse) {
       requestQueue.activeRequestId.value = null;
       request.state = RequestState.Done;
@@ -173,128 +193,55 @@ const getActiveRequest = (): IQueuedRequest => {
   return request;
 };
 
-const onRequestDone = (
-  id: number,
-  messageStatus: number,
-  messagePart: number,
-  specialRequestId: number,
-  responseData: number[],
-  parsed: number | number[] | string,
-) => {
-  const request = requestStack.value[id];
-  if (!request) {
-    requestLog.actions.addError({
-      errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
-      requestId: id,
-    });
-    return;
-  }
-
-  if (messageStatus > 1) {
-    request.state = RequestState.Error;
-    const errorDefinition = getErrorDefinition(messageStatus);
-    request.errorMessage = errorDefinition.description;
-    request.promiseReject(errorDefinition.code);
-
-    requestLog.actions.addError({
-      message: errorDefinition.description,
-      errorCode: errorDefinition.code,
-      requestId: id,
-    });
-
-    if (request.config) {
-      const definition = findRequestDefinitionByConfig(request.config);
-      // Disable this control in UI if not supported
-      if (definition && messageStatus === ErrorCode.NOT_SUPPORTED) {
-        disableControl(definition, ControlDisableType.NotSupported);
-      }
-      // Show notice that firmware doesn't support this control
-      if (definition && messageStatus === ErrorCode.INDEX) {
-        disableControl(definition, ControlDisableType.MissingIndex);
-      }
-    }
-  } else {
-    request.state = RequestState.Done;
-    request.responseData = responseData;
-    request.parsed = parsed;
-    request.messagePart = messagePart;
-    request.messageStatus = messageStatus;
-    request.specialRequestId = specialRequestId;
-    request.promiseResolve();
-  }
-
-  request.time.finished = new Date();
-  requestQueue.activeRequestId.value = (null as unknown) as number;
-
-  const nextId = id + 1;
-  if (requestStack.value[nextId]) {
-    startRequest(nextId);
-  }
-};
-
 const parseEventDataSingleByte = (
-  eventData: Uint8Array,
+  processed: IProcessedEventData,
+  definition: IRequestDefinition,
+): any =>
+  definition.parser ? definition.parser(processed.data) : processed.data;
+
+const removeEmbed = (
+  processed: IProcessedEventData,
   request: IQueuedRequest,
 ) => {
-  const response = Array.from(eventData);
-  const definition = requestDefinitions[request.command];
+  const { data, messageStatus, messagePart } = processed;
+  // Ensure response has returned sent request as prefix of data
+  const expectedEmbed = [1, ...request.payload.slice(1)];
+  // debugger;
+  const eventData = [messageStatus, messagePart, ...data];
+  const foundEmbed = eventData.slice(0, expectedEmbed.length);
+  if (!arrayEqual(expectedEmbed, foundEmbed)) {
+    throw new Error("EMBEDDED RESPONSE MISMATCH");
+  }
 
-  const messageStatus = response[4];
-  const messagePart = response[5];
-  const data = response.slice(6, -1);
-  const parsed = definition.parser ? definition.parser(data) : undefined;
-
-  return {
-    messageStatus,
-    messagePart,
-    data,
-    parsed,
-  };
+  return eventData.slice(expectedEmbed.length);
 };
 
 const parseEventDataDoubleByte = (
-  eventData: Uint8Array,
+  processed: IProcessedEventData,
+  definition: IRequestDefinition,
   request: IQueuedRequest,
-) => {
-  let data = Array.from(eventData).slice(4, -1);
-  const definition = requestDefinitions[request.command];
-  const messageStatus = data[0];
-  const messagePart = data[1];
-  const { specialRequestId } = definition;
-
-  if (specialRequestId) {
-    // Remove status/part bytes for special request decoding
-    data = data.slice(2);
-    const requestIdShifted = data.shift();
-    if (requestIdShifted !== specialRequestId) {
-      requestLog.actions.addError({
-        errorCode: ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH,
-        message: `Special Request ID mismatch ${specialRequestId} vs ${requestIdShifted}`,
-        payload: event.data,
-      });
-    }
-  }
-
-  let decoded;
+): any => {
+  const { data } = processed;
+  const { decodeDoubleByte, responseEmbedsRequest } = definition;
+  let decoded = data;
   try {
-    decoded = (definition.decode && definition.decode(data, request)) || data;
+    if (decodeDoubleByte) {
+      const dataToDecode = responseEmbedsRequest
+        ? removeEmbed(processed, request)
+        : data;
+
+      decoded = convertDataValuesToSingleByte(dataToDecode);
+    }
   } catch (error) {
     requestLog.actions.addError({
       errorCode: ErrorCode.UI_QUEUE_REQUEST_DECODE_ERROR,
-      message: "Failed to decode request data",
       payload: data,
       error,
     });
+    return undefined;
   }
-  const parsed = definition.parser ? definition.parser(decoded) : decoded;
 
-  return {
-    messageStatus,
-    messagePart,
-    data,
-    parsed,
-    specialRequestId,
-  };
+  return definition.parser ? definition.parser(decoded) : decoded;
 };
 
 const procesInfoMessage = (eventData: Uint8Array): boolean => {
@@ -317,30 +264,81 @@ const procesInfoMessage = (eventData: Uint8Array): boolean => {
   return true;
 };
 
-const parseEventData = (eventData: Uint8Array, request: IQueuedRequest) =>
-  deviceState.valueSize === 2
-    ? parseEventDataDoubleByte(eventData, request)
-    : parseEventDataSingleByte(eventData, request);
+const procesEventData = (
+  eventData: Uint8Array,
+  request: IQueuedRequest,
+  specialRequestId?: number,
+): IProcessedEventData => {
+  const eventDataArray = Array.from(eventData);
+  const messageStatus = eventDataArray[4];
+  const messagePart = eventDataArray[5];
+  const data = Array.from(eventData).slice(6, -1);
+
+  if (messageStatus > 1) {
+    request.state = RequestState.Error;
+    const errorDefinition = getErrorDefinition(messageStatus);
+    request.errorMessage = errorDefinition.description;
+    request.promiseReject(errorDefinition.code);
+
+    requestLog.actions.addError({
+      message: errorDefinition.description,
+      errorCode: errorDefinition.code,
+      requestId: request.id,
+    });
+
+    if (request.config) {
+      const sectionDef = findSectionDefinitionByConfig(request.config);
+      if (sectionDef && messageStatus === ErrorCode.NOT_SUPPORTED) {
+        disableControl(sectionDef, ControlDisableType.NotSupported);
+      }
+      if (sectionDef && messageStatus === ErrorCode.INDEX) {
+        disableControl(sectionDef, ControlDisableType.MissingIndex);
+      }
+    }
+  }
+
+  if (specialRequestId) {
+    const requestIdShifted = data.shift();
+    if (requestIdShifted !== specialRequestId) {
+      requestLog.actions.addError({
+        errorCode: ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH,
+        message: `Special Request ID mismatch ${specialRequestId} vs ${requestIdShifted}`,
+        payload: event.data,
+      });
+    }
+  }
+
+  return {
+    messageStatus,
+    messagePart,
+    data,
+  };
+};
 
 export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   if (procesInfoMessage(event.data)) {
     return;
   }
 
-  const request = getActiveRequest();
-  if (!request || request.state !== RequestState.Sent) {
-    // Note: MMC MIDI events are sent as SYSEX events, so handle them specifically here
-    if (
-      event.data.length === 6 &&
-      Object.keys(MidiEventTypeMMC).includes(String(event.data[4]))
-    ) {
-      requestLog.actions.addMidi({
-        type: MidiEventTypeMMC[event.data[4]],
-        data: [event.data[4]],
-      });
-      return;
-    }
+  // Note: MMC MIDI messages are sent as regular SYSEX events
+  if (isEventMidiMMC(event)) {
+    requestLog.actions.addMidi({
+      type: MidiEventTypeMMC[event.data[4]],
+      data: [event.data[4]],
+    });
+    return;
+  }
 
+  const request = getActiveRequest();
+  if (!request) {
+    requestLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
+      requestId: id,
+    });
+    return;
+  }
+
+  if (request.state !== RequestState.Sent) {
     requestLog.actions.addError({
       errorCode: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
       payload: event.data,
@@ -348,17 +346,19 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
     return;
   }
 
-  const { handler, expectedResponseCount } = request;
-  const {
-    messageStatus,
-    messagePart,
-    specialRequestId,
-    data,
-    parsed,
-  } = parseEventData(event.data, request);
-
   request.responseCount++;
 
+  const definition = getDefinition(request.command);
+  const { specialRequestId } = definition;
+  const processed = procesEventData(event.data, request, specialRequestId);
+  const { data } = processed;
+
+  const parsed =
+    deviceState.valueSize === 2
+      ? parseEventDataDoubleByte(processed, definition, request)
+      : parseEventDataSingleByte(processed, definition);
+
+  const { handler, expectedResponseCount } = request;
   const receivedAllExpectedResponses = expectedResponseCount
     ? request.responseCount === expectedResponseCount
     : true; // single response expected
@@ -367,18 +367,32 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   handler(parsed || data);
 
   if (receivedAllExpectedResponses) {
-    onRequestDone(
-      request.id,
-      messageStatus,
-      messagePart,
-      specialRequestId,
-      data,
-      parsed,
-    );
-    return;
+    return onRequestDone(request, processed, parsed);
   }
 
   logger.log("MULTIPART RESPONSE");
+};
+
+const onRequestDone = (
+  request: IQueuedRequest,
+  processed: IProcessedEventData,
+  parsed: number | number[] | string,
+) => {
+  const { messageStatus, messagePart, data } = processed;
+  request.state = RequestState.Done;
+  request.responseData = data;
+  request.parsed = parsed;
+  request.messagePart = messagePart;
+  request.messageStatus = messageStatus;
+  request.promiseResolve();
+  request.time.finished = new Date();
+
+  requestQueue.activeRequestId.value = (null as unknown) as number;
+
+  const nextId = request.id + 1;
+  if (requestStack.value[nextId]) {
+    startRequest(nextId);
+  }
 };
 
 const prepareRequestPayload = (
@@ -404,7 +418,7 @@ const prepareRequestPayload = (
 
 export const sendMessage = async (params: IRequestParams): Promise<any> => {
   const { command, handler, config } = params;
-  const definition = requestDefinitions[command];
+  const definition = getDefinition(command);
 
   // Delay any data requests until connection info messages exchanged
   if (!definition.isConnectionInfoRequest) {

@@ -154,7 +154,8 @@ export interface IRequestDefinition {
   expectsNoResponse?: boolean;
   getPayload?: (config?: any) => number[];
   responseHandler?: (response: number[], valueSize?: number) => any;
-  decode?: (response: number[]) => any;
+  decodeDoubleByte?: boolean;
+  responseEmbedsRequest?: boolean;
   parser?: (response: number[]) => any;
 }
 
