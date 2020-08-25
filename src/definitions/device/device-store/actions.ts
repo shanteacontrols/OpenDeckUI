@@ -1,8 +1,9 @@
 import semverGt from "semver/functions/gt";
 import marked from "marked";
 import { Input, Output } from "webmidi";
+import FileSaver from "file-saver";
 
-import { logger, delay } from "../../../util";
+import { logger, delay, arrayEqual, convertToHex } from "../../../util";
 import { Request } from "../../../definitions";
 import router from "../../../router";
 import {
@@ -162,12 +163,12 @@ const connectDevice = async (outputId: string): Promise<void> => {
   return deviceState.connectionPromise;
 };
 
-export const closeConnection = async (): Promise<any> => {
+export const closeConnection = async (): Promise<void> => {
   stopDeviceConnectionWatcher();
   reset();
 };
 
-export const ensureConnection = async (): Promise<any> => {
+export const ensureConnection = async (): Promise<void> => {
   if (deviceState.connectionState !== DeviceConnectionState.Closed) {
     return;
   }
@@ -179,7 +180,7 @@ export const ensureConnection = async (): Promise<any> => {
   deviceState.connectionState = DeviceConnectionState.Open;
 };
 
-export const startBootLoaderMode = async (): Promise<any> => {
+export const startBootLoaderMode = async (): Promise<void> => {
   await sendMessage({
     command: Request.BootloaderMode,
     handler: () => logger.log("Bootloader mode started"),
@@ -244,12 +245,12 @@ export const startUpdatesCheck = async (): Promise<Array<IOpenDeckRelease>> => {
     }));
 };
 
-export const startFactoryReset = async (): Promise<any> => {
+export const startFactoryReset = async (): Promise<void> => {
   const handler = () => logger.log("Bootloader mode started");
   await sendMessageAndRebootUi(Request.FactoryReset, handler);
 };
 
-export const startReboot = async (): Promise<any> => {
+export const startReboot = async (): Promise<void> => {
   const handler = () => logger.log("Reboot mode started");
   await sendMessageAndRebootUi(Request.Reboot, handler);
 };
@@ -276,7 +277,7 @@ const sendMessageAndRebootUi = async (
   return delay(50).then(closeConnection);
 };
 
-const loadDeviceInfo = async (): Promise<any> => {
+const loadDeviceInfo = async (): Promise<void> => {
   await sendMessage({
     command: Request.IdentifyBoard,
     handler: (value: number[]) => {
@@ -309,6 +310,46 @@ const loadDeviceInfo = async (): Promise<any> => {
     handler: (supportedPresetsCount: number) =>
       setInfo({ supportedPresetsCount }),
   });
+};
+
+// Backup
+
+const startBackup = async (): Promise<void> => {
+  let receivedCount = 0;
+  let firstResponse = null;
+  const backupData = [];
+
+  const handler = (data) => {
+    if (!receivedCount) {
+      firstResponse = data;
+    }
+    const isLastMessage = receivedCount && arrayEqual(firstResponse, data);
+
+    receivedCount = receivedCount + 1;
+    backupData.push(data.map(convertToHex).join(","));
+
+    if (isLastMessage) {
+      const blob = new Blob([backupData.join("\r\n")], {
+        type: "text/plain;charset=utf-8",
+      });
+
+      const timeString = new Date()
+        .toISOString()
+        .slice(0, -8)
+        .replace(":", "-")
+        .replace("T", "-");
+
+      FileSaver.saveAs(blob, `OpenDeckUI-Backup-${timeString}.sysex`);
+    }
+
+    // Signal End of broadcast when response is identical to the first one
+    return isLastMessage;
+  };
+
+  sendMessage({
+    command: Request.Backup,
+    handler,
+  }).catch((error) => logger.error("Failed to read component config", error));
 };
 
 // Section / Component values
@@ -372,7 +413,7 @@ export const getComponentSettings = async (
 export const setComponentSectionValue = async (
   config: IRequestConfig,
   handler: (val: any) => void,
-): Promise<any> =>
+): Promise<void> =>
   sendMessage({
     command: Request.SetValue,
     handler,
@@ -396,6 +437,7 @@ export interface IDeviceActions {
   startFirmwareUpdate: () => Promise<void>;
   isControlDisabled: (def: ISectionDefinition) => boolean;
   disableControl: (def: ISectionDefinition) => void;
+  startBackup: () => Promise<void>;
   getComponentSettings: (
     definition: Dictionary<ISectionDefinition>,
     block: Block,
@@ -425,6 +467,7 @@ export const deviceStoreActions: IDeviceActions = {
   loadDeviceInfo,
   isControlDisabled,
   disableControl,
+  startBackup,
   getComponentSettings,
   setComponentSectionValue,
 };

@@ -207,7 +207,6 @@ const removeEmbed = (
   const { data, messageStatus, messagePart } = processed;
   // Ensure response has returned sent request as prefix of data
   const expectedEmbed = [1, ...request.payload.slice(1)];
-  // debugger;
   const eventData = [messageStatus, messagePart, ...data];
   const foundEmbed = eventData.slice(0, expectedEmbed.length);
   if (!arrayEqual(expectedEmbed, foundEmbed)) {
@@ -349,28 +348,33 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   request.responseCount++;
 
   const definition = getDefinition(request.command);
-  const { specialRequestId } = definition;
-  const processed = procesEventData(event.data, request, specialRequestId);
-  const { data } = processed;
+  const { specialRequestId, hasMultiPartResponse } = definition;
 
-  const parsed =
-    deviceState.valueSize === 2
-      ? parseEventDataDoubleByte(processed, definition, request)
-      : parseEventDataSingleByte(processed, definition);
+  let data;
+  let parsed;
+  let processed;
+  if (request.command === Request.Backup) {
+    data = Array.from(event.data);
+    processed = { messageStatus: 1, messagePart: 0, data };
+  } else {
+    processed = procesEventData(event.data, request, specialRequestId);
+    data = processed.data;
+    parsed =
+      deviceState.valueSize === 2
+        ? parseEventDataDoubleByte(processed, definition, request)
+        : parseEventDataSingleByte(processed, definition);
+  }
 
-  const { handler, expectedResponseCount } = request;
-  const receivedAllExpectedResponses = expectedResponseCount
-    ? request.responseCount === expectedResponseCount
-    : true; // single response expected
+  const { handler } = request;
+  const isLastMultipartMessage = handler(parsed || data);
 
-  // For multipart responses, we call handler multiple times
-  handler(parsed || data);
+  // For multipart responses, we expect handler to return true after  last message
+  const receivedAllExpectedResponses =
+    !hasMultiPartResponse || isLastMultipartMessage;
 
   if (receivedAllExpectedResponses) {
     return onRequestDone(request, processed, parsed);
   }
-
-  logger.log("MULTIPART RESPONSE");
 };
 
 const onRequestDone = (

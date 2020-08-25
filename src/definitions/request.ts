@@ -28,6 +28,7 @@ export enum Request {
   GetNumberOfSupportedComponents = "GetNumberOfSupportedComponents",
   GetNumberOfSupportedPresets = "GetNumberOfSupportedPresets",
   Reboot = "Reboot",
+  Backup = "Backup",
   GetBootLoaderSupport = "GetBootLoaderSupport",
   BootloaderMode = "BootloaderMode",
   FactoryReset = "FactoryReset",
@@ -159,6 +160,13 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.EnableProcessing,
     type: RequestType.Custom,
     specialRequestId: 101, // Hex: 65
+  },
+  [Request.Backup]: {
+    key: Request.Backup,
+    type: RequestType.Custom,
+    specialRequestId: 27, // Hex: 1B
+    hasMultiPartResponse: true,
+    isSystemOperation: true,
   },
 
   // Configuration requests

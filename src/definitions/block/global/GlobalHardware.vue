@@ -19,6 +19,15 @@
         </p>
       </div>
 
+      <div class="form-field">
+        <Button @click.prevent="startBackup">
+          Backup
+        </Button>
+        <p class="help-text">
+          Download a backup of your configuration (incl presets).
+        </p>
+      </div>
+
       <div v-if="bootLoaderSupport" class="form-field">
         <ButtonLink :to="{ name: 'device-firmware-update' }">
           Firmware update
