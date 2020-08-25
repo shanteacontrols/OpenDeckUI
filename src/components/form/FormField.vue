@@ -26,7 +26,7 @@
     />
     <p v-else class="error-message text-red-500">
       <template v-if="isDisabled === ControlDisableType.NotSupported">
-        Not supported on current firmware. Consider updating the firmware.
+        Not supported on current firmware.
       </template>
       <template v-if="isDisabled === ControlDisableType.MissingIndex">
         Not supported on this board.
