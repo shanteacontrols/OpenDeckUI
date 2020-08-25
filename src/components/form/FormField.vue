@@ -12,7 +12,7 @@
           ? label.replace("(LSB)", "").replace("LSB", "")
           : label
       }}
-      <small v-if="min || max" class="instructions"
+      <small v-if="!isDisabled && (min || max)" class="instructions"
         >{{ min }} - {{ (!showMsbControls && max2Byte) || max }}</small
       >
     </label>
