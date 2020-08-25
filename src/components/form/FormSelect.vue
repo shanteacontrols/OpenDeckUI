@@ -1,5 +1,6 @@
 <template>
   <select
+    :key="keyHash"
     class="form-select mt-1 py-1 text-sm block w-full max-w-sm"
     :value="value"
     @change="emit('changed', $event.target.value)"
@@ -11,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
+import { defineComponent, computed, ref } from "vue";
 import { IFormSelectOption } from "../../definitions";
 
 export default defineComponent({
@@ -27,12 +28,23 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    // Force vue to rerender when options change
+    const keyHash = ref(String(props.value));
+
     const optionsArray =
       props.options && typeof props.options === "function"
-        ? computed(() => props.options())
+        ? computed(() => {
+            const opts = props.options();
+            keyHash.value = `${String(props.value)}-${opts.map(
+              (v) => v.value,
+            )}`;
+
+            return opts;
+          })
         : props.options;
 
     return {
+      keyHash,
       emit,
       optionsArray,
     };
