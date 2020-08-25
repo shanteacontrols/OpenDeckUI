@@ -343,7 +343,8 @@ export const getComponentSettings = async (
     .filter(filterOutMsbSections)
     .map((sectionDef) => {
       const { key, section, onLoad, settingIndex } = sectionDef;
-      const index = componentIndex || settingIndex;
+      const index =
+        typeof componentIndex === "number" ? componentIndex : settingIndex;
 
       const handler = (res: number[]): void => {
         const val = res[0];
