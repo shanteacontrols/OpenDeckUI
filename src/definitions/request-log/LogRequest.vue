@@ -69,8 +69,15 @@
       </div>
     </div>
 
+    <div v-if="request.errorCode">
+      <span class="sysex-label faded">Error code</span>
+      <span class="text-red-500">
+        {{ request.errorCode }}
+      </span>
+    </div>
+
     <div v-if="request.errorMessage">
-      <span class="sysex-label faded">Error</span>
+      <span class="sysex-label faded">Error message</span>
       <span class="text-red-500">
         {{ request.errorMessage }}
       </span>
