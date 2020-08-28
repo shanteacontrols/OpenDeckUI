@@ -34,9 +34,10 @@ export enum Request {
   FactoryReset = "FactoryReset",
   DisableProcessing = "DisableProcessing",
   EnableProcessing = "EnableProcessing",
-  // Configuration
   GetValue = "GetValue",
   SetValue = "SetValue",
+  // UI Internal
+  RestoreBackup = "RestoreBackup",
 }
 
 export const requestDefinitions: Dictionary<IRequestDefinition> = {
@@ -224,6 +225,14 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
       }
       return payload;
     },
+  },
+
+  // Internal request types, not sent to the board
+
+  [Request.RestoreBackup]: {
+    key: Request.Backup,
+    type: RequestType.Custom,
+    isSystemOperation: true,
   },
 };
 

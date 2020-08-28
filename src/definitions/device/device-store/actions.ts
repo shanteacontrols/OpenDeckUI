@@ -3,7 +3,13 @@ import marked from "marked";
 import { Input, Output } from "webmidi";
 import FileSaver from "file-saver";
 
-import { logger, delay, arrayEqual, convertToHex } from "../../../util";
+import {
+  logger,
+  delay,
+  arrayEqual,
+  convertToHex,
+  hexToDec,
+} from "../../../util";
 import { Request } from "../../../definitions";
 import router from "../../../router";
 import {
@@ -314,6 +320,50 @@ const loadDeviceInfo = async (): Promise<void> => {
 
 // Backup
 
+const startRestore = async (file: File): Promise<void> => {
+  const fileContent = await file.text();
+  const decodeHexMessageRow = (row: string) => row.split(" ").map(hexToDec);
+  const trimKnownBytes = (msg: number[]) => msg.slice(4, -1); // webmidi.js adds these
+
+  const messages = fileContent
+    .split("\r\n")
+    .map(decodeHexMessageRow)
+    .map(trimKnownBytes);
+
+  const openingMessage = messages.shift();
+  const endingMessage = messages.pop();
+  let counter = 0;
+
+  // Send opening message
+  await sendMessage({
+    command: Request.RestoreBackup,
+    payload: openingMessage,
+    handler: () => false, // Signal system operation still running
+  }).catch((error) => logger.error("Failed to start restore", error));
+
+  // Send body messages
+  const tasks = messages.map((payload) =>
+    sendMessage({
+      command: Request.RestoreBackup,
+      payload,
+      handler: () => {
+        counter = counter + 1;
+        return false; // Signal system operation still running
+      },
+    }).catch((error) => {
+      logger.error("Failed to restore backup value", error);
+    }),
+  );
+  await Promise.all(tasks);
+
+  // Send last message
+  await sendMessage({
+    command: Request.RestoreBackup,
+    payload: endingMessage,
+    handler: () => true, // Signal system operation finished
+  }).catch((error) => logger.error("Failed to end restore", error));
+};
+
 const startBackup = async (): Promise<void> => {
   let receivedCount = 0;
   let firstResponse = null;
@@ -324,9 +374,12 @@ const startBackup = async (): Promise<void> => {
       firstResponse = data;
     }
     const isLastMessage = receivedCount && arrayEqual(firstResponse, data);
+    const isFirstMessage = receivedCount === 0;
 
     receivedCount = receivedCount + 1;
-    backupData.push(data.map(convertToHex).join(","));
+    if (!isFirstMessage && !isLastMessage) {
+      backupData.push(data.map(convertToHex).join(" "));
+    }
 
     if (isLastMessage) {
       const blob = new Blob([backupData.join("\r\n")], {
@@ -438,6 +491,7 @@ export interface IDeviceActions {
   isControlDisabled: (def: ISectionDefinition) => boolean;
   disableControl: (def: ISectionDefinition) => void;
   startBackup: () => Promise<void>;
+  startRestore: (file: File) => Promise<void>;
   getComponentSettings: (
     definition: Dictionary<ISectionDefinition>,
     block: Block,
@@ -468,6 +522,7 @@ export const deviceStoreActions: IDeviceActions = {
   isControlDisabled,
   disableControl,
   startBackup,
+  startRestore,
   getComponentSettings,
   setComponentSectionValue,
 };

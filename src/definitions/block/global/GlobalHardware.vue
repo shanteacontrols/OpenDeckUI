@@ -28,6 +28,22 @@
         </p>
       </div>
 
+      <div class="form-field">
+        <div class="dropbox">
+          <input
+            type="file"
+            class="input-file"
+            name="selectedBackupFile"
+            @change="
+              onBackupFileSelected($event.target.name, $event.target.files)
+            "
+          />
+        </div>
+        <p class="help-text">
+          Select a backup file with to restore your board configuration to.
+        </p>
+      </div>
+
       <div v-if="bootLoaderSupport" class="form-field">
         <ButtonLink :to="{ name: 'device-firmware-update' }">
           Firmware update
@@ -80,6 +96,12 @@ export default defineComponent({
       systemRequestLoading.value = false;
     };
 
+    const onBackupFileSelected = (fieldName, fileList) => {
+      if (!fileList.length) return;
+
+      deviceStoreMapped.startRestore(fileList[0]);
+    };
+
     return {
       ...deviceStoreMapped,
       modalVisible,
@@ -89,6 +111,7 @@ export default defineComponent({
       checkForUpdates,
       availableUpdates,
       updateFirmwareToVersion,
+      onBackupFileSelected,
     };
   },
 });

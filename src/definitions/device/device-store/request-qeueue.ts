@@ -1,7 +1,11 @@
 import { Ref, ref } from "vue";
 import { InputEventBase } from "webmidi";
 import { deviceState } from "./state";
-import { DeviceConnectionState, ControlDisableType } from "./interface";
+import {
+  DeviceConnectionState,
+  ControlDisableType,
+  IRequestConfig,
+} from "./interface";
 import { disableControl } from "./actions";
 import { arrayEqual, convertDataValuesToSingleByte } from "../../../util";
 import {
@@ -27,6 +31,7 @@ import { ensureConnection } from "./actions";
 interface IRequestParams {
   command: Request;
   config?: IRequestConfig;
+  payload?: number[];
   handler: (data: any) => void;
 }
 
@@ -51,7 +56,6 @@ export interface IQueuedRequest {
   messagePart?: number;
   parsed?: number[] | number | string;
   errorMessage?: string;
-  expectedResponseCount: number;
   time: {
     created: Date;
     started: Date;
@@ -270,9 +274,15 @@ const procesEventData = (
   specialRequestId?: number,
 ): IProcessedEventData => {
   const eventDataArray = Array.from(eventData);
+
+  // Responses to backup request should not be processed
+  if (request.command === Request.Backup) {
+    return { messageStatus: 1, messagePart: 0, data: eventDataArray };
+  }
+
   const messageStatus = eventDataArray[4];
   const messagePart = eventDataArray[5];
-  const data = Array.from(eventData).slice(6, -1);
+  const data = eventDataArray.slice(6, -1);
 
   if (messageStatus > 1) {
     request.state = RequestState.Error;
@@ -281,7 +291,6 @@ const procesEventData = (
     request.promiseReject(errorDefinition.code);
 
     requestLog.actions.addError({
-      message: errorDefinition.description,
       errorCode: errorDefinition.code,
       requestId: request.id,
     });
@@ -295,6 +304,7 @@ const procesEventData = (
         disableControl(sectionDef, ControlDisableType.MissingIndex);
       }
     }
+    return;
   }
 
   if (specialRequestId) {
@@ -350,15 +360,11 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   const definition = getDefinition(request.command);
   const { specialRequestId, hasMultiPartResponse } = definition;
 
-  let data;
+  const processed = procesEventData(event.data, request, specialRequestId);
+  const data = processed.data;
+
   let parsed;
-  let processed;
-  if (request.command === Request.Backup) {
-    data = Array.from(event.data);
-    processed = { messageStatus: 1, messagePart: 0, data };
-  } else {
-    processed = procesEventData(event.data, request, specialRequestId);
-    data = processed.data;
+  if (request.command !== Request.Backup) {
     parsed =
       deviceState.valueSize === 2
         ? parseEventDataDoubleByte(processed, definition, request)
@@ -409,6 +415,7 @@ const prepareRequestPayload = (
 ) => {
   if ([RequestType.Custom, RequestType.Predefined].includes(definition.type)) {
     if (definition.specialRequestId === undefined) {
+      console.log(definition.command);
       throw new Error(
         `Missing specialRequestId for definition ${definition.key}`,
       );
@@ -425,7 +432,7 @@ const prepareRequestPayload = (
 };
 
 export const sendMessage = async (params: IRequestParams): Promise<any> => {
-  const { command, handler, config } = params;
+  const { command, handler, config, payload } = params;
   const definition = getDefinition(command);
 
   // Delay any data requests until connection info messages exchanged
@@ -438,16 +445,13 @@ export const sendMessage = async (params: IRequestParams): Promise<any> => {
   }
 
   return new Promise((resolve, reject) => {
-    const payload = prepareRequestPayload(definition, config);
-
     return addToQueue({
       command,
-      payload,
+      payload: payload || prepareRequestPayload(definition, config),
       handler,
       config,
       promiseResolve: resolve,
       promiseReject: reject,
-      expectedResponseCount: 1,
     });
   });
 };
