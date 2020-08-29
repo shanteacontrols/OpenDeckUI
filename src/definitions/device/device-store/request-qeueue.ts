@@ -173,7 +173,7 @@ const startRequest = async (id: number) => {
       requestQueue.activeRequestId.value = null;
       request.state = RequestState.Done;
       request.promiseResolve();
-    } else {
+    } else if (request.command === Request.RestoreBackup) {
       // Fail requests after 2 seconds of no response
       delay(2000).then(() => {
         if (request.state === RequestState.Sent) {
