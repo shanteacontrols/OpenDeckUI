@@ -21,6 +21,7 @@ export enum ErrorCode {
   UI_QUEUE_REQUEST_DECODE_ERROR = 716,
   UI_QUEUE_REQUEST_SEND_ERROR = 717,
   UI_QUEUE_REQ_DATA_INVALID = 718,
+  UI_QUEUE_REQ_TIMED_OUT = 719,
 }
 
 interface IErrorDefinition {
@@ -124,6 +125,10 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   [ErrorCode.UI_QUEUE_REQ_DATA_INVALID]: {
     code: ErrorCode.UI_QUEUE_REQ_DATA_INVALID,
     description: "Invalid request data.",
+  },
+  [ErrorCode.UI_QUEUE_REQ_TIMED_OUT]: {
+    code: ErrorCode.UI_QUEUE_REQ_TIMED_OUT,
+    description: "Request sent but timed out.",
   },
 };
 

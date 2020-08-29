@@ -330,38 +330,37 @@ const startRestore = async (file: File): Promise<void> => {
     .map(decodeHexMessageRow)
     .map(trimKnownBytes);
 
-  const openingMessage = messages.shift();
-  const endingMessage = messages.pop();
-  let counter = 0;
+  let errors = false;
 
-  // Send opening message
-  await sendMessage({
-    command: Request.RestoreBackup,
-    payload: openingMessage,
-    handler: () => false, // Signal system operation still running
-  }).catch((error) => logger.error("Failed to start restore", error));
-
-  // Send body messages
-  const tasks = messages.map((payload) =>
-    sendMessage({
+  const sendBackupRestoreReq = async (payload) => {
+    return sendMessage({
       command: Request.RestoreBackup,
       payload,
-      handler: () => {
-        counter = counter + 1;
-        return false; // Signal system operation still running
-      },
+      handler: () => null,
     }).catch((error) => {
       logger.error("Failed to restore backup value", error);
-    }),
-  );
-  await Promise.all(tasks);
+      errors = true;
+    });
+  };
 
-  // Send last message
-  await sendMessage({
-    command: Request.RestoreBackup,
-    payload: endingMessage,
-    handler: () => true, // Signal system operation finished
-  }).catch((error) => logger.error("Failed to end restore", error));
+  // Limit to 10 mesages per second
+  const startDelayed = (payload) => {
+    return delay(100).then(() => sendBackupRestoreReq(payload));
+  };
+
+  const promiseChain = messages.reduce((start, payload) => {
+    return start
+      .then(() => startDelayed(payload))
+      .catch(() => startDelayed(payload));
+  }, Promise.resolve());
+
+  await promiseChain.catch((error) => {
+    logger.error("Backup failed", error);
+    errors = true;
+  });
+
+  const msg = errors ? "Backup finished with errors" : "Backup finished";
+  alert(msg);
 };
 
 const startBackup = async (): Promise<void> => {

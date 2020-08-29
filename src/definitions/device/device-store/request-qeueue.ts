@@ -7,7 +7,11 @@ import {
   IRequestConfig,
 } from "./interface";
 import { disableControl } from "./actions";
-import { arrayEqual, convertDataValuesToSingleByte } from "../../../util";
+import {
+  arrayEqual,
+  convertDataValuesToSingleByte,
+  delay,
+} from "../../../util";
 import {
   requestDefinitions,
   Request,
@@ -169,15 +173,16 @@ const startRequest = async (id: number) => {
       requestQueue.activeRequestId.value = null;
       request.state = RequestState.Done;
       request.promiseResolve();
+    } else {
+      // Fail requests after 2 seconds of no response
+      delay(2000).then(() => {
+        if (request.state === RequestState.Sent) {
+          onRequestFail(request, ErrorCode.UI_QUEUE_REQ_TIMED_OUT);
+        }
+      });
     }
   } catch (error) {
-    requestLog.actions.addError({
-      errorCode: ErrorCode.UI_QUEUE_REQUEST_SEND_ERROR,
-      requestId: id,
-      error,
-    });
-    request.state = RequestState.Error;
-    request.promiseReject();
+    onRequestFail(request, ErrorCode.UI_QUEUE_REQUEST_SEND_ERROR);
   }
 };
 
@@ -268,10 +273,9 @@ const procesInfoMessage = (eventData: Uint8Array): boolean => {
   return true;
 };
 
-const procesEventData = (
+const processEventData = (
   eventData: Uint8Array,
   request: IQueuedRequest,
-  specialRequestId?: number,
 ): IProcessedEventData => {
   const eventDataArray = Array.from(eventData);
 
@@ -283,40 +287,6 @@ const procesEventData = (
   const messageStatus = eventDataArray[4];
   const messagePart = eventDataArray[5];
   const data = eventDataArray.slice(6, -1);
-
-  if (messageStatus > 1) {
-    request.state = RequestState.Error;
-    const errorDefinition = getErrorDefinition(messageStatus);
-    request.errorMessage = errorDefinition.description;
-    request.promiseReject(errorDefinition.code);
-
-    requestLog.actions.addError({
-      errorCode: errorDefinition.code,
-      requestId: request.id,
-    });
-
-    if (request.config) {
-      const sectionDef = findSectionDefinitionByConfig(request.config);
-      if (sectionDef && messageStatus === ErrorCode.NOT_SUPPORTED) {
-        disableControl(sectionDef, ControlDisableType.NotSupported);
-      }
-      if (sectionDef && messageStatus === ErrorCode.INDEX) {
-        disableControl(sectionDef, ControlDisableType.MissingIndex);
-      }
-    }
-    return;
-  }
-
-  if (specialRequestId) {
-    const requestIdShifted = data.shift();
-    if (requestIdShifted !== specialRequestId) {
-      requestLog.actions.addError({
-        errorCode: ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH,
-        message: `Special Request ID mismatch ${specialRequestId} vs ${requestIdShifted}`,
-        payload: event.data,
-      });
-    }
-  }
 
   return {
     messageStatus,
@@ -360,8 +330,20 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   const definition = getDefinition(request.command);
   const { specialRequestId, hasMultiPartResponse } = definition;
 
-  const processed = procesEventData(event.data, request, specialRequestId);
-  const data = processed.data;
+  const processed = processEventData(event.data, request);
+  const { messageStatus, data } = processed;
+
+  // Handle errors
+  if (messageStatus > 1) {
+    return onRequestFail(request, messageStatus);
+  }
+
+  if (specialRequestId) {
+    const requestIdShifted = data.shift();
+    if (requestIdShifted !== specialRequestId) {
+      return onRequestFail(request, ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH);
+    }
+  }
 
   let parsed;
   if (request.command !== Request.Backup) {
@@ -397,15 +379,47 @@ const onRequestDone = (
   request.promiseResolve();
   request.time.finished = new Date();
 
+  continueNextRequest();
+};
+
+const onRequestFail = (request: IQueuedRequest, messageStatus: number) => {
+  request.state = RequestState.Error;
+  const errorDefinition = getErrorDefinition(messageStatus);
+  request.errorMessage = errorDefinition.description;
+  request.promiseReject(errorDefinition.code);
+
+  requestLog.actions.addError({
+    errorCode: errorDefinition.code,
+    requestId: request.id,
+  });
+
+  if (request.config) {
+    const sectionDef = findSectionDefinitionByConfig(request.config);
+    if (sectionDef && messageStatus === ErrorCode.NOT_SUPPORTED) {
+      disableControl(sectionDef, ControlDisableType.NotSupported);
+    }
+    if (sectionDef && messageStatus === ErrorCode.INDEX) {
+      disableControl(sectionDef, ControlDisableType.MissingIndex);
+    }
+  }
+
+  continueNextRequest();
+};
+
+const continueNextRequest = () => {
   requestQueue.activeRequestId.value = (null as unknown) as number;
 
   if (deviceState.isSystemOperationRunning) {
     deviceState.isSystemOperationRunning = false;
   }
 
-  const nextId = request.id + 1;
-  if (requestStack.value[nextId]) {
-    startRequest(nextId);
+  const pendingRequests = Object.values(requestStack.value).filter(
+    (req) => req.state === RequestState.Pending,
+  );
+
+  const nextId = pendingRequests.length && pendingRequests[0].id;
+  if (nextId) {
+    return startRequest(nextId);
   }
 };
 
@@ -415,7 +429,6 @@ const prepareRequestPayload = (
 ) => {
   if ([RequestType.Custom, RequestType.Predefined].includes(definition.type)) {
     if (definition.specialRequestId === undefined) {
-      console.log(definition.command);
       throw new Error(
         `Missing specialRequestId for definition ${definition.key}`,
       );

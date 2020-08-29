@@ -230,7 +230,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
   // Internal request types, not sent to the board
 
   [Request.RestoreBackup]: {
-    key: Request.Backup,
+    key: Request.RestoreBackup,
     type: RequestType.Custom,
     isSystemOperation: true,
   },
