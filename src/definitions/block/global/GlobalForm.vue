@@ -1,7 +1,7 @@
 <template>
   <DeviceSettings class="global flex flex-wrap flex-grow" :block="Block.Global">
     <template #default="{ form, showField, onSettingChange }">
-      <Section title="Presets">
+      <Section v-if="supportedPresetsCount > 1" title="Presets">
         <div class="form-grid">
           <FormField
             v-if="showField(sections.PreservePresetState)"
@@ -63,6 +63,7 @@
 import { defineComponent } from "vue";
 import { Block } from "../../interface";
 import { GlobalBlock } from "./global";
+import { deviceStoreMapped } from "../../device/device-store";
 
 import GlobalHardware from "./GlobalHardware.vue";
 
@@ -73,10 +74,12 @@ export default defineComponent({
   },
   setup() {
     const { sections } = GlobalBlock;
+    const { supportedPresetsCount } = deviceStoreMapped;
 
     return {
       Block,
       sections,
+      supportedPresetsCount,
     };
   },
 });

@@ -19,7 +19,7 @@
         </p>
       </div>
 
-      <div class="form-field">
+      <div v-if="valueSize === 2" class="form-field">
         <Button @click.prevent="startBackup">
           Backup
         </Button>
@@ -28,7 +28,7 @@
         </p>
       </div>
 
-      <div class="form-field">
+      <div v-if="valueSize === 2" class="form-field">
         <div class="dropbox">
           <input
             type="file"
