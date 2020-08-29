@@ -254,14 +254,15 @@ const parseEventDataDoubleByte = (
 };
 
 const procesInfoMessage = (eventData: Uint8Array): boolean => {
-  if (eventData[6] !== ComponentInfoRequestID) {
+  const data = Array.from(eventData);
+  if (data[6] !== ComponentInfoRequestID) {
     return false;
   }
 
   const block = eventData[7];
   const index =
     deviceState.valueSize === 2
-      ? convertDataValuesToSingleByte(eventData.slice(8, 9))[0]
+      ? convertDataValuesToSingleByte(eventData.slice(8, 10))[0]
       : eventData[8];
 
   requestLog.actions.addInfo({
@@ -287,9 +288,13 @@ const processEventData = (
   const messageStatus = eventDataArray[4];
   const messagePart = eventDataArray[5];
   const data = eventDataArray.slice(6, -1);
+  const { specialRequestId } = getDefinition(request.command);
 
-  // Remove special request ID from data stack
-  if (specialRequestId && deviceState.valueSize === 2) {
+  // Trim specialRequestId from data for 2 byte protocol
+  if (
+    ([1, 2].includes(specialRequestId) && data.length) ||
+    (specialRequestId && deviceState.valueSize === 2)
+  ) {
     data.shift();
   }
 
@@ -301,6 +306,8 @@ const processEventData = (
 };
 
 export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
+  console.log(event.data);
+
   if (procesInfoMessage(event.data)) {
     return;
   }
