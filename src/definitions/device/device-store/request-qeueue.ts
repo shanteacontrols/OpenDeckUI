@@ -288,6 +288,11 @@ const processEventData = (
   const messagePart = eventDataArray[5];
   const data = eventDataArray.slice(6, -1);
 
+  // Remove special request ID from data stack
+  if (specialRequestId && deviceState.valueSize === 2) {
+    data.shift();
+  }
+
   return {
     messageStatus,
     messagePart,
@@ -328,7 +333,7 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   request.responseCount++;
 
   const definition = getDefinition(request.command);
-  const { specialRequestId, hasMultiPartResponse } = definition;
+  const { hasMultiPartResponse } = definition;
 
   const processed = processEventData(event.data, request);
   const { messageStatus, data } = processed;
@@ -336,13 +341,6 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   // Handle errors
   if (messageStatus > 1) {
     return onRequestFail(request, messageStatus);
-  }
-
-  if (specialRequestId) {
-    const requestIdShifted = data.shift();
-    if (requestIdShifted !== specialRequestId) {
-      return onRequestFail(request, ErrorCode.UI_QUEUE_SPECIAL_REQ_ID_MISMATCH);
-    }
   }
 
   let parsed;
