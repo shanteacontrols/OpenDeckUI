@@ -306,8 +306,6 @@ const processEventData = (
 };
 
 export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
-  console.log(event.data);
-
   if (procesInfoMessage(event.data)) {
     return;
   }
