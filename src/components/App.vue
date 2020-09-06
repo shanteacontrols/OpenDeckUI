@@ -14,6 +14,10 @@
           <strong>{{ firmwareVersion }}</strong>
         </template>
 
+        <template v-if="isBootloaderMode">
+          <small>Bootloader mode</small>
+        </template>
+
         <template v-if="supportedPresetsCount > 1">
           <small>Preset</small>
           <strong>{{ activePreset + 1 }}</strong>
@@ -101,7 +105,7 @@ export default defineComponent({
     );
 
     const { isConnected, isConnecting } = midiStoreMapped;
-    const { supportedPresetsCount } = deviceStoreMapped;
+    const { supportedPresetsCount, isBootloaderMode } = deviceStoreMapped;
 
     onMounted(() => {
       midiStoreMapped.loadMidi();
@@ -121,6 +125,7 @@ export default defineComponent({
       firmwareVersion,
       activePreset,
       supportedPresetsCount,
+      isBootloaderMode,
     };
   },
 });

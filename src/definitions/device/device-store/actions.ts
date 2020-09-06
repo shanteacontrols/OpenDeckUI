@@ -2,14 +2,7 @@ import semverGt from "semver/functions/gt";
 import marked from "marked";
 import { Input, Output } from "webmidi";
 import FileSaver from "file-saver";
-
-import {
-  logger,
-  delay,
-  arrayEqual,
-  convertToHex,
-  hexToDec,
-} from "../../../util";
+import { logger, delay, arrayEqual, convertToHex } from "../../../util";
 import { Request } from "../../../definitions";
 import router from "../../../router";
 import {
@@ -25,8 +18,11 @@ import {
   GitHubReleasesUrl,
   getBoardDefinition,
 } from "../../../definitions";
+import {
+  sendMessagesFromFileWithRateLimiter,
+  newLineCharacter,
+} from "./actions-utility";
 import { midiStore } from "../../midi";
-
 import {
   IDeviceState,
   IRequestConfig,
@@ -108,8 +104,9 @@ export const connectDeviceStoreToInput = async (
   outputId: string,
 ): Promise<any> => {
   const matched = await midiStore.actions.matchInputOutput(outputId);
-  const { input, output } = matched;
+  const { input, output, isBootloaderMode } = matched;
 
+  deviceState.isBootloaderMode = isBootloaderMode;
   deviceState.outputId = outputId;
   deviceState.input = input as Input;
   deviceState.output = output as Output;
@@ -119,6 +116,15 @@ export const connectDeviceStoreToInput = async (
   deviceState.input.addListener("sysex", "all", handleSysExEvent);
   detachMidiEventHandlers(deviceState.input);
   attachMidiEventHandlers(deviceState.input);
+
+  // In bootloader mode, we cannot send regular requests
+  if (isBootloaderMode) {
+    deviceState.boardName = output.name;
+    deviceState.connectionState = DeviceConnectionState.Open;
+    deviceState.connectionPromise = (null as unknown) as Promise<any>;
+    startDeviceConnectionWatcher();
+    return;
+  }
 
   // Handshake is required before any communication
   await sendMessage({
@@ -186,6 +192,8 @@ export const ensureConnection = async (): Promise<void> => {
   deviceState.connectionState = DeviceConnectionState.Open;
 };
 
+// Firmware updates
+
 export const startBootLoaderMode = async (): Promise<void> => {
   await sendMessage({
     command: Request.BootloaderMode,
@@ -193,7 +201,19 @@ export const startBootLoaderMode = async (): Promise<void> => {
   });
 };
 
-export const startFirmwareUpdate = async (
+const startFirmwareUdate = async (file: File): Promise<void> => {
+  const success = await sendMessagesFromFileWithRateLimiter(
+    file,
+    Request.FirmwareUpdate,
+  );
+
+  const msg = success
+    ? "Firmware update finished"
+    : "Firmware update finished with errors";
+  alert(msg);
+};
+
+export const startFirmwareUpdateRemote = async (
   tagNameTouse: string,
 ): Promise<Array<IOpenDeckTag>> => {
   try {
@@ -250,6 +270,65 @@ export const startUpdatesCheck = async (): Promise<Array<IOpenDeckRelease>> => {
       ...release,
     }));
 };
+
+// Backup
+
+const startRestore = async (file: File): Promise<void> => {
+  const success = await sendMessagesFromFileWithRateLimiter(
+    file,
+    Request.RestoreBackup,
+  );
+
+  const msg = success
+    ? "Restoring from backup finished"
+    : "Restoring from backup finished with errors";
+  alert(msg);
+};
+
+const startBackup = async (): Promise<void> => {
+  let receivedCount = 0;
+  let firstResponse = null;
+  const backupData = [];
+
+  const handler = (data) => {
+    if (!receivedCount) {
+      firstResponse = data;
+    }
+
+    // Note: first and ast messages are identical signals
+    const isLastMessage = receivedCount && arrayEqual(firstResponse, data);
+    const isFirstMessage = receivedCount === 0;
+
+    receivedCount = receivedCount + 1;
+    if (!isFirstMessage && !isLastMessage) {
+      backupData.push(data.map(convertToHex).join(" "));
+    }
+
+    if (isLastMessage) {
+      const blob = new Blob([backupData.join(newLineCharacter)], {
+        type: "text/plain;charset=utf-8",
+      });
+
+      const timeString = new Date()
+        .toISOString()
+        .slice(0, -8)
+        .replace(":", "-")
+        .replace("T", "-");
+
+      FileSaver.saveAs(blob, `OpenDeckUI-Backup-${timeString}.sysex`);
+    }
+
+    // Signal End of broadcast when response is identical to the first one
+    return isLastMessage;
+  };
+
+  sendMessage({
+    command: Request.Backup,
+    handler,
+  }).catch((error) => logger.error("Failed to read component config", error));
+};
+
+// Other hardware
 
 export const startFactoryReset = async (): Promise<void> => {
   const handler = () => logger.log("Bootloader mode started");
@@ -316,92 +395,6 @@ const loadDeviceInfo = async (): Promise<void> => {
     handler: (supportedPresetsCount: number) =>
       setInfo({ supportedPresetsCount }),
   });
-};
-
-// Backup
-
-const startRestore = async (file: File): Promise<void> => {
-  const fileContent = await file.text();
-  const decodeHexMessageRow = (row: string) => row.split(" ").map(hexToDec);
-  const trimKnownBytes = (msg: number[]) => msg.slice(4, -1); // webmidi.js adds these
-
-  const messages = fileContent
-    .split("\r\n")
-    .map(decodeHexMessageRow)
-    .map(trimKnownBytes);
-
-  let errors = false;
-
-  const sendBackupRestoreReq = async (payload) => {
-    return sendMessage({
-      command: Request.RestoreBackup,
-      payload,
-      handler: () => null,
-    }).catch((error) => {
-      logger.error("Failed to restore backup value", error);
-      errors = true;
-    });
-  };
-
-  // Limit to 10 mesages per second
-  const startDelayed = (payload) => {
-    return delay(100).then(() => sendBackupRestoreReq(payload));
-  };
-
-  const promiseChain = messages.reduce((start, payload) => {
-    return start
-      .then(() => startDelayed(payload))
-      .catch(() => startDelayed(payload));
-  }, Promise.resolve());
-
-  await promiseChain.catch((error) => {
-    logger.error("Backup failed", error);
-    errors = true;
-  });
-
-  const msg = errors ? "Backup finished with errors" : "Backup finished";
-  alert(msg);
-};
-
-const startBackup = async (): Promise<void> => {
-  let receivedCount = 0;
-  let firstResponse = null;
-  const backupData = [];
-
-  const handler = (data) => {
-    if (!receivedCount) {
-      firstResponse = data;
-    }
-    const isLastMessage = receivedCount && arrayEqual(firstResponse, data);
-    const isFirstMessage = receivedCount === 0;
-
-    receivedCount = receivedCount + 1;
-    if (!isFirstMessage && !isLastMessage) {
-      backupData.push(data.map(convertToHex).join(" "));
-    }
-
-    if (isLastMessage) {
-      const blob = new Blob([backupData.join("\r\n")], {
-        type: "text/plain;charset=utf-8",
-      });
-
-      const timeString = new Date()
-        .toISOString()
-        .slice(0, -8)
-        .replace(":", "-")
-        .replace("T", "-");
-
-      FileSaver.saveAs(blob, `OpenDeckUI-Backup-${timeString}.sysex`);
-    }
-
-    // Signal End of broadcast when response is identical to the first one
-    return isLastMessage;
-  };
-
-  sendMessage({
-    command: Request.Backup,
-    handler,
-  }).catch((error) => logger.error("Failed to read component config", error));
 };
 
 // Section / Component values
@@ -486,7 +479,8 @@ export interface IDeviceActions {
   startReboot: () => Promise<void>;
   startDeviceConnectionWatcher: () => void;
   stopDeviceConnectionWatcher: () => void;
-  startFirmwareUpdate: () => Promise<void>;
+  startFirmwareUpdateRemote: () => Promise<void>;
+  startFirmwareUdate: (file: File) => Promise<void>;
   isControlDisabled: (def: ISectionDefinition) => boolean;
   disableControl: (def: ISectionDefinition) => void;
   startBackup: () => Promise<void>;
@@ -516,7 +510,8 @@ export const deviceStoreActions: IDeviceActions = {
   startReboot,
   startDeviceConnectionWatcher,
   stopDeviceConnectionWatcher,
-  startFirmwareUpdate,
+  startFirmwareUpdateRemote,
+  startFirmwareUdate,
   loadDeviceInfo,
   isControlDisabled,
   disableControl,

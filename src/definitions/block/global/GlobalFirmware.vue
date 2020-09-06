@@ -1,21 +1,49 @@
 <template>
   <Section title="Firmware update" class="w-full">
-    <p v-if="!bootLoaderSupport" class="mb-6 text-sm leading-5 text-gray-500">
+    <p
+      v-if="!bootLoaderSupport && !isBootloaderMode"
+      class="mb-6 text-sm leading-5 text-gray-500"
+    >
       Your device does not have bootloader support. <br />
       To perform a manual firmware update please consult the
       <a href="https://github.com/paradajz/OpenDeck/wiki/Firmware-update"
         >wiki firmware update page</a
       >.
     </p>
-    <div v-else>
+    <div v-else class="form-grid">
       <div class="form-field">
-        <p class="text-sm leading-5 text-gray-500">
-          Check for newer firmware versions. If updates are available and
-          supported you can update the firmware here.
-        </p>
         <Button :disabled="loading" @click.prevent="checkForUpdates">
           Check for available updates
         </Button>
+        <p class="help-text">
+          Check for newer firmware versions. If updates are available and
+          supported you can update the firmware here.
+        </p>
+      </div>
+
+      <div v-if="!isBootloaderMode && bootLoaderSupport" class="form-field">
+        <Button @click.prevent="startBootLoaderMode">
+          Bootloader mode
+        </Button>
+        <p class="help-text">
+          Starting bootloader mode is required for manual firmware updates. The
+          UI will be restricted in bootloader mode.
+        </p>
+      </div>
+
+      <div class="form-field">
+        <FormFileInput
+          name="backup-file"
+          label="Update firmware using custom file"
+          :disabled="!isBootloaderMode"
+          @change="onFirmwareFileSelected"
+        />
+        <p v-if="isBootloaderMode" class="help-text">
+          Select a firmware file to update your board firmware.
+        </p>
+        <p class="help-text">
+          Start bootloader mode to use a custom firmware file.
+        </p>
       </div>
     </div>
   </Section>
@@ -73,8 +101,14 @@ export default defineComponent({
 
     const updateFirmwareToVersion = async (tagName: string) => {
       loading.value = true;
-      await deviceStoreMapped.startFirmwareUpdate(tagName);
+      await deviceStoreMapped.startFirmwareUpdateRemote(tagName);
       loading.value = false;
+    };
+
+    const onFirmwareFileSelected = (fileList) => {
+      if (!fileList.length) return;
+
+      deviceStoreMapped.startFirmwareUdate(fileList[0]);
     };
 
     return {
@@ -84,6 +118,7 @@ export default defineComponent({
       checkForUpdates,
       availableUpdates,
       updateFirmwareToVersion,
+      onFirmwareFileSelected,
     };
   },
 });

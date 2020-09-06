@@ -20,6 +20,7 @@ export type IDeviceState = {
   outputId: string;
   input: Input;
   output: Output;
+  isBootloaderMode: boolean;
   connectionState: DeviceConnectionState;
   connectionPromise?: Promise<any>;
   valueSize: number;

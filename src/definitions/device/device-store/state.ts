@@ -18,6 +18,7 @@ export const defaultState: IDeviceState = {
   outputId: (null as unknown) as string,
   input: (null as unknown) as Input,
   output: (null as unknown) as Output,
+  isBootloaderMode: (null as unknown) as boolean,
   connectionState: (null as unknown) as DeviceConnectionState,
   connectionPromise: (null as unknown) as Promise<any>,
   valueSize: (null as unknown) as number,

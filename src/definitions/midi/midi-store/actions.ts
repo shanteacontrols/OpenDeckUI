@@ -46,7 +46,7 @@ const connectionWatcher = async (): Promise<void> => {
     logger.error("MIDI Connection watcher error", err);
   }
 
-  connectionWatcherTimer = setTimeout(connectionWatcher, 250);
+  connectionWatcherTimer = setTimeout(connectionWatcher, 500);
 };
 
 const startMidiConnectionWatcher = (): Promise<void> => connectionWatcher();
@@ -77,6 +77,16 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
   return new Promise((resolve, reject) => {
     let input;
 
+    // When device is in Bootloader mode, it's name will contain "DFU"
+    const isBootloaderMode = output.name.includes("OpenDeck DFU");
+    if (isBootloaderMode) {
+      input = inputs.find((input: Input) =>
+        input.name.includes("OpenDeck DFU"),
+      );
+
+      return resolve({ input, output, isBootloaderMode });
+    }
+
     const handleInitialHandShake = (event: InputEventBase<"sysex">): void => {
       input = event.target;
 
@@ -84,7 +94,7 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
         input.removeListener("sysex", "all");
       });
 
-      resolve({ input, output });
+      resolve({ input, output, isBootloaderMode });
     };
 
     inputs.forEach((input: Input) => {
@@ -95,7 +105,7 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
     // Send HandShake to find which input will reply
     output.sendSysex(openDeckManufacturerId, [0, 0, 1]);
 
-    return delay(250).then(() => reject("TIMED OUT"));
+    return delay(500).then(() => reject("TIMED OUT"));
   }).catch(() => pingOutput(output, inputs));
 };
 
@@ -104,10 +114,14 @@ export const matchInputOutput = async (
 ): Promise<{ input: Input; output: Output }> => {
   await loadMidi();
 
+  console.log("matching", outputId);
+
   const output = WebMidi.outputs.find((output: Output) => {
     return output.id === outputId;
   });
   if (!output) {
+    console.log("not found", outputId);
+
     return delay(250).then(() => matchInputOutput(outputId));
   }
 
@@ -115,6 +129,8 @@ export const matchInputOutput = async (
     (input: Input) => input.name === output.name,
   );
   if (!inputs.length) {
+    console.log("not found input", outputId);
+
     return delay(250).then(() => matchInputOutput(outputId));
   }
 

@@ -38,6 +38,7 @@ export enum Request {
   SetValue = "SetValue",
   // UI Internal
   RestoreBackup = "RestoreBackup",
+  FirmwareUpdate = "FirmwareUpdate",
 }
 
 export const requestDefinitions: Dictionary<IRequestDefinition> = {
@@ -233,6 +234,12 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.RestoreBackup,
     type: RequestType.Custom,
     isSystemOperation: true,
+  },
+  [Request.FirmwareUpdate]: {
+    key: Request.FirmwareUpdate,
+    type: RequestType.Custom,
+    isSystemOperation: true,
+    expectsNoResponse: true,
   },
 };
 

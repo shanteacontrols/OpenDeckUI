@@ -4,7 +4,7 @@
   </Hero>
 
   <div v-else-if="isConnected" class="relative">
-    <DeviceNav />
+    <DeviceNav v-if="!isBootloaderMode" />
     <router-view></router-view>
 
     <SpinnerOverlay v-if="isSystemOperationRunning" />
@@ -37,6 +37,7 @@ export default defineComponent({
       isConnected,
       isConnecting,
       isSystemOperationRunning,
+      isBootloaderMode,
     } = deviceStoreMapped;
 
     onMounted(async () => {
@@ -44,6 +45,9 @@ export default defineComponent({
         await connectDevice(
           router.currentRoute.value.params.outputId as string,
         );
+        if (isBootloaderMode.value) {
+          router.push({ name: "device-firmware-update" });
+        }
       } catch (err) {
         logger.error(err);
       }
@@ -54,6 +58,7 @@ export default defineComponent({
     return {
       isConnected,
       isConnecting,
+      isBootloaderMode,
       isSystemOperationRunning,
     };
   },

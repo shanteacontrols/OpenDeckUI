@@ -30,3 +30,9 @@ a.btn {
 .btn:focus {
   @apply bg-yellow-400 text-gray-800 shadow-outline outline-none;
 }
+
+.btn.disabled,
+.btn.disabled:hover,
+input.btn:disabled {
+  @apply bg-gray-900 text-gray-500 border-gray-800;
+}

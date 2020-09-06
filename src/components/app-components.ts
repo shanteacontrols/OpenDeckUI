@@ -8,6 +8,7 @@ import Siblinks from "./elements/Siblinks.vue";
 import SpinnerOverlay from "./elements/SpinnerOverlay.vue";
 import FormField from "./form/FormField.vue";
 import FormToggle from "./form/FormToggle.vue";
+import FormFileInput from "./form/FormFileInput.vue";
 
 export default {
   Chevron,
@@ -20,4 +21,5 @@ export default {
   SpinnerOverlay,
   FormField,
   FormToggle,
+  FormFileInput,
 };

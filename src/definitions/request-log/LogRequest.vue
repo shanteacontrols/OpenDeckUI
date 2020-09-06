@@ -61,7 +61,7 @@
           247 ]</span
         >
       </div>
-      <div v-if="request.parsed">
+      <div v-if="request.parsed && request.parsed.length">
         <span class="sysex-label faded">Parsed</span>
         <span class="sysex-payload">
           {{ request.parsed }}
