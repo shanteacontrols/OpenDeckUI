@@ -467,38 +467,7 @@ export const setComponentSectionValue = async (
 
 // Export
 
-export interface IDeviceActions {
-  setInfo: (data: Partial<IDeviceState>) => void;
-  connectDevice: (outputId: string) => Promise<void>;
-  closeConnection: () => Promise<void>;
-  ensureConnection: () => Promise<void>;
-  loadDeviceInfo: () => Promise<void>;
-  startUpdatesCheck: () => Promise<void>;
-  startBootLoaderMode: () => Promise<void>;
-  startFactoryReset: () => Promise<void>;
-  startReboot: () => Promise<void>;
-  startDeviceConnectionWatcher: () => void;
-  stopDeviceConnectionWatcher: () => void;
-  startFirmwareUpdateRemote: () => Promise<void>;
-  startFirmwareUdate: (file: File) => Promise<void>;
-  isControlDisabled: (def: ISectionDefinition) => boolean;
-  disableControl: (def: ISectionDefinition) => void;
-  startBackup: () => Promise<void>;
-  startRestore: (file: File) => Promise<void>;
-  getComponentSettings: (
-    definition: Dictionary<ISectionDefinition>,
-    block: Block,
-    sectionType: SectionType,
-    customIndex?: number,
-  ) => Promise<any>;
-  setComponentSectionValue: (
-    config: IRequestConfig,
-    value: number,
-    handler: () => void,
-  ) => Promise<any>;
-}
-
-export const deviceStoreActions: IDeviceActions = {
+export const deviceStoreActions = {
   reset,
   setInfo,
   connectDevice,
@@ -520,3 +489,5 @@ export const deviceStoreActions: IDeviceActions = {
   getComponentSettings,
   setComponentSectionValue,
 };
+
+export type IDeviceActions = typeof deviceStoreActions;
