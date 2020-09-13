@@ -41,7 +41,6 @@ export const sendMessagesFromFileWithRateLimiter = async (
     const bytes = payload.length + 5;
     const absSeconds = getAbsoluteSeconds();
     if (timeLimiter[absSeconds] > bytesPerSecondLimit) {
-      logger.log("DELAYED");
       return delay(250).then(() => sendMessageWithLimiter(payload));
     }
 
@@ -52,8 +51,6 @@ export const sendMessagesFromFileWithRateLimiter = async (
     }
 
     sentMessageCount += 1;
-
-    logger.log("Sending", sentMessageCount, "of", messages.length);
 
     deviceState.systemOperationPercentage = Math.floor(
       (sentMessageCount / messages.length) * 100,
