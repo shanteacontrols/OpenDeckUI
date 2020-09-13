@@ -114,14 +114,10 @@ export const matchInputOutput = async (
 ): Promise<{ input: Input; output: Output }> => {
   await loadMidi();
 
-  console.log("matching", outputId);
-
   const output = WebMidi.outputs.find((output: Output) => {
     return output.id === outputId;
   });
   if (!output) {
-    console.log("not found", outputId);
-
     return delay(250).then(() => matchInputOutput(outputId));
   }
 
@@ -129,8 +125,6 @@ export const matchInputOutput = async (
     (input: Input) => input.name === output.name,
   );
   if (!inputs.length) {
-    console.log("not found input", outputId);
-
     return delay(250).then(() => matchInputOutput(outputId));
   }
 
