@@ -209,7 +209,7 @@ export interface ISectionSetting extends ISectionBase {
 
 export type ISectionDefinition = ISectionSetting | ISectionComponent;
 
-interface IOpenDeckRelease {
+export interface IOpenDeckRelease {
   url: string;
   id: string;
   node_id: string;

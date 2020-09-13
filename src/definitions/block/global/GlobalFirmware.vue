@@ -39,9 +39,10 @@
           @change="onFirmwareFileSelected"
         />
         <p v-if="isBootloaderMode" class="help-text">
-          Select a firmware file to update your board firmware.
+          Select a firmware file to start board firmware update. UI might become
+          unresponsive while updating.
         </p>
-        <p class="help-text">
+        <p v-else class="help-text">
           Start bootloader mode to use a custom firmware file.
         </p>
       </div>
@@ -84,36 +85,48 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { deviceStoreMapped } from "../../../store";
+import { IOpenDeckRelease } from "../../interface";
 
 export default defineComponent({
   name: "GlobalFirmware",
   setup() {
+    const {
+      isBootloaderMode,
+      startUpdatesCheck,
+      bootLoaderSupport,
+      startBootLoaderMode,
+      startFirmwareUdate,
+      startFirmwareUpdateRemote,
+    } = deviceStoreMapped;
+
     const loading = ref(false);
     const updatesChecked = ref(false);
-    const availableUpdates = ref([]);
+    const availableUpdates = ref<Array<IOpenDeckRelease>>([]);
 
     const checkForUpdates = async () => {
       loading.value = true;
-      availableUpdates.value = await deviceStoreMapped.startUpdatesCheck();
+      availableUpdates.value = await startUpdatesCheck();
       loading.value = false;
       updatesChecked.value = true;
     };
 
     const updateFirmwareToVersion = async (tagName: string) => {
       loading.value = true;
-      await deviceStoreMapped.startFirmwareUpdateRemote(tagName);
+      await startFirmwareUpdateRemote(tagName);
       loading.value = false;
     };
 
-    const onFirmwareFileSelected = (fileList) => {
+    const onFirmwareFileSelected = async (fileList) => {
       if (!fileList.length) return;
 
-      deviceStoreMapped.startFirmwareUdate(fileList[0]);
+      startFirmwareUdate(fileList[0]);
     };
 
     return {
-      ...deviceStoreMapped,
       loading,
+      isBootloaderMode,
+      bootLoaderSupport,
+      startBootLoaderMode,
       updatesChecked,
       checkForUpdates,
       availableUpdates,

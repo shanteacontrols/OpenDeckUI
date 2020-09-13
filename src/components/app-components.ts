@@ -5,6 +5,7 @@ import ButtonLink from "./elements/ButtonLink.vue";
 import Section from "./elements/Section.vue";
 import Spinner from "./elements/Spinner.vue";
 import Siblinks from "./elements/Siblinks.vue";
+import ProgressBar from "./elements/ProgressBar.vue";
 import SpinnerOverlay from "./elements/SpinnerOverlay.vue";
 import FormField from "./form/FormField.vue";
 import FormToggle from "./form/FormToggle.vue";
@@ -22,4 +23,5 @@ export default {
   FormField,
   FormToggle,
   FormFileInput,
+  ProgressBar,
 };

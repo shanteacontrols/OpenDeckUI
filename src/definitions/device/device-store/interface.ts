@@ -34,4 +34,5 @@ export type IDeviceState = {
   numberOfComponents: Array<number>;
   unsupportedComponents: Record<number, Record<string, ControlDisableType>>; // block, key, type
   isSystemOperationRunning: boolean;
+  systemOperationPercentage: number;
 };

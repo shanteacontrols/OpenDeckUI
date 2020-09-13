@@ -1,8 +1,9 @@
 import { logger, delay, hexToDec } from "../../../util";
 import { Request } from "../../request";
 import { sendMessage } from "./request-qeueue";
+import { deviceState } from "./state";
 
-const bytesPerSecondLimit = 300;
+const bytesPerSecondLimit = 3000; // cca 3 x 1024 - 3kb/s
 
 export const newLineCharacter = "\n";
 
@@ -32,10 +33,12 @@ export const sendMessagesFromFileWithRateLimiter = async (
   const messages = await convertFileToMessageArray(file);
 
   const timeLimiter = {};
+  let sentMessageCount = 0;
+  deviceState.systemOperationPercentage = 0;
 
   // Limit to 10 mesages per second
   const sendMessageWithLimiter = async (payload) => {
-    const bytes = payload.length;
+    const bytes = payload.length + 5;
     const absSeconds = getAbsoluteSeconds();
     if (timeLimiter[absSeconds] > bytesPerSecondLimit) {
       logger.log("DELAYED");
@@ -47,6 +50,14 @@ export const sendMessagesFromFileWithRateLimiter = async (
     } else {
       timeLimiter[absSeconds] = timeLimiter[absSeconds] + bytes;
     }
+
+    sentMessageCount += 1;
+
+    logger.log("Sending", sentMessageCount, "of", messages.length);
+
+    deviceState.systemOperationPercentage = Math.floor(
+      (sentMessageCount / messages.length) * 100,
+    ); // eslint-disable-line
 
     return sendMessage({
       command,
@@ -67,6 +78,8 @@ export const sendMessagesFromFileWithRateLimiter = async (
   }, Promise.resolve());
 
   await promiseChain;
+
+  deviceState.systemOperationPercentage = null;
 
   return !hadErrors;
 };

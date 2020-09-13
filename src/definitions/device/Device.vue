@@ -7,7 +7,13 @@
     <DeviceNav v-if="!isBootloaderMode" />
     <router-view></router-view>
 
-    <SpinnerOverlay v-if="isSystemOperationRunning" />
+    <ProgressBar
+      v-if="
+        isSystemOperationRunning && Number.isInteger(systemOperationPercentage)
+      "
+      :percentage="systemOperationPercentage"
+    />
+    <SpinnerOverlay v-else-if="isSystemOperationRunning" />
   </div>
 
   <Hero v-else custom="h-64" title="No WebMidi device found." />
@@ -37,6 +43,7 @@ export default defineComponent({
       isConnected,
       isConnecting,
       isSystemOperationRunning,
+      systemOperationPercentage,
       isBootloaderMode,
     } = deviceStoreMapped;
 
@@ -60,6 +67,7 @@ export default defineComponent({
       isConnecting,
       isBootloaderMode,
       isSystemOperationRunning,
+      systemOperationPercentage,
     };
   },
 });
