@@ -112,7 +112,6 @@ export default defineComponent({
     });
 
     onUnmounted(() => {
-      deviceStoreMapped.closeConnection();
       midiStoreMapped.stopMidiConnectionWatcher();
     });
 

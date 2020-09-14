@@ -1,4 +1,4 @@
-import { logger, delay, hexToDec } from "../../../util";
+import { delay, hexToDec } from "../../../util";
 import { Request } from "../../request";
 import { sendMessage } from "./request-qeueue";
 import { deviceState } from "./state";

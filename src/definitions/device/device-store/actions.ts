@@ -49,9 +49,9 @@ export const disableControl = (
 ): void =>
   (deviceState.unsupportedComponents[def.block][def.key] = type || !type);
 
-const reset = (): void => {
+const reset = async (): void => {
   if (deviceState.input) {
-    sendMessage({
+    await sendMessage({
       command: Request.CloseConnection,
       handler: () =>
         (deviceState.connectionState = DeviceConnectionState.Closed),
@@ -110,6 +110,9 @@ export const connectDeviceStoreToInput = async (
   deviceState.outputId = outputId;
   deviceState.input = input as Input;
   deviceState.output = output as Output;
+  deviceState.valueSize = null;
+  deviceState.valuesPerMessageRequest = null;
+  deviceState.firmwareVersion = null;
 
   // make sure we don't duplicate listeners
   deviceState.input.removeListener("sysex", "all");
@@ -125,12 +128,6 @@ export const connectDeviceStoreToInput = async (
     startDeviceConnectionWatcher();
     return;
   }
-
-  // Handshake is required before any communication
-  await sendMessage({
-    command: Request.Handshake,
-    handler: () => ({}),
-  });
 
   try {
     await sendMessage({

@@ -343,6 +343,11 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   const processed = processEventData(event.data, request);
   const { messageStatus, data } = processed;
 
+  // Note: Fix issue with input output matching handshake response
+  if (request.specialRequestId && event.data[6] !== request.specialRequestId) {
+    return;
+  }
+
   // Handle errors
   if (messageStatus > 1) {
     return onRequestFail(request, messageStatus);
