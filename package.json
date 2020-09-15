@@ -14,7 +14,7 @@
   },
   "scripts": {
     "dev": "vite --port 3002",
-    "build": "vite build",
+    "build": "vite build --base=/OpenDeck/",
     "format": "prettier --config .prettierrc --write --parser typescript \"src/**/*.ts\"",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix"
