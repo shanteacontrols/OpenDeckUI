@@ -30,7 +30,7 @@ import {
   ControlDisableType,
 } from "./interface";
 import { deviceState, defaultState } from "./state";
-import { sendMessage, handleSysExEvent } from "./request-qeueue";
+import { sendMessage, handleSysExEvent, resetQueue } from "./request-qeueue";
 import {
   attachMidiEventHandlers,
   detachMidiEventHandlers,
@@ -49,16 +49,11 @@ export const disableControl = (
 ): void =>
   (deviceState.unsupportedComponents[def.block][def.key] = type || !type);
 
-const reset = async (): void => {
-  if (deviceState.input) {
-    await sendMessage({
-      command: Request.CloseConnection,
-      handler: () =>
-        (deviceState.connectionState = DeviceConnectionState.Closed),
-    });
-    deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
-    detachMidiEventHandlers(deviceState.input);
-  }
+const resetDeviceStore = async (): void => {
+  resetQueue();
+
+  deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
+  detachMidiEventHandlers(deviceState.input);
 
   Object.assign(deviceState, defaultState);
 };
@@ -79,10 +74,6 @@ const connectionWatcher = async (): Promise<void> => {
     if (!output) {
       return router.push({ name: "home" });
     }
-
-    if (deviceState.connectionState !== DeviceConnectionState.Open) {
-      await connectDevice(deviceState.outputId);
-    }
   } catch (err) {
     logger.error("Device connection watcher error", err);
     return router.push({ name: "home" });
@@ -91,7 +82,9 @@ const connectionWatcher = async (): Promise<void> => {
   connectionWatcherTimer = setTimeout(() => connectionWatcher(), 1000);
 };
 
-const startDeviceConnectionWatcher = (): Promise<void> => connectionWatcher();
+const startDeviceConnectionWatcher = (): Promise<void> =>
+  // Prevent connection watcher from causing duplicate redirects on reconnect
+  delay(5000).then(connectionWatcher);
 
 const stopDeviceConnectionWatcher = (): Promise<void> => {
   if (connectionWatcherTimer) {
@@ -172,21 +165,25 @@ const connectDevice = async (outputId: string): Promise<void> => {
   return deviceState.connectionPromise;
 };
 
-export const closeConnection = async (): Promise<void> => {
+export const closeConnection = (): Promise<void> => {
   stopDeviceConnectionWatcher();
-  reset();
+  resetDeviceStore();
 };
 
 export const ensureConnection = async (): Promise<void> => {
-  if (deviceState.connectionState !== DeviceConnectionState.Closed) {
+  if (deviceState.connectionState === DeviceConnectionState.Open) {
     return;
   }
 
-  await sendMessage({
-    command: Request.Handshake,
-    handler: () => ({}),
-  });
-  deviceState.connectionState = DeviceConnectionState.Open;
+  if (deviceState.connectionPromise) {
+    return deviceState.connectionPromise;
+  }
+
+  if (deviceState.outputId) {
+    return connectDevice(deviceState.outputId);
+  }
+
+  throw new Error("CANNOT ENSURE CONNECTION, MISSING outputId");
 };
 
 // Firmware updates
@@ -341,18 +338,12 @@ const sendMessageAndRebootUi = async (
   command: Request,
   handler: () => void,
 ): Promise<any> => {
-  deviceState.connectionState = DeviceConnectionState.Pending;
-
-  // Ensure connection is available
-  await sendMessage({
-    command: Request.Handshake,
-    handler: () => ({}),
-  });
-
   await sendMessage({
     command,
     handler,
   });
+
+  deviceState.connectionState = DeviceConnectionState.Closed;
 
   return delay(200).then(() => router.push({ name: "home" }));
 };
@@ -411,7 +402,6 @@ export const getComponentSettings = async (
   componentIndex?: number,
 ): Promise<any> => {
   await ensureConnection();
-
   const settings = {} as any;
   if (!BlockMap[block]) {
     throw new Error(`Block definition not found in BlockMap ${block}`);
@@ -463,7 +453,6 @@ export const setComponentSectionValue = async (
 // Export
 
 export const deviceStoreActions = {
-  reset,
   setInfo,
   connectDevice,
   closeConnection,
@@ -476,7 +465,6 @@ export const deviceStoreActions = {
   stopDeviceConnectionWatcher,
   startFirmwareUpdateRemote,
   startFirmwareUdate,
-  loadDeviceInfo,
   isControlDisabled,
   disableControl,
   startBackup,

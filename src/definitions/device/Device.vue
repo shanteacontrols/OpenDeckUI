@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted } from "vue";
+import { defineComponent, onMounted } from "vue";
 import router from "../../router";
 import { logger } from "../../util";
 import { deviceStoreMapped } from "../../store";
@@ -39,7 +39,6 @@ export default defineComponent({
   setup() {
     const {
       connectDevice,
-      closeConnection,
       isConnected,
       isConnecting,
       isSystemOperationRunning,
@@ -59,8 +58,6 @@ export default defineComponent({
         logger.error(err);
       }
     });
-
-    onUnmounted(closeConnection);
 
     return {
       isConnected,

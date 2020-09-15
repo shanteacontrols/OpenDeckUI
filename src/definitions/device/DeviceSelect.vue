@@ -34,7 +34,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
-import { midiStoreMapped } from "../../store";
+import { midiStoreMapped, deviceStoreMapped } from "../../store";
 
 export default defineComponent({
   name: "DeviceSelect",
@@ -42,6 +42,9 @@ export default defineComponent({
     onMounted(() => {
       midiStoreMapped.assignInputs();
       midiStoreMapped.startMidiConnectionWatcher();
+
+      // Note: this should be in Device.vue onUnmounted, but it is unreliable for some reason
+      deviceStoreMapped.closeConnection();
     });
 
     return {

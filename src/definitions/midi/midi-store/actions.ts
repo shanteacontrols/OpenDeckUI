@@ -76,6 +76,7 @@ export const findOutputById = (outputId: string): Output => {
 const pingOutput = async (output: Output, inputs: Inputs[]) => {
   return new Promise((resolve, reject) => {
     let input;
+    let resolved = false;
 
     // When device is in Bootloader mode, it's name will contain "DFU"
     const isBootloaderMode = output.name.includes("OpenDeck DFU");
@@ -83,6 +84,8 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
       input = inputs.find((input: Input) =>
         input.name.includes("OpenDeck DFU"),
       );
+
+      resolved = true;
 
       return resolve({ input, output, isBootloaderMode });
     }
@@ -93,6 +96,8 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
       inputs.forEach((input: Input) => {
         input.removeListener("sysex", "all");
       });
+
+      resolved = true;
 
       resolve({ input, output, isBootloaderMode });
     };
@@ -105,8 +110,13 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
     // Send HandShake to find which input will reply
     output.sendSysex(openDeckManufacturerId, [0, 0, 1]);
 
-    return delay(500).then(() => reject("TIMED OUT"));
-  }).catch(() => pingOutput(output, inputs));
+    return delay(1000).then(() => {
+      if (!resolved) {
+        logger.error("INITIAL HANDSHAKE TIMED OUT, RETRYING");
+        reject("TIMED OUT");
+      }
+    });
+  }).catch(() => matchInputOutput(output.id));
 };
 
 export const matchInputOutput = async (

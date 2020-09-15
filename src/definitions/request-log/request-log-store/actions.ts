@@ -22,6 +22,10 @@ export const toggleLog = (): void => {
   saveToStorage("showRequestLog", state.showRequestLog);
 };
 
+export const clearRequestLog = (): void => {
+  state.stack = [];
+};
+
 const maxStackSize = 50;
 const trimDebounceMS = 10;
 
@@ -70,9 +74,7 @@ export const addBuffered = (logEntry: ILogEntry): void => {
 // Export
 
 export const requestLogActions = {
-  clear: (): void => {
-    state.stack = [];
-  },
+  clearRequestLog,
   getFilteredLogs,
   addRequest,
   addInfo,

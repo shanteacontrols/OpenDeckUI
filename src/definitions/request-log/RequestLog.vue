@@ -49,7 +49,7 @@ export default defineComponent({
   },
   setup() {
     const clear = () => {
-      requestLogMapped.clear();
+      requestLogMapped.clearRequestLog();
       purgeFinishedRequests();
     };
 

@@ -1,11 +1,7 @@
 import { Ref, ref } from "vue";
 import { InputEventBase } from "webmidi";
 import { deviceState } from "./state";
-import {
-  DeviceConnectionState,
-  ControlDisableType,
-  IRequestConfig,
-} from "./interface";
+import { ControlDisableType, IRequestConfig } from "./interface";
 import { disableControl } from "./actions";
 import {
   arrayEqual,
@@ -30,6 +26,7 @@ import {
   requestLog,
   MidiEventTypeMMC,
 } from "../../request-log/request-log-store";
+import { clearRequestLog } from "../../request-log/request-log-store/actions";
 import { ensureConnection } from "./actions";
 
 interface IRequestParams {
@@ -79,6 +76,14 @@ export const requestQueue: IRequestQueue = {
   nextRequestId: 100, // Must be over 0 to avoid conflicts with boolean checks
 };
 
+export const resetQueue = (): void => {
+  clearRequestLog();
+
+  requestQueue.activeRequestId.value = null;
+  requestQueue.nextRequestId = 100;
+  requestStack.value = {};
+};
+
 const getNextRequestId = () => {
   requestQueue.nextRequestId += 1;
   return requestQueue.nextRequestId;
@@ -107,7 +112,9 @@ const addToQueue = async (
     return;
   }
 
-  const { specialRequestId } = getDefinition(request.command);
+  const { specialRequestId, isConnectionInfoRequest } = getDefinition(
+    request.command,
+  );
   const requestToStore = {
     ...request,
     id,
@@ -124,8 +131,13 @@ const addToQueue = async (
   requestStack.value[id] = requestToStore;
   requestLog.actions.addRequest(id);
 
+  // Delay any data requests until connection info messages exchanged
+  if (!isConnectionInfoRequest) {
+    await ensureConnection();
+  }
+
   if (!requestQueue.activeRequestId.value) {
-    startRequest(id);
+    return startRequest(id);
   }
 };
 
@@ -164,7 +176,10 @@ const startRequest = async (id: number) => {
       deviceState.isSystemOperationRunning = true;
     }
 
-    deviceState.output.sendSysex(openDeckManufacturerId, request.payload);
+    deviceState.output.sendSysex(
+      openDeckManufacturerId,
+      Array.from(request.payload),
+    );
     request.time.started = new Date();
     requestQueue.activeRequestId.value = id;
     request.state = RequestState.Sent;
@@ -195,7 +210,7 @@ const getActiveRequest = (): IQueuedRequest => {
   const request = requestStack.value[id];
   if (!request) {
     requestLog.actions.addError({
-      errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
+      errorCode: ErrorCode.UI_QUEUE_REQ_NONE_ACTIVE,
       requestId: id,
     });
   }
@@ -219,7 +234,9 @@ const removeEmbed = (
   const eventData = [messageStatus, messagePart, ...data];
   const foundEmbed = eventData.slice(0, expectedEmbed.length);
   if (!arrayEqual(expectedEmbed, foundEmbed)) {
-    throw new Error("EMBEDDED RESPONSE MISMATCH");
+    requestLog.actions.addError({
+      errorCode: ErrorCode.UI_QUEUE_EMBEDED_RESPONSE_MISMATCH,
+    });
   }
 
   return eventData.slice(expectedEmbed.length);
@@ -321,9 +338,6 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   const request = getActiveRequest();
   if (!request) {
-    requestLog.actions.addError({
-      errorCode: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
-    });
     return;
   }
 
@@ -340,13 +354,20 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   const definition = getDefinition(request.command);
   const { hasMultiPartResponse } = definition;
 
-  const processed = processEventData(event.data, request);
-  const { messageStatus, data } = processed;
-
   // Note: Fix issue with input output matching handshake response
   if (request.specialRequestId && event.data[6] !== request.specialRequestId) {
     return;
   }
+
+  let processed;
+  try {
+    processed = processEventData(event.data, request);
+  } catch (err) {
+    logger.error("Failed to process event data", err);
+    return;
+  }
+
+  const { messageStatus, data } = processed;
 
   // Handle errors
   if (messageStatus > 1) {
@@ -421,6 +442,17 @@ const continueNextRequest = () => {
     deviceState.isSystemOperationRunning = false;
   }
 
+  const unfinishedRequests = Object.values(requestStack.value).filter(
+    (req) => req.state === RequestState.Sent,
+  );
+
+  if (unfinishedRequests.length) {
+    logger.error(
+      "Cannot start next request, there are unfinished sent requests",
+    );
+    return;
+  }
+
   const pendingRequests = Object.values(requestStack.value).filter(
     (req) => req.state === RequestState.Pending,
   );
@@ -455,15 +487,6 @@ const prepareRequestPayload = (
 export const sendMessage = async (params: IRequestParams): Promise<any> => {
   const { command, handler, config, payload } = params;
   const definition = getDefinition(command);
-
-  // Delay any data requests until connection info messages exchanged
-  if (!definition.isConnectionInfoRequest) {
-    if (deviceState.connectionPromise) {
-      await deviceState.connectionPromise;
-    } else if (deviceState.connectionState !== DeviceConnectionState.Open) {
-      await ensureConnection();
-    }
-  }
 
   return new Promise((resolve, reject) => {
     return addToQueue({

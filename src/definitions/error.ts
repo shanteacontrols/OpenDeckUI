@@ -22,6 +22,7 @@ export enum ErrorCode {
   UI_QUEUE_REQUEST_SEND_ERROR = 717,
   UI_QUEUE_REQ_DATA_INVALID = 718,
   UI_QUEUE_REQ_TIMED_OUT = 719,
+  UI_QUEUE_EMBEDED_RESPONSE_MISMATCH = 720,
 }
 
 interface IErrorDefinition {
@@ -100,7 +101,7 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   },
   [ErrorCode.UI_QUEUE_REQ_DATA_MISSING]: {
     code: ErrorCode.UI_QUEUE_REQ_DATA_MISSING,
-    description: "A Qeue Request failed to provide data.",
+    description: "Could not start request, no request found for passed id.",
   },
   [ErrorCode.UI_QUEUE_REQ_ALREADY_ACTIVE]: {
     code: ErrorCode.UI_QUEUE_REQ_ALREADY_ACTIVE,
@@ -129,6 +130,10 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   [ErrorCode.UI_QUEUE_REQ_TIMED_OUT]: {
     code: ErrorCode.UI_QUEUE_REQ_TIMED_OUT,
     description: "Request sent but timed out.",
+  },
+  [ErrorCode.UI_QUEUE_EMBEDED_RESPONSE_MISMATCH]: {
+    code: ErrorCode.UI_QUEUE_EMBEDED_RESPONSE_MISMATCH,
+    description: "Received a request not matching the active one.",
   },
 };
 
