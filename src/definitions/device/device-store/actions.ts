@@ -343,20 +343,18 @@ const sendMessageAndRebootUi = async (
 ): Promise<any> => {
   deviceState.connectionState = DeviceConnectionState.Pending;
 
+  // Ensure connection is available
   await sendMessage({
     command: Request.Handshake,
     handler: () => ({}),
   });
 
-  sendMessage({
+  await sendMessage({
     command,
     handler,
   });
 
-  // Note: router.push doesn't perform url change for some reason, so doing it the old way
-  window.location = "/";
-
-  return delay(50).then(closeConnection);
+  return delay(200).then(() => router.push({ name: "home" }));
 };
 
 const loadDeviceInfo = async (): Promise<void> => {
