@@ -58,6 +58,14 @@ import { deviceStoreMapped } from "../../../store";
 export default defineComponent({
   name: "GlobalHardware",
   setup() {
+    const {
+      valueSize,
+      bootLoaderSupport,
+      startBackup,
+      startFactoryReset,
+      startReboot,
+    } = deviceStoreMapped;
+
     const modalVisible = ref(false);
     const modalTitle = ref("");
     const availableUpdates = ref([]);
@@ -69,11 +77,15 @@ export default defineComponent({
     };
 
     return {
-      ...deviceStoreMapped,
       modalVisible,
       modalTitle,
       availableUpdates,
       onBackupFileSelected,
+      valueSize,
+      bootLoaderSupport,
+      startBackup,
+      startFactoryReset,
+      startReboot,
     };
   },
 });
