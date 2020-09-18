@@ -25,7 +25,7 @@
       velocity {{ logEntry.data[2] }}
     </span>
     <div v-if="logEntry.data && logEntry.data.length" class="mr-2">
-      Raw data: {{ logEntry.data }}
+      Raw data: {{ convertToHex(logEntry.data) }} <sup>hex</sup>
     </div>
   </div>
 </template>
@@ -37,6 +37,7 @@ import {
   MidiEventTypeLabel,
   MidiRealtimeEvent,
 } from "./request-log-store";
+import { convertToHex } from "../../util";
 
 export default defineComponent({
   name: "ActivityMidi",
@@ -48,6 +49,7 @@ export default defineComponent({
   },
   setup() {
     return {
+      convertToHex,
       MidiEventTypeLabel,
       MidiRealtimeEvent,
     };

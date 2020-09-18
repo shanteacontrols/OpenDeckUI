@@ -37,43 +37,41 @@
 
     <div v-if="request.payload">
       <span class="sysex-label faded">Sent</span>
-      <span class="sysex-payload">
-        {{ [240, 0, 84, 67, ...request.payload, 247] }}
+      <span class="sysex-payload"
+        >[ F0, 0, 54, 43, {{ [...convertToHex(request.payload)].join(", ") }},
+        F7 ]
       </span>
+      <sup>Hex</sup>
     </div>
     <div v-if="request.responseData">
       <div class="">
         <span class="sysex-label faded">Received</span>
         <span class="sysex-payload"
-          >[ 240, 0, 84, 67,
+          >[ F0, 0, 54, 43,
           <template v-if="request.messageStatus !== undefined">
-            {{ request.messageStatus }},
+            {{ convertToHex(request.messageStatus) }},
           </template>
           <template v-if="request.messagePart !== undefined">
-            {{ request.messagePart }},
+            {{ convertToHex(request.messagePart) }},
           </template>
           <template v-if="request.specialRequestId !== undefined">
-            {{ request.specialRequestId }},
+            {{ convertToHex(request.specialRequestId) }},
           </template>
           <span v-for="(val, idx) in request.responseData" :key="idx">
-            {{ val }},
+            {{ convertToHex(val) }},
           </span>
-          247 ]</span
-        >
+          F7 ]</span
+        >&nbsp;<sup>Hex</sup>
       </div>
-      <div v-if="request.parsed && request.parsed.length">
+      <div
+        v-if="
+          request.parsed &&
+          (!Array.isArray(request.parsed) || request.parsed.length)
+        "
+      >
         <span class="sysex-label faded">Parsed</span>
-        <span class="sysex-payload">
-          {{ request.parsed }}
-        </span>
+        <span class="sysex-payload"> {{ request.parsed }}</span>
       </div>
-    </div>
-
-    <div v-if="request.errorCode">
-      <span class="sysex-label faded">Error code</span>
-      <span class="text-red-500">
-        {{ request.errorCode }}
-      </span>
     </div>
 
     <div v-if="request.errorMessage">
@@ -87,14 +85,15 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { IQueuedRequest, IRequestConfig } from "../device/device-store";
+import { IRequestConfig } from "../device/device-store";
+import { IQueuedRequest } from "../device/device-store/request-qeueue";
 import { RequestState } from "../interface";
 import {
   Block,
   SectionType,
   findSectionDefinitionByConfig,
 } from "../../definitions";
-import { getDifferenceInMs } from "../../util";
+import { getDifferenceInMs, convertToHex } from "../../util";
 
 export default defineComponent({
   name: "ActivityRequest",
@@ -122,6 +121,7 @@ export default defineComponent({
     return {
       getDefinitionLabel,
       getDifferenceInMs,
+      convertToHex,
       RequestState,
       Block,
     };
