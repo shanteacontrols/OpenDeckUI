@@ -1,7 +1,7 @@
 .btn {
   @apply px-4 py-2 rounded-full;
   @apply bg-gray-800 text-gray-300 border-gray-700 border-2;
-  @apply text-sm font-bold leading-tight;
+  @apply text-sm font-bold leading-tight cursor-pointer;
 }
 
 a.btn {
@@ -24,6 +24,11 @@ a.btn {
 
 .btn-primary:hover {
   @apply bg-yellow-600;
+}
+
+.btn-active,
+.btn-active:hover {
+  @apply bg-yellow-400 text-gray-800;
 }
 
 .btn:hover,

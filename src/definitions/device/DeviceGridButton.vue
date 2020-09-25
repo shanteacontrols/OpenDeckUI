@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { defineComponent, toRefs } from "vue";
-import { Block } from "./../../definitions";
 import { useHighlightAnimation } from "./../../composables/use-highlight-animation";
 
 export default defineComponent({
@@ -34,10 +33,6 @@ export default defineComponent({
     routeName: {
       required: true,
       type: String,
-    },
-    block: {
-      required: true,
-      type: String as () => Block,
     },
     highlight: {
       default: null,

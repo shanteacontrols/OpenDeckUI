@@ -26,8 +26,8 @@ export const useDeviceForm = (
   const defaultData = getDefaultDataForBlock(block, sectionType);
   const formData = reactive(defaultData);
 
-  const showField = (blockDef: ISectionDefinition): boolean =>
-    blockDef && (!blockDef.showIf || blockDef.showIf(formData));
+  const showField = (sectionDef: ISectionDefinition): boolean =>
+    sectionDef && (!sectionDef.showIf || sectionDef.showIf(formData));
 
   const loadData = async () => {
     loading.value = true;

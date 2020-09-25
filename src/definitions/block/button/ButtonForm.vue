@@ -5,7 +5,7 @@
         <FormField
           v-if="showField(sections.Type)"
           class="col-span-2"
-          :value="form.Type"
+          :value="form.type"
           :field-definition="sections.Type"
           @modified="onValueChange"
         />

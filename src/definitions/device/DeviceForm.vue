@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import { defineComponent, toRefs } from "vue";
-import { SectionType, BlockMap } from "../../definitions";
+import { SectionType, BlockMap, Block } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
 import { useDeviceForm } from "../../composables";
 

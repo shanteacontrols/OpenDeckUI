@@ -15,5 +15,5 @@
 .form-field.error {
 }
 .form-field .error-message {
-  @apply mt-3 text-sm;
+  @apply mt-3 text-sm text-red-500;
 }

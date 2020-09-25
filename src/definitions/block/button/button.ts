@@ -18,7 +18,7 @@ import ButtonIcon from "./ButtonIcon.vue";
 const sections: Dictionary<ISectionDefinition> = {
   Type: {
     block: Block.Button,
-    key: "Type",
+    key: "type",
     type: SectionType.Value,
     section: 0,
     component: FormInputComponent.Select,
