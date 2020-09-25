@@ -179,6 +179,7 @@ export interface IBlockDefinition {
   title: string;
   routeName: string;
   iconComponent: Component;
+  sections: Dictionary<ISectionDefinition>;
 }
 
 interface ISectionBase {

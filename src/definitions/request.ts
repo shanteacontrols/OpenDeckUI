@@ -36,6 +36,7 @@ export enum Request {
   EnableProcessing = "EnableProcessing",
   GetValue = "GetValue",
   SetValue = "SetValue",
+  GetSectionValues = "GetSectionValues",
   // UI Internal
   RestoreBackup = "RestoreBackup",
   FirmwareUpdate = "FirmwareUpdate",
@@ -189,7 +190,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
       ];
 
       if (state.valueSize === 1) {
-        payload.push(config.index); // Two byte protocol requires value to be sent
+        payload.push(config.index);
       } else {
         payload.push(
           ...convertValueToDoubleByte(config.index), // 2 byte index
@@ -224,6 +225,36 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
           ...convertValueToDoubleByte(config.value), // 2 byte value
         );
       }
+      return payload;
+    },
+  },
+  [Request.GetSectionValues]: {
+    key: Request.GetSectionValues,
+    type: RequestType.Configuration,
+    decodeDoubleByte: true,
+    responseEmbedsRequest: true,
+    hasMultiPartResponse: true,
+    getPayload: (config: IRequestConfig, state: IDeviceState): number[] => {
+      const payload = [
+        MessageStatus.Request,
+        126, // one extra message containing the copy of the original request will be sent with the status byte ACK
+        Wish.Get,
+        Amount.All,
+        config.block,
+        config.section,
+      ];
+
+      if (state.valueSize === 1) {
+        payload.push(0);
+      } else {
+        payload.push(
+          0, // 2 byte index
+          0, // 2 byte index
+          0, // new value MSB (unused, but required)
+          0, // new value LSB (unused, but required)
+        );
+      }
+
       return payload;
     },
   },

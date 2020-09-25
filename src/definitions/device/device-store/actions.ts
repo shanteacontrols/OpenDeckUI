@@ -29,7 +29,7 @@ import {
   DeviceConnectionState,
   ControlDisableType,
 } from "./interface";
-import { deviceState, defaultState } from "./state";
+import { deviceState, defaultState, IViewSettingState } from "./state";
 import { sendMessage, handleSysExEvent, resetQueue } from "./request-qeueue";
 import {
   attachMidiEventHandlers,
@@ -60,6 +60,20 @@ const resetDeviceStore = async (): void => {
 
 const setInfo = (data: Partial<IDeviceState>): void => {
   Object.assign(deviceState, data);
+};
+
+export const setViewSetting = (
+  block: Block,
+  setting: IViewSettingState,
+): void => {
+  // Reset page if changing paging options
+  if (
+    setting.itemsPerPage &&
+    setting.itemsPerPage !== deviceState.viewSettings[block].itemsPerPage
+  ) {
+    deviceState.viewSettings[block].currentPage = 1;
+  }
+  Object.assign(deviceState.viewSettings[block], setting);
 };
 
 const connectionWatcher = async (): Promise<void> => {
@@ -450,10 +464,51 @@ export const setComponentSectionValue = async (
     config,
   });
 
+export const getSectionValues = async (
+  block: Block,
+): Promise<Record<string, number[]>> => {
+  await ensureConnection();
+  const settings = {} as any;
+  const blockDef = BlockMap[block];
+
+  if (!blockDef) {
+    throw new Error(`Block definition not found in BlockMap ${block}`);
+  }
+
+  const tasks = Object.values(blockDef.sections)
+    .filter((sectionDef) => filterSectionsByType(sectionDef, SectionType.Value))
+    .filter(filterOutDisabledSections)
+    .filter(filterOutMsbSections)
+    .map((sectionDef) => {
+      const { key, section } = sectionDef;
+
+      const handler = (res: number[]): void => {
+        if (!settings[key]) {
+          settings[key] = [];
+        }
+        settings[key].push(...res);
+        return false;
+      };
+
+      return sendMessage({
+        command: Request.GetSectionValues,
+        handler,
+        config: { block, section },
+      }).catch((error) =>
+        logger.error("Failed to read component config", error),
+      );
+    });
+
+  await Promise.all(tasks);
+
+  return settings;
+};
+
 // Export
 
 export const deviceStoreActions = {
   setInfo,
+  setViewSetting,
   connectDevice,
   closeConnection,
   ensureConnection,
@@ -471,6 +526,7 @@ export const deviceStoreActions = {
   startRestore,
   getComponentSettings,
   setComponentSectionValue,
+  getSectionValues,
 };
 
 export type IDeviceActions = typeof deviceStoreActions;

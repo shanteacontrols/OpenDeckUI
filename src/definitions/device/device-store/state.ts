@@ -5,14 +5,24 @@ import { Block } from "../../interface";
 
 // State
 
-const unsupportedComponents = {
-  [Block.Global]: {},
-  [Block.Button]: {},
-  [Block.Encoder]: {},
-  [Block.Analog]: {},
-  [Block.Led]: {},
-  [Block.Display]: {},
-};
+const unsupportedComponents = {};
+const viewSettings = {};
+
+Object.values(Block)
+  .filter(Number.isInteger)
+  .forEach((blockId) => {
+    unsupportedComponents[blockId] = {};
+    viewSettings[blockId] = {
+      itemsPerPage: 16,
+      currentPage: 1,
+    };
+  });
+
+export interface IViewSettingState {
+  viewListAsTable?: boolean;
+  itemsPerPage?: number;
+  currentPage?: number;
+}
 
 export const defaultState: IDeviceState = {
   outputId: (null as unknown) as string,
@@ -33,6 +43,7 @@ export const defaultState: IDeviceState = {
   unsupportedComponents,
   isSystemOperationRunning: false,
   systemOperationPercentage: (null as unknown) as number,
+  viewSettings,
 };
 
 export const deviceState = reactive(defaultState);

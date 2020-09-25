@@ -1,0 +1,56 @@
+.form-table {
+  @apply w-full surface-neutral border;
+}
+.form-table-row {
+  @apply grid surface-neutral border-b;
+}
+
+.form-table-row:last-child {
+  @apply border-b-0;
+}
+.form-table-row > div {
+  @apply px-4 pt-2 pb-3;
+}
+.form-table-row > div:first-child {
+  @apply surface-elevated border-b text-center font-bold;
+}
+
+.form-table-row .help-text {
+  @apply hidden;
+}
+.form-table-row .label {
+  @apply text-xs leading-tight text-gray-500 mb-0;
+}
+.form-table-row .error-message {
+  @apply text-xs mt-1;
+}
+
+@screen md {
+  .form-table-row > div:first-child {
+    @apply col-span-4;
+  }
+  .form-table-row {
+    @apply grid-cols-4;
+  }
+}
+
+@screen lg {
+  .form-table {
+    @apply table py-3;
+  }
+  .form-table-row {
+    @apply table-row relative;
+  }
+  .form-table-row > div {
+    @apply table-cell py-2;
+  }
+  .form-table-row > div:first-child {
+    @apply surface-neutral border-none h-full align-bottom pb-4;
+  }
+  .form-table-row .label {
+    @apply h-6 mb-1;
+  }
+  .form-table-row .instructions {
+    @apply block m-0;
+  }
+}

@@ -33,7 +33,7 @@
       </template>
     </p>
 
-    <p v-if="helpText" class="help-text">
+    <p v-if="helpText && !simpleLayout" class="help-text">
       {{
         !showMsbControls && helpText
           ? helpText.replace("(LSB)", "").replace("LSB", "")
@@ -51,10 +51,9 @@ import {
   FormInputComponent,
   ISectionDefinition,
   ISectionSetting,
-  midiStoreMapped,
-  deviceStoreMapped,
   ControlDisableType,
 } from "../../definitions";
+import { deviceStoreMapped } from "../../store";
 import {
   required,
   minValue,
@@ -123,6 +122,14 @@ export default defineComponent({
       type: Object as () => ISectionDefinition,
       required: true,
     },
+    index: {
+      type: Number,
+      default: undefined, // Used in table-view
+    },
+    simpleLayout: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["modified"],
   setup(props, { emit }) {
@@ -158,6 +165,7 @@ export default defineComponent({
           value: Number(value),
           section,
           settingIndex, // defined for settings only
+          index: props.index, // defined for column view only
           onLoad, // handles storing value to special store sections (ie active preset)
         });
       }
@@ -178,9 +186,11 @@ export default defineComponent({
       componentProps.options = options;
     }
 
+    const { showMsbControls } = deviceStoreMapped;
+
     return {
       fieldComponent: props.fieldDefinition.component,
-      showMsbControls: deviceStoreMapped.showMsbControls,
+      showMsbControls,
       componentProps,
       emit,
       input,
@@ -195,7 +205,6 @@ export default defineComponent({
       max,
       max2Byte,
       ControlDisableType,
-      ...midiStoreMapped,
     };
   },
 });

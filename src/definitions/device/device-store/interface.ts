@@ -35,4 +35,5 @@ export type IDeviceState = {
   unsupportedComponents: Record<number, Record<string, ControlDisableType>>; // block, key, type
   isSystemOperationRunning: boolean;
   systemOperationPercentage: number;
+  viewSettings: Record<Block, IViewSettingState>;
 };

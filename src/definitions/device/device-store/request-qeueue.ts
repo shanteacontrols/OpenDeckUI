@@ -54,6 +54,7 @@ export interface IQueuedRequest {
   responseCount: number;
   responseData?: number[];
   messageStatus?: number;
+  specialRequestId?: number;
   messagePart?: number;
   parsed?: number[] | number | string;
   errorMessage?: string;
@@ -226,13 +227,20 @@ const parseEventDataSingleByte = (
 
 const removeEmbed = (
   processed: IProcessedEventData,
+  definition: IRequestDefinition,
   request: IQueuedRequest,
 ) => {
   const { data, messageStatus, messagePart } = processed;
+  const { hasMultiPartResponse } = definition;
+
   // Ensure response has returned sent request as prefix of data
-  const expectedEmbed = [1, ...request.payload.slice(1)];
+  const expectedEmbed = hasMultiPartResponse
+    ? [1, messagePart, ...request.payload.slice(2)] // For multipart response, messagePart will vary
+    : [1, ...request.payload.slice(1)];
+
   const eventData = [messageStatus, messagePart, ...data];
   const foundEmbed = eventData.slice(0, expectedEmbed.length);
+
   if (!arrayEqual(expectedEmbed, foundEmbed)) {
     requestLog.actions.addError({
       errorCode: ErrorCode.UI_QUEUE_EMBEDED_RESPONSE_MISMATCH,
@@ -253,7 +261,7 @@ const parseEventDataDoubleByte = (
   try {
     if (decodeDoubleByte) {
       const dataToDecode = responseEmbedsRequest
-        ? removeEmbed(processed, request)
+        ? removeEmbed(processed, definition, request)
         : data;
 
       decoded = convertDataValuesToSingleByte(dataToDecode);
@@ -372,7 +380,7 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
     return;
   }
 
-  const { messageStatus, data } = processed;
+  const { messageStatus, messagePart, data } = processed;
 
   // Handle errors
   if (messageStatus > 1) {
@@ -388,7 +396,9 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   }
 
   const { handler } = request;
-  const isLastMultipartMessage = handler(parsed || data);
+  const isLastMultipartMessage =
+    handler(parsed || data) ||
+    (request.command === Request.GetSectionValues && messagePart === 126);
 
   // For multipart responses, we expect handler to return true after  last message
   const receivedAllExpectedResponses =

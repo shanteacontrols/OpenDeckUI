@@ -13,6 +13,7 @@
 @import "./components/section";
 @import "./components/device-grid";
 @import "./components/form-grid";
+@import "./components/form-table";
 @import "./pages/request-log";
 
 @import "tailwindcss/screens";
