@@ -1,7 +1,14 @@
 <template>
   <div class="form-table-row">
     <div>
-      {{ index }}
+      <span
+        class="btn"
+        :class="{
+          'btn-highlight': isHighlighted,
+        }"
+      >
+        {{ index }}
+      </span>
     </div>
     <template v-for="section in sections">
       <FormField
@@ -17,7 +24,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, toRefs } from "vue";
+import { useHighlightAnimation } from "./../../composables/use-highlight-animation";
 
 export default defineComponent({
   name: "DeviceTableComponentRow",
@@ -42,6 +50,17 @@ export default defineComponent({
       required: true,
       type: Object,
     },
+    highlight: {
+      type: Number,
+      default: null,
+    },
+  },
+  setup(props) {
+    const { highlight } = toRefs(props);
+
+    return {
+      ...useHighlightAnimation(highlight),
+    };
   },
 });
 </script>

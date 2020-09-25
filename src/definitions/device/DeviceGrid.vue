@@ -1,6 +1,6 @@
 <template>
-  <Section :title="title" :wide="true">
-    <div class="-mt-2 pb-6 clearfix">
+  <Section :title="title" :wide="viewSetting.viewListAsTable">
+    <div v-if="!showMsbControls" class="-mt-2 pb-6 clearfix">
       <span class="">
         <span
           class="btn btn-xs mr-2"
@@ -69,12 +69,13 @@
       <div class="form-table">
         <DeviceTableComponentRow
           v-for="index in indexRange"
-          :key="`column-form-${index}`"
+          :key="`table-form-${index}`"
           :index="index"
           :form-data="columnViewData[index]"
           :show-field="showField"
           :sections="sections"
           :on-value-change="onValueChange"
+          :highlight="highlights[block][index]"
         />
       </div>
     </form>

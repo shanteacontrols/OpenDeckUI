@@ -5,6 +5,14 @@
   @apply grid surface-neutral border-b;
 }
 
+/* highlighted buttons */
+
+.form-table-row .btn-highlight,
+.form-table-row .btn-highlight:hover,
+.form-table-row .btn-highlight:focus {
+  @apply bg-green-400 border-green-600 shadow-outline;
+}
+
 .form-table-row:last-child {
   @apply border-b-0;
 }
