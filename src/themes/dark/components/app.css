@@ -33,17 +33,16 @@ body {
   @apply w-full pb-8 self-end surface-neutral;
 }
 .app-footer-wrap {
-  @apply max-w-6xl mx-auto flex;
+  @apply max-w-6xl mx-auto;
 }
 .app-footer .heading {
   @apply font-bold pb-4;
 }
-.app-about {
+.app-about,
+.app-resources {
   @apply w-full padder;
 }
-.app-resources {
-  @apply w-full padder text-right;
-}
+
 .app-resources .list {
   @apply text-xs;
 }
@@ -65,11 +64,17 @@ body {
   .app-board-info * {
     @apply mr-0 ml-1;
   }
+}
 
-  .app-about {
+@screen lg {
+  .app-footer-wrap {
+    @apply flex;
+  }
+  .app-about,
+  .app-resources {
     @apply w-1/2;
   }
   .app-resources {
-    @apply w-1/2;
+    @apply text-right;
   }
 }

@@ -2,10 +2,10 @@
   @apply w-full surface-elevated border-t;
 }
 .section-heading {
-  @apply padder surface-neutral border-b font-bold;
+  @apply surface-neutral border-b font-bold;
 }
 .section-heading-inner {
-  @apply max-w-6xl mx-auto;
+  @apply max-w-6xl px-8 py-4 mx-auto;
 }
 .section-content {
   @apply max-w-6xl px-8 pt-6 mx-auto;
