@@ -8,5 +8,10 @@
   @apply max-w-6xl mx-auto;
 }
 .section-content {
-  @apply px-8 pt-6 max-w-6xl mx-auto;
+  @apply max-w-6xl px-8 pt-6 mx-auto;
+}
+
+.section-wide .section-heading-inner,
+.section-wide .section-content {
+  @apply max-w-none;
 }

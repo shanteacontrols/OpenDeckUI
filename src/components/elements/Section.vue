@@ -1,5 +1,5 @@
 <template>
-  <div class="section">
+  <div class="section" :class="{ 'section-wide': !!wide }">
     <slot name="title">
       <h3 v-if="title" class="section-heading">
         <div class="section-heading-inner">
@@ -27,6 +27,10 @@ export default defineComponent({
     showContent: {
       type: Boolean,
       default: true,
+    },
+    wide: {
+      type: Boolean,
+      default: false,
     },
   },
 });
