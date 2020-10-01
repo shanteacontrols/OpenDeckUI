@@ -72,9 +72,20 @@ export const addBuffered = (logEntry: ILogEntry): void => {
     return;
   }
 
+  let payload = logEntry.payload;
+  if (payload) {
+    if (typeof payload === "string") {
+      payload = payload.split(",");
+    }
+    if (!Array.isArray(payload)) {
+      payload = Array.from(payload);
+    }
+  }
+
   // Push to log stack
   state.stack.unshift({
     ...logEntry,
+    payload,
     time,
     timeAbs,
   });

@@ -14,7 +14,7 @@
 /* table */
 
 .request-table {
-  @apply mt-2 mb-4 border-gray-800 border-b;
+  @apply mt-2 mb-0 border-gray-800 border-b;
 }
 .request-table .table-head {
   @apply font-bold;

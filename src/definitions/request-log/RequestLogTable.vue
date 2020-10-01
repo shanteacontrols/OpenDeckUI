@@ -1,10 +1,9 @@
 <template>
-  <table v-if="stack.length" class="table-auto request-table" colspan="2">
+  <table v-if="stack.length" class="table-auto mb-0 request-table" colspan="2">
     <thead class="table-head">
       <tr class="text-left">
-        <th class="w-1/12 text-center">Time</th>
-        <th class="w-2/12">Type</th>
-        <th class="w-8/12">Body</th>
+        <th class="w-1/12 text-right">Time</th>
+        <th class="w-8/12">Event</th>
       </tr>
     </thead>
     <tbody class="table-body">
@@ -16,20 +15,6 @@
       >
         <td class="w-2/12 text-right">
           {{ formatDate(logEntry.time) }}
-        </td>
-        <td class="w-2/12 font-bold">
-          <span v-if="logEntry.type === LogType.Request || logEntry.requestId">
-            REQ {{ logEntry.requestId }}
-          </span>
-          <span v-if="logEntry.type === LogType.Error" class="text-red">
-            ERR {{ logEntry.errorCode }}
-          </span>
-          <span v-else-if="logEntry.type === LogType.Info">
-            INFO
-          </span>
-          <span v-else-if="logEntry.type === LogType.Midi">
-            MIDI
-          </span>
         </td>
         <td class="w-8/12">
           <LogError

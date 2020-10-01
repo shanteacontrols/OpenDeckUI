@@ -1,7 +1,7 @@
 <template>
-  <div class="p-2 border-b border-gray-800 last:border-b-0">
+  <div class="border-b border-gray-800 last:border-b-0">
     <strong class="mr-2 text-gray-400">
-      <span v-if="MidiRealtimeEvent.includes(logEntry.eventType)"
+      <span v-if="MidiRealtimeEvent.includes(logEntry.eventType)" class="faded"
         >real time:</span
       >
       {{ MidiEventTypeLabel[logEntry.eventType] }}
@@ -10,22 +10,24 @@
       </template>
     </strong>
     <span v-if="logEntry.channel" class="mr-2">
-      channel {{ logEntry.channel }}
+      <span class="faded">channel</span> {{ logEntry.channel }}
     </span>
     <span
       v-if="logEntry.value && logEntry.eventType !== 'controlchange'"
       class="mr-2"
     >
-      value {{ logEntry.value }}
+      <span class="faded">value</span> {{ logEntry.value }}
     </span>
     <span v-if="logEntry.controller && logEntry.controller.number" class="mr-2">
-      controller {{ logEntry.controller.number }}
+      <span class="faded">controller</span> {{ logEntry.controller.number }}
     </span>
     <span v-if="logEntry.data && logEntry.data.length > 2" class="mr-2">
-      velocity {{ logEntry.data[2] }}
+      <span class="faded">velocity</span> {{ logEntry.data[2] }}
     </span>
-    <div v-if="logEntry.data && logEntry.data.length" class="mr-2">
-      Raw data: {{ convertToHex(logEntry.data) }} <sup>hex</sup>
+    <div v-if="logEntry.data && logEntry.data.length">
+      <span class="sysex-label faded">Raw data</span>
+      <span class="sysex-payload">{{ convertToHex(logEntry.data) }} </span
+      >&nbsp;<sup>Hex</sup>
     </div>
   </div>
 </template>
