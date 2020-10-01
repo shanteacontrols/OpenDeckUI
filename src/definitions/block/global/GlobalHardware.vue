@@ -11,7 +11,7 @@
       </div>
 
       <div class="form-field">
-        <Button @click.prevent="startFactoryReset">
+        <Button @click.prevent="onFactoryResetClicked">
           Reset to factory settings
         </Button>
         <p class="help-text">
@@ -30,7 +30,7 @@
     </div>
     <div v-if="valueSize === 2" class="form-grid">
       <div class="form-field">
-        <Button @click.prevent="startBackup">
+        <Button @click.prevent="onBackupClicked">
           Backup
         </Button>
         <p class="help-text">
@@ -54,6 +54,7 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import { deviceStoreMapped } from "../../../store";
+import { useConfirmPrompt } from "../../../composables";
 
 export default defineComponent({
   name: "GlobalHardware",
@@ -76,15 +77,24 @@ export default defineComponent({
       deviceStoreMapped.startRestore(fileList[0]);
     };
 
+    const onBackupClicked = useConfirmPrompt(
+      "This will initiate a full backup of all parameters stored on the board. Depending on your board this can take up to 2 minutes. Proceed?",
+      startBackup,
+    );
+    const onFactoryResetClicked = useConfirmPrompt(
+      "This will reset all parameters on the board to their factory settings. Continue?",
+      startFactoryReset,
+    );
+
     return {
       modalVisible,
       modalTitle,
       availableUpdates,
+      onBackupClicked,
       onBackupFileSelected,
+      onFactoryResetClicked,
       valueSize,
       bootLoaderSupport,
-      startBackup,
-      startFactoryReset,
       startReboot,
     };
   },
