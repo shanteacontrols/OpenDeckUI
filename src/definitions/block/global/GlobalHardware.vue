@@ -19,7 +19,17 @@
         </p>
       </div>
 
-      <div v-if="valueSize === 2" class="form-field">
+      <div v-if="bootLoaderSupport" class="form-field">
+        <ButtonLink :to="{ name: 'device-firmware-update' }">
+          Firmware section
+        </ButtonLink>
+        <p class="help-text">
+          Open the Firmware updates section
+        </p>
+      </div>
+    </div>
+    <div v-if="valueSize === 2" class="form-grid">
+      <div class="form-field">
         <Button @click.prevent="startBackup">
           Backup
         </Button>
@@ -27,8 +37,7 @@
           Download a backup of your configuration (incl presets).
         </p>
       </div>
-
-      <div v-if="valueSize === 2" class="form-field">
+      <div class="form-field">
         <FormFileInput
           name="backup-file"
           label="Restore from Backup file"
@@ -36,15 +45,6 @@
         />
         <p class="help-text">
           Select a backup file to restore your board configuration.
-        </p>
-      </div>
-
-      <div v-if="bootLoaderSupport" class="form-field">
-        <ButtonLink :to="{ name: 'device-firmware-update' }">
-          Firmware section
-        </ButtonLink>
-        <p class="help-text">
-          Open the Firmware updates section
         </p>
       </div>
     </div>
