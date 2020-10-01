@@ -13,6 +13,11 @@ export enum LogType {
   Error = "error",
 }
 
+export enum LogFilter {
+  Midi = "midi",
+  System = "system",
+}
+
 export interface ILogEntryBase {
   time: Date;
   timeAbs: number;
@@ -33,12 +38,12 @@ type blockHighlights = Record<number, number>;
 export type IRequestLogState = {
   stack: Array<ILogEntry>;
   highlights: Record<Block, blockHighlights>;
-  logFilter: Array<LogType>;
+  logFilter: Array<LogTypeFilter>;
   showRequestLog: boolean;
 };
 
 const defaultLogFilter = {
-  [LogType.Midi]: true,
+  [LogFilter.Midi]: true,
 };
 
 export const defaultState: IRequestLogState = {

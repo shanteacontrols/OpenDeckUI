@@ -13,7 +13,7 @@
         </button>
         <span v-if="showRequestLog" class="float-right mt-1 clearfix">
           <span
-            v-for="(type, idx) in LogType"
+            v-for="(type, idx) in LogFilter"
             :key="idx"
             class="inline-block ml-2"
           >
@@ -38,7 +38,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { purgeFinishedRequests } from "../device/device-store/request-qeueue";
-import { requestLogMapped, LogType } from "./request-log-store";
+import { requestLogMapped, LogType, LogFilter } from "./request-log-store";
 
 import RequestLogTable from "./RequestLogTable.vue";
 
@@ -56,6 +56,7 @@ export default defineComponent({
     return {
       clear,
       LogType,
+      LogFilter,
       ...requestLogMapped,
     };
   },

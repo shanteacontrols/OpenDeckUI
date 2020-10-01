@@ -1,4 +1,4 @@
-import { state, ILogEntry, LogType } from "./state";
+import { state, ILogEntry, LogType, LogFilter } from "./state";
 import { addError } from "./log-type-error";
 import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
@@ -12,8 +12,8 @@ export const getFilteredLogs = (
   filterBy: (log: ILogEntry) => boolean,
 ): ILogEntry[] => state.stack.filter(filterBy);
 
-export const toggleLogFilter = (type: LogType): void => {
-  state.logFilter[type] = !state.logFilter[type];
+export const toggleLogFilter = (filter: LogFilter): void => {
+  state.logFilter[filter] = !state.logFilter[filter];
   saveToStorage("logFilter", state.logFilter);
 };
 
@@ -57,8 +57,18 @@ export const addBuffered = (logEntry: ILogEntry): void => {
     blockHighlights[index] = timeAbs;
   }
 
+  // Skip logging if Log is disabled
+  if (!state.showRequestLog) {
+    return;
+  }
+
   // Skip log types not included in filter (better memory handling)
-  if (!state.showRequestLog || !state.logFilter[type]) {
+  const skipLogging =
+    type === LogType.Midi
+      ? !state.logFilter[LogFilter.Midi]
+      : !state.logFilter[LogFilter.System];
+
+  if (skipLogging) {
     return;
   }
 
