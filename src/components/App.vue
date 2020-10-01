@@ -6,21 +6,20 @@
       </router-link>
 
       <span v-if="!isHomePage && boardName" class="app-board-info">
-        <small>Board</small>
-        <strong>{{ boardName }}</strong>
+        <template v-if="isBootloaderMode">OpenDeck DFU mode</template>
+        <template v-else>
+          <small>Board</small>
+          <strong>{{ boardName }}</strong>
 
-        <template v-if="firmwareVersion !== null">
-          <small>Firmware</small>
-          <strong>{{ firmwareVersion }}</strong>
-        </template>
+          <template v-if="firmwareVersion !== null">
+            <small>Firmware</small>
+            <strong>{{ firmwareVersion }}</strong>
+          </template>
 
-        <template v-if="isBootloaderMode">
-          <small>Bootloader mode</small>
-        </template>
-
-        <template v-if="supportedPresetsCount > 1">
-          <small>Preset</small>
-          <strong>{{ activePreset + 1 }}</strong>
+          <template v-if="supportedPresetsCount > 1">
+            <small>Preset</small>
+            <strong>{{ activePreset + 1 }}</strong>
+          </template>
         </template>
       </span>
     </nav>
