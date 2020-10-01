@@ -47,6 +47,7 @@ export enum Block {
   Analog = 3,
   Led = 4,
   Display = 5,
+  Touchscreen = 6,
 }
 
 export enum AnalogType {
