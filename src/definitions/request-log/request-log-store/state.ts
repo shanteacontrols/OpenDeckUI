@@ -46,16 +46,14 @@ const defaultLogFilter = {
   [LogFilter.Midi]: true,
 };
 
+const highlights = {};
+Object.values(Block).forEach((block: number) => {
+  highlights[block] = {};
+});
+
 export const defaultState: IRequestLogState = {
   stack: [] as Array<ILogEntry>,
-  highlights: {
-    [Block.Global]: {},
-    [Block.Button]: {},
-    [Block.Encoder]: {},
-    [Block.Analog]: {},
-    [Block.Led]: {},
-    [Block.Display]: {},
-  },
+  highlights,
   logFilter: defaultLogFilter,
   showRequestLog: false,
 };

@@ -28,6 +28,10 @@ import { BlockMap } from "../../definitions";
 import { useHighlightAnimation } from "./../../composables/use-highlight-animation";
 
 const getLatestTimeInArray = (values: number[]): number => {
+  if (!values) {
+    return null;
+  }
+
   let latest = null;
   Object.keys(values).forEach((index) => {
     latest = values[index] > latest ? values[index] : latest;
