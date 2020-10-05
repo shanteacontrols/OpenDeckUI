@@ -12,67 +12,42 @@
       >.
     </p>
   </Section>
-  <template v-else>
-    <Section title="Backup & Restore" class="w-full">
-      <div class="form-grid">
-        <div class="form-field">
-          <Button @click.prevent="onBackupClicked">
-            Backup
-          </Button>
-          <p class="help-text">
-            Download a backup of your configuration (incl presets).
-          </p>
-        </div>
-        <div class="form-field">
-          <FormFileInput
-            label="Restore"
-            name="backup-file"
-            @change="onBackupFileSelected"
-          />
-          <p class="help-text">
-            Select a backup file to restore your board configuration.
-          </p>
-        </div>
+  <Section v-else title="Firmware update" class="w-full">
+    <div class="form-grid">
+      <div class="form-field">
+        <Button :disabled="loading" @click.prevent="checkForUpdates">
+          Check for Updates
+        </Button>
+        <p class="help-text">
+          Check for newer firmware versions. If updates are available and
+          supported you can update the firmware here.
+        </p>
       </div>
-    </Section>
 
-    <Section title="Firmware update" class="w-full">
-      <div class="form-grid">
-        <div class="form-field">
-          <Button :disabled="loading" @click.prevent="checkForUpdates">
-            Check for Updates
-          </Button>
-          <p class="help-text">
-            Check for newer firmware versions. If updates are available and
-            supported you can update the firmware here.
-          </p>
-        </div>
-
-        <div v-if="!isBootloaderMode && bootLoaderSupport" class="form-field">
-          <Button @click.prevent="startBootLoaderMode">
-            Bootloader mode
-          </Button>
-          <p class="help-text">
-            Starting bootloader mode is required for manual firmware updates.
-            The UI will be restricted in bootloader mode.
-          </p>
-        </div>
-
-        <div v-if="isBootloaderMode" class="form-field">
-          <FormFileInput
-            name="backup-file"
-            label="Update Firmware"
-            :disabled="!isBootloaderMode"
-            @change="onFirmwareFileSelected"
-          />
-          <p class="help-text">
-            Select a firmware file to start board firmware update. UI might
-            become unresponsive while updating.
-          </p>
-        </div>
+      <div v-if="!isBootloaderMode && bootLoaderSupport" class="form-field">
+        <Button @click.prevent="startBootLoaderMode">
+          Bootloader mode
+        </Button>
+        <p class="help-text">
+          Starting bootloader mode is required for manual firmware updates. The
+          UI will be restricted in bootloader mode.
+        </p>
       </div>
-    </Section>
-  </template>
+
+      <div v-if="isBootloaderMode" class="form-field">
+        <FormFileInput
+          name="backup-file"
+          label="Update Firmware"
+          :disabled="!isBootloaderMode"
+          @change="onFirmwareFileSelected"
+        />
+        <p class="help-text">
+          Select a firmware file to start board firmware update. UI might become
+          unresponsive while updating.
+        </p>
+      </div>
+    </div>
+  </Section>
 
   <div v-if="loading" class="lg:text-center relative" style="min-height: 50vh;">
     <div class="absolute flex inset-0 opacity-75 bg-gray-900">
@@ -111,7 +86,6 @@
 import { defineComponent, ref } from "vue";
 import { deviceStoreMapped } from "../../../store";
 import { IOpenDeckRelease } from "../../interface";
-import { useConfirmPrompt } from "../../../composables";
 
 export default defineComponent({
   name: "GlobalFirmware",
@@ -123,7 +97,6 @@ export default defineComponent({
       startBootLoaderMode,
       startFirmwareUdate,
       startFirmwareUpdateRemote,
-      startBackup,
     } = deviceStoreMapped;
 
     const loading = ref(false);
@@ -149,17 +122,6 @@ export default defineComponent({
       startFirmwareUdate(fileList[0]);
     };
 
-    const onBackupFileSelected = (fileList) => {
-      if (!fileList.length) return;
-
-      deviceStoreMapped.startRestore(fileList[0]);
-    };
-
-    const onBackupClicked = useConfirmPrompt(
-      "This will initiate a full backup of all parameters stored on the board. Depending on your board this can take up to 2 minutes. Proceed?",
-      startBackup,
-    );
-
     return {
       loading,
       isBootloaderMode,
@@ -170,8 +132,6 @@ export default defineComponent({
       availableUpdates,
       updateFirmwareToVersion,
       onFirmwareFileSelected,
-      onBackupClicked,
-      onBackupFileSelected,
     };
   },
 });

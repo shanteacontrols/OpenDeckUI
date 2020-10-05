@@ -29,6 +29,28 @@
       </div>
     </div>
   </Section>
+  <Section title="Backup & Restore" class="w-full">
+    <div class="form-grid">
+      <div class="form-field">
+        <Button @click.prevent="onBackupClicked">
+          Backup
+        </Button>
+        <p class="help-text">
+          Download a backup of your configuration (incl presets).
+        </p>
+      </div>
+      <div class="form-field">
+        <FormFileInput
+          label="Restore"
+          name="backup-file"
+          @change="onBackupFileSelected"
+        />
+        <p class="help-text">
+          Select a backup file to restore your board configuration.
+        </p>
+      </div>
+    </div>
+  </Section>
 </template>
 
 <script lang="ts">
@@ -44,6 +66,7 @@ export default defineComponent({
       bootLoaderSupport,
       startFactoryReset,
       startReboot,
+      startBackup,
     } = deviceStoreMapped;
 
     const modalVisible = ref(false);
@@ -55,6 +78,17 @@ export default defineComponent({
       startFactoryReset,
     );
 
+    const onBackupFileSelected = (fileList) => {
+      if (!fileList.length) return;
+
+      deviceStoreMapped.startRestore(fileList[0]);
+    };
+
+    const onBackupClicked = useConfirmPrompt(
+      "This will initiate a full backup of all parameters stored on the board. Depending on your board this can take up to 2 minutes. Proceed?",
+      startBackup,
+    );
+
     return {
       modalVisible,
       modalTitle,
@@ -63,6 +97,8 @@ export default defineComponent({
       valueSize,
       bootLoaderSupport,
       startReboot,
+      onBackupClicked,
+      onBackupFileSelected,
     };
   },
 });
