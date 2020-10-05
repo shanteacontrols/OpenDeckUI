@@ -410,6 +410,22 @@ const filterOutDisabledSections = (sectionDef: ISectionDefinition) =>
 const filterOutMsbSections = (sectionDef: ISectionDefinition) =>
   deviceState.valueSize === 1 || !sectionDef.isMsb;
 
+export const getFilteredSectionsForBlock = (
+  block: Block,
+  sectionType: SectionType,
+): ISectionDefinition[] => {
+  if (!BlockMap[block]) {
+    throw new Error(`Block definition not found in BlockMap ${block}`);
+  }
+
+  const { sections } = BlockMap[block];
+
+  return Object.values(sections)
+    .filter((sectionDef) => filterSectionsByType(sectionDef, sectionType))
+    .filter(filterOutDisabledSections)
+    .filter(filterOutMsbSections);
+};
+
 export const getComponentSettings = async (
   block: Block,
   sectionType: SectionType,
@@ -417,16 +433,9 @@ export const getComponentSettings = async (
 ): Promise<any> => {
   await ensureConnection();
   const settings = {} as any;
-  if (!BlockMap[block]) {
-    throw new Error(`Block definition not found in BlockMap ${block}`);
-  }
-  const { sections } = BlockMap[block];
 
-  const tasks = Object.values(sections)
-    .filter((sectionDef) => filterSectionsByType(sectionDef, sectionType))
-    .filter(filterOutDisabledSections)
-    .filter(filterOutMsbSections)
-    .map((sectionDef) => {
+  const tasks = getFilteredSectionsForBlock(block, sectionType).map(
+    (sectionDef) => {
       const { key, section, onLoad, settingIndex } = sectionDef;
       const index =
         typeof componentIndex === "number" ? componentIndex : settingIndex;
@@ -447,7 +456,8 @@ export const getComponentSettings = async (
       }).catch((error) =>
         logger.error("Failed to read component config", error),
       );
-    });
+    },
+  );
 
   await Promise.all(tasks);
 
@@ -469,17 +479,9 @@ export const getSectionValues = async (
 ): Promise<Record<string, number[]>> => {
   await ensureConnection();
   const settings = {} as any;
-  const blockDef = BlockMap[block];
 
-  if (!blockDef) {
-    throw new Error(`Block definition not found in BlockMap ${block}`);
-  }
-
-  const tasks = Object.values(blockDef.sections)
-    .filter((sectionDef) => filterSectionsByType(sectionDef, SectionType.Value))
-    .filter(filterOutDisabledSections)
-    .filter(filterOutMsbSections)
-    .map((sectionDef) => {
+  const tasks = getFilteredSectionsForBlock(block, SectionType.Value).map(
+    (sectionDef) => {
       const { key, section } = sectionDef;
 
       const handler = (res: number[]): void => {
@@ -497,7 +499,8 @@ export const getSectionValues = async (
       }).catch((error) =>
         logger.error("Failed to read component config", error),
       );
-    });
+    },
+  );
 
   await Promise.all(tasks);
 
@@ -527,6 +530,7 @@ export const deviceStoreActions = {
   getComponentSettings,
   setComponentSectionValue,
   getSectionValues,
+  getFilteredSectionsForBlock,
 };
 
 export type IDeviceActions = typeof deviceStoreActions;

@@ -9,9 +9,9 @@ import {
   AnalogType,
 } from "../../interface";
 
+import DeviceForm from "../../device/DeviceForm.vue";
+import DeviceGrid from "../../device/DeviceGrid.vue";
 import RouteWrapper from "../../../components/RouteWrapper.vue";
-import AnalogList from "./AnalogList.vue";
-import AnalogsForm from "./AnalogsForm.vue";
 import AnalogIcon from "./AnalogIcon.vue";
 
 const sections: Dictionary<ISectionDefinition> = {
@@ -173,12 +173,19 @@ export const AnalogBlock: IBlockDefinition = {
         {
           path: "list",
           name: "device-analogs-list",
-          component: AnalogList,
+          component: DeviceGrid,
+          props: {
+            block: Block.Analog,
+            routeName: "device-analogs-form",
+          },
         },
         {
           path: "analogs/:index",
           name: "device-analogs-form",
-          component: AnalogsForm,
+          component: DeviceForm,
+          props: {
+            block: Block.Analog,
+          },
         },
       ],
     },

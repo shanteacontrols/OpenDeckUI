@@ -1,13 +1,22 @@
 <template>
-  <form class="relative" novalidate @submit.prevent="">
+  <form class="relative flex flex-wrap flex-grow" novalidate @submit.prevent="">
     <div v-if="loading" class="absolute flex inset-0 opacity-75 bg-gray-900">
       <Spinner class="self-center" />
     </div>
-    <slot
-      :form="formData"
-      :onSettingChange="onSettingChange"
-      :showField="showField"
-    ></slot>
+
+    <Section :title="title" class="w-full">
+      <div class="form-grid">
+        <template v-for="section in sections">
+          <FormField
+            v-if="showField(section)"
+            :key="section.key"
+            :value="formData[section.key]"
+            :field-definition="section"
+            @modified="onSettingChange"
+          />
+        </template>
+      </div>
+    </Section>
   </form>
 </template>
 
@@ -21,6 +30,10 @@ export default defineComponent({
   props: {
     block: {
       type: Number,
+      required: true,
+    },
+    title: {
+      type: String,
       required: true,
     },
   },

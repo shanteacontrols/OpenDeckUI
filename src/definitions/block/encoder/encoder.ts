@@ -9,8 +9,8 @@ import {
 } from "../../interface";
 
 import RouteWrapper from "../../../components/RouteWrapper.vue";
-import EncodersList from "./EncodersList.vue";
-import EncoderForm from "./EncoderForm.vue";
+import DeviceGrid from "../../device/DeviceGrid.vue";
+import DeviceForm from "../../device/DeviceForm.vue";
 import EncoderIcon from "./EncoderIcon.vue";
 
 const sections: Dictionary<ISectionDefinition> = {
@@ -37,6 +37,7 @@ const sections: Dictionary<ISectionDefinition> = {
     key: "encodingMode",
     type: SectionType.Value,
     section: 2,
+    colspan: 2,
     component: FormInputComponent.Select,
     options: [
       { value: EncodingMode.Controlchange7F, text: "Control change - 7Fh01h" },
@@ -58,19 +59,6 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Encoding mode",
     helpText: ``,
   },
-  MidiIdLSB: {
-    isLsb: true,
-    block: Block.Encoder,
-    key: "midiIdLSB",
-    type: SectionType.Value,
-    section: 3,
-    component: FormInputComponent.Input,
-    min: 0,
-    max: 127,
-    max2Byte: 16383,
-    label: "MIDI ID (LSB)",
-    helpText: "",
-  },
   MidiChannel: {
     block: Block.Encoder,
     key: "midiChannel",
@@ -81,20 +69,6 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 16,
     label: "MIDI channel",
     helpText: "",
-  },
-  PulsesPerStep: {
-    block: Block.Encoder,
-    key: "pulsesPerStep",
-    type: SectionType.Value,
-    section: 5,
-    component: FormInputComponent.Select,
-    options: [
-      { value: 2, text: "2" },
-      { value: 3, text: "3" },
-      { value: 4, text: "4" },
-    ],
-    label: "Pulses per step",
-    helpText: `Amount of pulses encoder must generate in order for firmware to register it as single step.`,
   },
   Acceleration: {
     showIf: (formState: FormState): boolean =>
@@ -113,6 +87,34 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Acceleration",
     helpText: ``,
   },
+  MidiIdLSB: {
+    isLsb: true,
+    block: Block.Encoder,
+    key: "midiIdLSB",
+    type: SectionType.Value,
+    section: 3,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 127,
+    max2Byte: 16383,
+    label: "MIDI ID (LSB)",
+    helpText: "",
+  },
+  PulsesPerStep: {
+    block: Block.Encoder,
+    key: "pulsesPerStep",
+    type: SectionType.Value,
+    section: 5,
+    colspan: 2,
+    component: FormInputComponent.Select,
+    options: [
+      { value: 2, text: "2" },
+      { value: 3, text: "3" },
+      { value: 4, text: "4" },
+    ],
+    label: "Pulses per step",
+    helpText: `Amount of pulses encoder must generate in order for firmware to register it as single step.`,
+  },
   MidiIdMSB: {
     isMsb: true,
     block: Block.Encoder,
@@ -130,6 +132,7 @@ const sections: Dictionary<ISectionDefinition> = {
     key: "remoteSync",
     type: SectionType.Value,
     section: 8,
+    colspan: 2,
     component: FormInputComponent.Toggle,
     label: "Remote sync",
     helpText: `Used only in continuous CC mode or pitch bend mode.
@@ -155,12 +158,20 @@ export const EncoderBlock: IBlockDefinition = {
         {
           path: "list",
           name: "device-encoders-list",
-          component: EncodersList,
+          component: DeviceGrid,
+          props: {
+            block: Block.Encoder,
+            routeName: "device-encoders-form",
+          },
         },
         {
           path: "encoders/:index",
           name: "device-encoders-form",
-          component: EncoderForm,
+          component: DeviceForm,
+          props: {
+            block: Block.Encoder,
+            gridCols: 4, // Use a 4 column grid on large screens
+          },
         },
       ],
     },

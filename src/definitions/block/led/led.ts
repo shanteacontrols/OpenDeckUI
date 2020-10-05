@@ -6,9 +6,10 @@ import {
   Block,
 } from "../../interface";
 
+import { RouteLocation } from "vue-router";
+import DeviceForm from "../../device/DeviceForm.vue";
 import RouteWrapper from "../../../components/RouteWrapper.vue";
 import LedList from "./LedList.vue";
-import LedForm from "./LedForm.vue";
 import LedIcon from "./LedIcon.vue";
 
 export const sections: Dictionary<ISectionDefinition> = {
@@ -163,7 +164,13 @@ export const LedBlock: IBlockDefinition = {
         {
           path: "leds/:index",
           name: "device-leds-form",
-          component: LedForm,
+          component: DeviceForm,
+          props: (route: RouteLocation): Record<string, any> => {
+            return {
+              index: Number(route.params.index),
+              block: Block.Led,
+            };
+          },
         },
       ],
     },

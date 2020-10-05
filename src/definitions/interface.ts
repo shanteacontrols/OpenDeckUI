@@ -200,6 +200,7 @@ interface ISectionBase {
   max2Byte?: number;
   isLsb?: boolean;
   isMsb?: boolean;
+  colspan?: number; // ie Display as 2 cols in form grid
 }
 
 export interface ISectionComponent extends ISectionBase {

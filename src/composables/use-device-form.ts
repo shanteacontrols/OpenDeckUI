@@ -1,9 +1,11 @@
 import { ref, reactive, onMounted, watch } from "vue";
 import {
   Block,
+  BlockMap,
   SectionType,
   ISectionDefinition,
   getDefaultDataForBlock,
+  IBlockDefinition,
 } from "../definitions";
 import { delay, logger } from "../util";
 import { deviceStore } from "../store";
@@ -15,6 +17,8 @@ interface IDeviceForm {
   onSettingChange: Promise<void>;
   onValueChange: Promise<void>;
   showField(definition: ISectionDefinition): boolean;
+  sections: Array<ISectionDefinition>;
+  blockDefinition: IBlockDefinition;
 }
 
 export const useDeviceForm = (
@@ -28,6 +32,11 @@ export const useDeviceForm = (
 
   const showField = (sectionDef: ISectionDefinition): boolean =>
     sectionDef && (!sectionDef.showIf || sectionDef.showIf(formData));
+
+  const sections = deviceStore.actions.getFilteredSectionsForBlock(
+    block,
+    sectionType,
+  );
 
   const loadData = async () => {
     loading.value = true;
@@ -108,5 +117,7 @@ export const useDeviceForm = (
     onSettingChange,
     onValueChange,
     showField,
+    sections,
+    blockDefinition: BlockMap[block],
   };
 };

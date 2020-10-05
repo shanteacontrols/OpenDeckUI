@@ -11,8 +11,8 @@ import {
 } from "../../interface";
 
 import RouteWrapper from "../../../components/RouteWrapper.vue";
+import DeviceForm from "../../device/DeviceForm.vue";
 import ButtonList from "./ButtonList.vue";
-import ButtonForm from "./ButtonForm.vue";
 import ButtonIcon from "./ButtonIcon.vue";
 
 const sections: Dictionary<ISectionDefinition> = {
@@ -22,6 +22,7 @@ const sections: Dictionary<ISectionDefinition> = {
     type: SectionType.Value,
     section: 0,
     component: FormInputComponent.Select,
+    colspan: 2,
     options: [
       { value: 0, text: "Momentary" },
       { value: 1, text: "Latching" },
@@ -84,6 +85,17 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
     block: Block.Button,
   },
+  MidiChannel: {
+    key: "midiChannel",
+    type: SectionType.Value,
+    section: 4,
+    min: 1,
+    max: 16,
+    component: FormInputComponent.Input,
+    label: "MIDI channel",
+    helpText: "",
+    block: Block.Button,
+  },
   MidiId: {
     showIf: (formState: FormState): boolean =>
       !HideMidiIdOnTypes.includes(formState.midiMessage),
@@ -110,17 +122,6 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: "Velocity button sends when it's pressed.",
     block: Block.Button,
   },
-  MidiChannel: {
-    key: "midiChannel",
-    type: SectionType.Value,
-    section: 4,
-    min: 1,
-    max: 16,
-    component: FormInputComponent.Input,
-    label: "MIDI channel",
-    helpText: "",
-    block: Block.Button,
-  },
 };
 
 export const ButtonBlock: IBlockDefinition = {
@@ -145,7 +146,10 @@ export const ButtonBlock: IBlockDefinition = {
         {
           path: "buttons/:index",
           name: "device-buttons-form",
-          component: ButtonForm,
+          component: DeviceForm,
+          props: {
+            block: Block.Button,
+          },
         },
       ],
     },

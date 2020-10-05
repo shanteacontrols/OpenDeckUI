@@ -6,7 +6,7 @@ import {
   Block,
 } from "../../interface";
 
-import DisplayList from "./DisplayList.vue";
+import DeviceSettings from "../../device/DeviceSettings.vue";
 import DisplayIcon from "./DisplayIcon.vue";
 
 export const sections: Dictionary<ISectionDefinition> = {
@@ -20,6 +20,39 @@ export const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Toggle,
     label: "Enable display",
     helpText: `Enables or disables display.`,
+  },
+  WelcomeMessage: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
+    block: Block.Display,
+    key: "welcomeMessage",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 1,
+    component: FormInputComponent.Toggle,
+    label: "Welcome Message",
+    helpText: `Enable or disable welcome message on display when the board is powered on.`,
+  },
+  ShowVersionsOnStartup: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
+    block: Block.Display,
+    key: "showVersionsOnStartup",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 2,
+    component: FormInputComponent.Toggle,
+    label: "Version info on startup",
+    helpText: `Enable or disable version info on display when the board is powered on. This info is shown after welcome message.`,
+  },
+  AlternateMidiNoteDisplay: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
+    block: Block.Display,
+    key: "alternateMidiNoteDisplay",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 3,
+    component: FormInputComponent.Toggle,
+    label: "Alternate MIDI note Display",
+    helpText: `If enabled, MIDI note data will be displayed in note-key format (ie. C#4). If disabled, MIDI note number will be displayed instead.`,
   },
   DisplayController: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
@@ -66,64 +99,6 @@ export const sections: Dictionary<ISectionDefinition> = {
     ],
     label: "Display resolution",
     helpText: ``,
-  },
-  I2CAddress: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
-    block: Block.Display,
-    key: "i2CAddress",
-    type: SectionType.Setting,
-    section: 1,
-    settingIndex: 4,
-    component: FormInputComponent.Select,
-    options: [
-      {
-        value: 0,
-        text: "0",
-      },
-      {
-        value: 120,
-        text: "0x78 (120)",
-      },
-      {
-        value: 122,
-        text: "0x7A (122)",
-      },
-    ],
-    label: "I2C address",
-    helpText: ``,
-  },
-  WelcomeMessage: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
-    block: Block.Display,
-    key: "welcomeMessage",
-    type: SectionType.Setting,
-    section: 0,
-    settingIndex: 1,
-    component: FormInputComponent.Toggle,
-    label: "Welcome Message",
-    helpText: `Enable or disable welcome message on display when the board is powered on.`,
-  },
-  ShowVersionsOnStartup: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
-    block: Block.Display,
-    key: "showVersionsOnStartup",
-    type: SectionType.Setting,
-    section: 0,
-    settingIndex: 2,
-    component: FormInputComponent.Toggle,
-    label: "Version info on startup",
-    helpText: `Enable or disable version info on display when the board is powered on. This info is shown after welcome message.`,
-  },
-  AlternateMidiNoteDisplay: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
-    block: Block.Display,
-    key: "alternateMidiNoteDisplay",
-    type: SectionType.Setting,
-    section: 0,
-    settingIndex: 3,
-    component: FormInputComponent.Toggle,
-    label: "Alternate MIDI note Display",
-    helpText: `If enabled, MIDI note data will be displayed in note-key format (ie. C#4). If disabled, MIDI note number will be displayed instead.`,
   },
   MidiEventRetentionTime: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
@@ -175,6 +150,31 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "Octave normalization value",
     helpText: ``,
   },
+  I2CAddress: {
+    showIf: (formState: FormState): boolean => formState.enableDisplay,
+    block: Block.Display,
+    key: "i2CAddress",
+    type: SectionType.Setting,
+    section: 1,
+    settingIndex: 4,
+    component: FormInputComponent.Select,
+    options: [
+      {
+        value: 0,
+        text: "0",
+      },
+      {
+        value: 120,
+        text: "0x78 (120)",
+      },
+      {
+        value: 122,
+        text: "0x7A (122)",
+      },
+    ],
+    label: "I2C address",
+    helpText: ``,
+  },
 };
 
 export const DisplayBlock: IBlockDefinition = {
@@ -187,7 +187,11 @@ export const DisplayBlock: IBlockDefinition = {
     {
       name: "device-displays",
       path: "displays",
-      component: DisplayList,
+      component: DeviceSettings,
+      props: {
+        block: Block.Display,
+        title: "Display Features",
+      },
     },
   ],
 };

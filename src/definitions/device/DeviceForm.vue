@@ -26,19 +26,27 @@
     <SpinnerOverlay v-if="loading" />
 
     <div class="section-content">
-      <slot
-        :form="formData"
-        :showField="showField"
-        :onValueChange="onValueChange"
-      ></slot>
+      <div class="form-grid" :class="`lg:grid-cols-${gridCols}`">
+        <template v-for="section in sections">
+          <FormField
+            v-if="showField(section)"
+            :key="section.key"
+            :class="`col-span-${section.colspan || 1}`"
+            :value="formData[section.key]"
+            :field-definition="section"
+            @modified="onValueChange"
+          />
+        </template>
+      </div>
     </div>
   </form>
 </template>
 
 <script lang="ts">
-import { defineComponent, toRefs } from "vue";
-import { SectionType, BlockMap, Block } from "../../definitions";
+import { defineComponent, computed } from "vue";
+import { SectionType, Block } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
+import router from "../../router";
 import { useDeviceForm } from "../../composables";
 
 export default defineComponent({
@@ -48,20 +56,21 @@ export default defineComponent({
       required: true,
       type: Number as () => Block,
     },
-    index: {
+    gridCols: {
+      default: 3,
       type: Number,
-      required: true,
     },
   },
   setup(props) {
-    const { index } = toRefs(props);
     const { numberOfComponents, outputId } = deviceStoreMapped;
-    const blockDefinition = BlockMap[props.block];
+    const index = computed(() =>
+      Number(router.currentRoute.value.params.index),
+    );
 
     return {
-      blockDefinition,
       outputId,
       numberOfComponents,
+      index,
       ...useDeviceForm(props.block, SectionType.Value, index),
     };
   },
