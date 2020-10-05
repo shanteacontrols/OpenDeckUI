@@ -111,7 +111,9 @@ export default defineComponent({
       }
 
       const indexString =
-        sectionDef.type === SectionType.Setting ? " - " : `# ${config.index}`;
+        sectionDef.type === SectionType.Value && config.index
+          ? `# ${config.index}`
+          : " - ";
 
       return `- ${Block[config.block]} ${indexString} ${
         sectionDef && sectionDef.label
