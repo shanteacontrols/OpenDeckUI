@@ -7,7 +7,7 @@ import {
 } from "../../interface";
 
 import RouteWrapper from "../../../components/RouteWrapper.vue";
-import DeviceGrid from "../../device/DeviceGrid.vue";
+import DeviceGridWithSettings from "../../device/DeviceGridWithSettings.vue";
 import DeviceForm from "../../device/DeviceForm.vue";
 import TouchscreenIcon from "./TouchscreenIcon.vue";
 
@@ -40,10 +40,11 @@ export const TouchscreenBlock: IBlockDefinition = {
         {
           path: "list",
           name: "device-touchscreens-list",
-          component: DeviceGrid,
+          component: DeviceGridWithSettings,
           props: {
             block: Block.Touchscreen,
             routeName: "device-touchscreens-form",
+            settingsTitle: "Touchscreen Global",
           },
         },
         {

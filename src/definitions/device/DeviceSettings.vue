@@ -40,7 +40,7 @@ export default defineComponent({
     },
     title: {
       type: String,
-      default: "null",
+      default: "Global",
     },
   },
   setup(props) {
