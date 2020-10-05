@@ -53,10 +53,10 @@
           />
         </div>
       </Section>
-
-      <GlobalHardware class="w-full" />
     </template>
   </DeviceSettings>
+
+  <GlobalHardware />
 </template>
 
 <script lang="ts">

@@ -4,19 +4,25 @@
       <Spinner class="self-center" />
     </div>
 
-    <Section :title="title" class="w-full">
-      <div class="form-grid">
-        <template v-for="section in sections">
-          <FormField
-            v-if="showField(section)"
-            :key="section.key"
-            :value="formData[section.key]"
-            :field-definition="section"
-            @modified="onSettingChange"
-          />
-        </template>
-      </div>
-    </Section>
+    <slot
+      :form="formData"
+      :onSettingChange="onSettingChange"
+      :showField="showField"
+    >
+      <Section :title="title" class="w-full">
+        <div class="form-grid">
+          <template v-for="section in sections">
+            <FormField
+              v-if="showField(section)"
+              :key="section.key"
+              :value="formData[section.key]"
+              :field-definition="section"
+              @modified="onSettingChange"
+            />
+          </template>
+        </div>
+      </Section>
+    </slot>
   </form>
 </template>
 
@@ -34,7 +40,7 @@ export default defineComponent({
     },
     title: {
       type: String,
-      required: true,
+      default: "null",
     },
   },
   setup(props) {
