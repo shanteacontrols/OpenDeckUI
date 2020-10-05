@@ -28,7 +28,7 @@ export const TouchscreenBlock: IBlockDefinition = {
   title: "Touchscreen",
   routeName: "device-touchscreens",
   iconComponent: markRaw(TouchscreenIcon),
-  componentCountResponseIndex: 1,
+  componentCountResponseIndex: 4,
   sections,
   routes: [
     {
