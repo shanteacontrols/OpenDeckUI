@@ -181,6 +181,8 @@ export interface IBlockDefinition {
   routeName: string;
   iconComponent: Component;
   sections: Dictionary<ISectionDefinition>;
+  // Marks position of component count in GetNumberOfSupportedComponents req
+  componentCountResponseIndex?: number;
 }
 
 interface ISectionBase {

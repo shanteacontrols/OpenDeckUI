@@ -143,6 +143,7 @@ export const EncoderBlock: IBlockDefinition = {
   title: "Encoder",
   routeName: "device-encoders",
   iconComponent: markRaw(EncoderIcon),
+  componentCountResponseIndex: 1,
   sections,
   routes: [
     {

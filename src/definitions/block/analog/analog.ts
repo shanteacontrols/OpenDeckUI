@@ -161,6 +161,7 @@ export const AnalogBlock: IBlockDefinition = {
   title: "Analog",
   routeName: "device-analogs",
   iconComponent: markRaw(AnalogIcon),
+  componentCountResponseIndex: 2,
   sections,
   routes: [
     {

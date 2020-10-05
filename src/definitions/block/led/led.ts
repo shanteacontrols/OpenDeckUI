@@ -146,6 +146,7 @@ export const LedBlock: IBlockDefinition = {
   title: "LED",
   routeName: "device-leds",
   iconComponent: markRaw(LedIcon),
+  componentCountResponseIndex: 3,
   sections,
   routes: [
     {

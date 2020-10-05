@@ -2,9 +2,9 @@ import {
   MessageStatus,
   Wish,
   Amount,
-  Block,
   RequestType,
   IRequestDefinition,
+  IBlockDefinition,
   ISectionDefinition,
   SectionType,
 } from "./interface";
@@ -111,12 +111,18 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     type: RequestType.Custom,
     specialRequestId: 77, // Hex: 4D
     decodeDoubleByte: true,
-    parser: (response: number[]): any => ({
-      [Block.Button]: response[0],
-      [Block.Encoder]: response[1],
-      [Block.Analog]: response[2],
-      [Block.Led]: response[3],
-    }),
+    parser: (response: number[]): Record<number, number> => {
+      const componentCounts = {};
+
+      Object.values(BlockMap).forEach((blockDef: IBlockDefinition) => {
+        if (blockDef.componentCountResponseIndex !== undefined) {
+          componentCounts[blockDef.block] =
+            response[blockDef.componentCountResponseIndex];
+        }
+      });
+
+      return componentCounts;
+    },
   },
   [Request.GetNumberOfSupportedPresets]: {
     key: Request.GetNumberOfSupportedPresets,

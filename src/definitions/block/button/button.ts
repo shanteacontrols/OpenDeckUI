@@ -128,6 +128,7 @@ export const ButtonBlock: IBlockDefinition = {
   title: "Button",
   routeName: "device-buttons",
   iconComponent: markRaw(ButtonIcon),
+  componentCountResponseIndex: 0,
   sections,
   routes: [
     {
