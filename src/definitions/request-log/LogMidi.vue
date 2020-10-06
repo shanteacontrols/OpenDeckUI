@@ -1,6 +1,6 @@
 <template>
   <div class="border-b border-gray-800 last:border-b-0">
-    <strong class="mr-2 text-gray-400">
+    <strong class="mr-2 text-yellow-300">
       <span v-if="MidiRealtimeEvent.includes(logEntry.eventType)" class="faded"
         >real time:</span
       >

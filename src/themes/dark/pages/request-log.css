@@ -1,7 +1,7 @@
 /* heading */
 
 .request-log .section-heading {
-  @apply pb-2;
+  @apply pb-0;
 }
 
 /* main */
@@ -22,10 +22,10 @@
 .request-table .table-body {
 }
 .request-table .table-head th {
-  @apply px-4 py-2;
+  @apply px-4 py-1;
 }
 .request-table .table-row td {
-  @apply px-4 py-2 border-gray-900 border-b;
+  @apply px-4 py-1 border-gray-900 border-b;
 }
 .request-table .table-row:last-child td {
   @apply border-none;
