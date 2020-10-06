@@ -1,11 +1,11 @@
 .form-field .label {
-  @apply block mb-3 font-bold text-gray-300;
+  @apply block mb-3 font-bold text-white;
 }
 .form-field .instructions {
   @apply ml-2;
 }
 .form-field .help-text {
-  @apply mt-3 text-sm;
+  @apply mt-3 text-sm text-gray-200;
 }
 .form-field.not-supported {
   @apply text-red-900;
