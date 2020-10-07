@@ -18,8 +18,8 @@ export const sections: Dictionary<ISectionDefinition> = {
     section: 0,
     settingIndex: 0,
     component: FormInputComponent.Toggle,
-    label: "Enable display",
-    helpText: `Enables or disables display.`,
+    label: "Enable",
+    helpText: `Enables or disables the usage of small OLED/LCD displays.`,
   },
   WelcomeMessage: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
@@ -30,7 +30,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 1,
     component: FormInputComponent.Toggle,
     label: "Welcome Message",
-    helpText: `Enable or disable welcome message on display when the board is powered on.`,
+    helpText: `Enable or disable welcome message on display when the device is powered on.`,
   },
   ShowVersionsOnStartup: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
@@ -41,18 +41,32 @@ export const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 2,
     component: FormInputComponent.Toggle,
     label: "Version info on startup",
-    helpText: `Enable or disable version info on display when the board is powered on. This info is shown after welcome message.`,
+    helpText: `Enable or disable version info on display when the device is powered on. This info is shown after welcome message.`,
   },
-  AlternateMidiNoteDisplay: {
+  I2CAddress: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
-    key: "alternateMidiNoteDisplay",
+    key: "i2CAddress",
     type: SectionType.Setting,
-    section: 0,
-    settingIndex: 3,
-    component: FormInputComponent.Toggle,
-    label: "Alternate MIDI note Display",
-    helpText: `If enabled, MIDI note data will be displayed in note-key format (ie. C#4). If disabled, MIDI note number will be displayed instead.`,
+    section: 1,
+    settingIndex: 4,
+    component: FormInputComponent.Select,
+    options: [
+      {
+        value: 0,
+        text: "Not specified",
+      },
+      {
+        value: 120,
+        text: "0x78 (120)",
+      },
+      {
+        value: 122,
+        text: "0x7A (122)",
+      },
+    ],
+    label: "I2C address",
+    helpText: ``,
   },
   DisplayController: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
@@ -65,7 +79,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     options: [
       {
         value: 0,
-        text: "Invalid",
+        text: "None",
       },
       {
         value: 1,
@@ -86,7 +100,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     options: [
       {
         value: 0,
-        text: "Invalid",
+        text: "None",
       },
       {
         value: 1,
@@ -137,43 +151,16 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "MIDI event time",
     helpText: `Timeout after which any message on display will be cleared. If set to 0, message stays on display until new event occurs.`,
   },
-  OctaveNormalizationValue: {
+  AlternateMidiNoteDisplay: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
-    key: "octaveNormalizationValue",
+    key: "alternateMidiNoteDisplay",
     type: SectionType.Setting,
-    section: 1,
+    section: 0,
     settingIndex: 3,
-    component: FormInputComponent.Input,
-    min: 0,
-    max: 127,
-    label: "Octave normalization value",
-    helpText: ``,
-  },
-  I2CAddress: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
-    block: Block.Display,
-    key: "i2CAddress",
-    type: SectionType.Setting,
-    section: 1,
-    settingIndex: 4,
-    component: FormInputComponent.Select,
-    options: [
-      {
-        value: 0,
-        text: "0",
-      },
-      {
-        value: 120,
-        text: "0x78 (120)",
-      },
-      {
-        value: 122,
-        text: "0x7A (122)",
-      },
-    ],
-    label: "I2C address",
-    helpText: ``,
+    component: FormInputComponent.Toggle,
+    label: "Alternate MIDI note Display",
+    helpText: `If enabled, MIDI note data will be displayed in note-key format (ie. C#4). If disabled, MIDI note number will be displayed instead.`,
   },
 };
 
@@ -190,7 +177,7 @@ export const DisplayBlock: IBlockDefinition = {
       component: DeviceSettings,
       props: {
         block: Block.Display,
-        title: "Display Features",
+        title: "",
       },
     },
   ],

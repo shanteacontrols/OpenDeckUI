@@ -28,9 +28,9 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: 1, text: "Latching" },
     ],
     label: "Type",
-    helpText: `Denotes button type.
-      Type can be momentary, which means that note off is sent as soon as
-      button is released, or latching, which means that note off is sent on
+    helpText: `
+      Button type can be momentary, which means that configured MIDI message is sent as soon as
+      button is released, or latching, which means that MIDI message is sent on
       second button press. All buttons are configured as momentary by
       default. Depending on message type this setting can be ignored.`,
   },

@@ -53,7 +53,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 2,
     component: FormInputComponent.Toggle,
     label: "Start-up animation",
-    helpText: `Enables or disables LED animation. If animation is enabled, all LEDS will slowly turn on and off when the board is powered.`,
+    helpText: `Enables or disables LED animation when the device is powered on.`,
     block: Block.Led,
   },
   // Component definitions

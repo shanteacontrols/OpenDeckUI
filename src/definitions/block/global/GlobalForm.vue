@@ -34,15 +34,21 @@
             @modified="onSettingChange"
           />
           <FormField
-            v-if="showField(sections.MidiMergeEnable)"
-            :value="form.midiMergeEnable"
-            :field-definition="sections.MidiMergeEnable"
-            @modified="onSettingChange"
-          />
-          <FormField
             v-if="showField(sections.RunningStatus)"
             :value="form.runningStatus"
             :field-definition="sections.RunningStatus"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.PassUSBtoDIN)"
+            :value="form.passUSBtoDIN"
+            :field-definition="sections.PassUSBtoDIN"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.MidiMergeEnable)"
+            :value="form.midiMergeEnable"
+            :field-definition="sections.MidiMergeEnable"
             @modified="onSettingChange"
           />
           <FormField

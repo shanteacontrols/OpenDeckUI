@@ -21,21 +21,25 @@ const sections: Dictionary<ISectionDefinition> = {
     type: SectionType.Value,
     section: 0,
     component: FormInputComponent.Toggle,
-    label: "Enabled",
-    helpText: ``,
+    label: "Enable",
+    helpText: `Enables or disables analog input. Disabled by default to avoid sending erratic values when nothing
+    is connected to the input.`,
   },
   Invert: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     key: "invert",
     type: SectionType.Value,
     section: 1,
     component: FormInputComponent.Toggle,
     label: "Invert direction",
-    helpText: ``,
+    helpText: `Inverts the direction of the analog input. For example, if CC MIDI message is used, when the potentiometer is
+    at its left edge, sent CC value is 0, and when it's at its right edge, sent value is 127. If inversion is enabled, vice
+    versa applies.`,
     block: Block.Analog,
   },
   Type: {
+    showIf: (formState: FormState): boolean => !!formState.enabled,
     key: "type",
     type: SectionType.Value,
     section: 2,
@@ -56,7 +60,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   MidiIdLSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     key: "midiIdLSB",
     type: SectionType.Value,
     section: 3,
@@ -71,7 +75,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   MidiIdMSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     isMsb: true,
     key: "midiIdMSB",
     type: SectionType.Value,
@@ -85,7 +89,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   LowerCCLimitLSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     isLsb: true,
     key: "lowerCCLimitLSB",
     type: SectionType.Value,
@@ -95,12 +99,13 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 127,
     max2Byte: 16383,
     label: "Lower CC limit (LSB)",
-    helpText: "",
+    helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
+    here, so this value will be sent when the analog input is at its lowest position.`,
     block: Block.Analog,
   },
   LowerCCLimitMSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     isMsb: true,
     key: "lowerCCLimitMSB",
     type: SectionType.Value,
@@ -109,12 +114,13 @@ const sections: Dictionary<ISectionDefinition> = {
     min: 0,
     max: 127,
     label: "Lower CC limit (MSB)",
-    helpText: "",
+    helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
+    here, so this value will be sent when the analog input is at its lowest position.`,
     block: Block.Analog,
   },
   UpperCCLimitLSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     isLsb: true,
     key: "upperCCLimitLSB",
     type: SectionType.Value,
@@ -124,12 +130,13 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 127,
     max2Byte: 16383,
     label: "Upper CC limit (LSB)",
-    helpText: "",
+    helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
+    here, so this value will be sent when the analog input is at its highest position.`,
     block: Block.Analog,
   },
   UpperCCLimitMSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     isMsb: true,
     key: "upperCCLimitMSB",
     type: SectionType.Value,
@@ -138,17 +145,18 @@ const sections: Dictionary<ISectionDefinition> = {
     min: 0,
     max: 127,
     label: "Upper CC limit (MSB)",
-    helpText: "",
+    helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
+    here, so this value will be sent when the analog input is at its highest position.`,
     block: Block.Analog,
   },
   MidiChannel: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button,
+      formState.type !== AnalogType.Button && !!formState.enabled,
     key: "midiChannel",
     type: SectionType.Value,
     section: 9,
     component: FormInputComponent.Input,
-    min: 0,
+    min: 1,
     max: 16,
     label: "MIDI channel",
     helpText: "",

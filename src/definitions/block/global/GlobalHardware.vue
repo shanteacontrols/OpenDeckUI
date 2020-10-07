@@ -15,7 +15,7 @@
           Reset to factory settings
         </Button>
         <p class="help-text">
-          Reset your board to it's factory settings.
+          Resets the device to its factory settings.
         </p>
       </div>
 
@@ -24,7 +24,7 @@
           Firmware section
         </ButtonLink>
         <p class="help-text">
-          Open the Firmware updates section
+          Section used to reboot the device into bootloader mode and update the firmware.
         </p>
       </div>
     </div>
@@ -46,7 +46,7 @@
           @change="onBackupFileSelected"
         />
         <p class="help-text">
-          Select a backup file to restore your board configuration.
+          Select a backup file to restore your device configuration.
         </p>
       </div>
     </div>

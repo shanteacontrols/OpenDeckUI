@@ -21,8 +21,8 @@ const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 1,
     component: FormInputComponent.Toggle,
     label: "Preserve preset setting",
-    helpText: `When disabled, first preset will always be loaded on board power on.
-      Otherwise, preset index configured here is remembered. This is not related to saving of configuration
+    helpText: `When disabled, first preset will always be loaded on device power on.
+      Otherwise, preset specified with "Active preset" option is remembered. This is not related to saving of configuration
       to specified preset - the configuration data is always retained even after power off.`,
   },
   ActivePreset: {
@@ -49,7 +49,7 @@ const sections: Dictionary<ISectionDefinition> = {
       deviceStore.state.activePreset = value;
     },
     label: "Active preset",
-    helpText: ``,
+    helpText: `Preset stores the entire configuration for device.`,
   },
   StandardNoteOff: {
     block: Block.Global,
@@ -70,7 +70,8 @@ const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 1,
     component: FormInputComponent.Toggle,
     label: "Running status",
-    helpText: `This setting applies only to DIN MIDI out. This setting can cause issues on older MIDI gear so it's best to leave it disabled.`,
+    helpText: `This setting applies only to DIN MIDI out. When enabled,
+    MIDI output bandwidth increases due to lower amount of bytes being sent. This setting can cause issues on older MIDI gear so it's best to leave it disabled.`,
   },
   DinMidiState: {
     block: Block.Global,
@@ -92,6 +93,17 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Toggle,
     label: "MIDI merge",
     helpText: `When enabled, all data received via DIN MIDI can be forwarded to USB, DIN MIDI out or both interfaces.`,
+  },
+  PassUSBtoDIN: {
+    showIf: (formState: FormState): boolean => !!formState.dinMidiState,
+    block: Block.Global,
+    key: "passUSBtoDIN",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 4,
+    component: FormInputComponent.Toggle,
+    label: "Pass USB MIDI to DIN MIDI",
+    helpText: `When enabled, all data received via USB MIDI will be forwarded to DIN MIDI output.`,
   },
   MidiMergeType: {
     showIf: (formState: FormState): boolean => !!formState.midiMergeEnable,
