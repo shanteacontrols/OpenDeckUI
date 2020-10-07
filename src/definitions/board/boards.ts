@@ -11,7 +11,13 @@ export const Boards: IBoardDefinition[] = [
     name: "Arduino Mega",
     id: [9, 16, 0, 18],
     oldId: [],
-    firmwareFileLocation: "bin/compiled/fw/avr/atmega2560/mega2560.hex",
+    firmwareFileLocation: "mega2560.hex",
+  },
+  {
+    name: "Arduino Mega 6mux",
+    id: [21, 118, 38, 40],
+    oldId: [],
+    firmwareFileLocation: "mega2560_6mux.sysex",
   },
   {
     name: "Arduino Pro Micro",
@@ -29,13 +35,25 @@ export const Boards: IBoardDefinition[] = [
     name: "Teensy++ 2.0",
     id: [112, 11, 64, 30],
     oldId: [],
-    firmwareFileLocation: null,
+    firmwareFileLocation: "teensy2pp.sysex",
   },
   {
-    name: "DubFocus",
+    name: "DubFocus v1",
     id: [57, 92, 109, 93],
     oldId: [],
     firmwareFileLocation: null,
+  },
+  {
+    name: "DubFocus 12",
+    id: [125, 74, 109, 51],
+    oldId: [],
+    firmwareFileLocation: "dubfocus12.sysex",
+  },
+  {
+    name: "DubFocus 16",
+    id: [61, 70, 72, 25],
+    oldId: [],
+    firmwareFileLocation: "dubfocus16.sysex",
   },
   {
     name: "Bergamot",
@@ -47,7 +65,7 @@ export const Boards: IBoardDefinition[] = [
     name: "STM32F4 Discovery",
     id: [43, 19, 68, 122],
     oldId: [],
-    firmwareFileLocation: null,
+    firmwareFileLocation: "discovery.sysex",
   },
   {
     name: "Jamiel",
@@ -56,16 +74,16 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileLocation: null,
   },
   {
-    name: "Jose",
-    id: [3, 109, 68, 30],
-    oldId: [],
-    firmwareFileLocation: null,
-  },
-  {
     name: "Cardamom",
     id: [99, 82, 54, 48],
     oldId: [],
-    firmwareFileLocation: null,
+    firmwareFileLocation: "cardamom.sysex",
+  },
+  {
+    name: "OpenDeck v2",
+    id: [122, 56, 41, 19],
+    oldId: [],
+    firmwareFileLocation: "opendeckv2.sysex",
   },
 ];
 
