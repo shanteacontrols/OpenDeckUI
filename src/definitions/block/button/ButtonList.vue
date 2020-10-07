@@ -19,7 +19,7 @@ export default defineComponent({
     const { numberOfComponents } = deviceStoreMapped;
 
     const touchscreenCount = computed(
-      () => numberOfComponents[Block.Touchscreen] || 0,
+      () => numberOfComponents.value[Block.Touchscreen] || 0,
     );
     const analogCount = computed(
       () => numberOfComponents.value[Block.Analog] || 0,
