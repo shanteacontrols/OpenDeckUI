@@ -35,28 +35,24 @@ export type ILogEntry =
 
 type blockHighlights = Record<number, number>;
 
-export type IRequestLogState = {
-  stack: Array<ILogEntry>;
-  highlights: Record<Block, blockHighlights>;
-  logFilter: Array<LogTypeFilter>;
-  showRequestLog: boolean;
-};
-
-const defaultLogFilter = {
+const defaultLogFilter: Record<string, boolean> = {
   [LogFilter.Midi]: true,
 };
 
-const highlights = {};
+const highlights: Record<Block, blockHighlights> = {};
 Object.values(Block).forEach((block: number) => {
   highlights[block] = {};
 });
 
-export const defaultState: IRequestLogState = {
+export const defaultState = {
   stack: [] as Array<ILogEntry>,
   highlights,
   logFilter: defaultLogFilter,
   showRequestLog: false,
+  showHexValues: false,
 };
+
+export type IRequestLogState = typeof defaultState;
 
 const loadStateFromStorage = (): IRequestLogState => ({
   ...defaultState,

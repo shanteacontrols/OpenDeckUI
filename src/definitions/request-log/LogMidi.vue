@@ -26,8 +26,7 @@
     </span>
     <div v-if="logEntry.data && logEntry.data.length">
       <span class="sysex-label faded">Raw data</span>
-      <span class="sysex-payload">{{ convertToHex(logEntry.data) }} </span
-      >&nbsp;<sup>Hex</sup>
+      <LogDataValue :value="logEntry.data" />
     </div>
   </div>
 </template>
@@ -39,10 +38,14 @@ import {
   MidiEventTypeLabel,
   MidiRealtimeEvent,
 } from "./request-log-store";
-import { convertToHex } from "../../util";
+import { convertToHexString } from "../../util";
+import LogDataValue from "./LogDataValue.vue";
 
 export default defineComponent({
   name: "ActivityMidi",
+  components: {
+    LogDataValue,
+  },
   props: {
     logEntry: {
       required: true,
@@ -51,7 +54,7 @@ export default defineComponent({
   },
   setup() {
     return {
-      convertToHex,
+      convertToHexString,
       MidiEventTypeLabel,
       MidiRealtimeEvent,
     };

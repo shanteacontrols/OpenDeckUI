@@ -7,8 +7,7 @@
     </strong>
     <div v-if="logEntry.payload && logEntry.payload.length">
       <span class="sysex-label faded">Raw data</span>
-      <span class="sysex-payload">{{ convertToHex(logEntry.payload) }}</span
-      >&nbsp;<sup>Hex</sup>
+      <LogDataValue :value="logEntry.payload" />
     </div>
   </div>
 </template>
@@ -17,10 +16,14 @@
 import { defineComponent } from "vue";
 import { ILogEntryInfo } from "./request-log-store";
 import { Block, BlockMap } from "../../definitions";
-import { convertToHex } from "../../util";
+import { convertToHexString } from "../../util";
+import LogDataValue from "./LogDataValue.vue";
 
 export default defineComponent({
   name: "ActivityInfo",
+  components: {
+    LogDataValue,
+  },
   props: {
     logEntry: {
       required: true,
@@ -31,7 +34,7 @@ export default defineComponent({
     return {
       Block,
       BlockMap,
-      convertToHex,
+      convertToHexString,
     };
   },
 });

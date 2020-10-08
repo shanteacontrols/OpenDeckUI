@@ -22,6 +22,11 @@ export const toggleLog = (): void => {
   saveToStorage("showRequestLog", state.showRequestLog);
 };
 
+export const toggleHexValues = (): void => {
+  state.showHexValues = !state.showHexValues;
+  saveToStorage("showHexValues", state.showHexValues);
+};
+
 export const clearRequestLog = (): void => {
   state.stack = [];
 };
@@ -103,6 +108,7 @@ export const requestLogActions = {
   addMidi,
   toggleLogFilter,
   toggleLog,
+  toggleHexValues,
 };
 
 export type IRequestLogActions = typeof requestLogActions;

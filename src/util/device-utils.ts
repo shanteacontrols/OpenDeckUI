@@ -8,6 +8,12 @@ export const convertToHex = (value: number | number[]): string | string[] => {
     : value.toString(16);
 };
 
+export const convertToHexString = (value: number | number[]): string => {
+  return Array.isArray(value)
+    ? value.map((val: number) => val.toString(16)).join(", ")
+    : value.toString(16);
+};
+
 // Byte conversion
 
 export const convertDataValuesToSingleByte = (values: number[]): number[] => {

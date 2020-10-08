@@ -37,40 +37,16 @@
 
     <div v-if="request.payload">
       <span class="sysex-label faded">Sent</span>
-      <span class="sysex-payload"
-        >[ F0, 0, 54, 43, {{ [...convertToHex(request.payload)].join(", ") }},
-        F7 ]
-      </span>
-      <sup>Hex</sup>
+      <LogDataValue :value="request.payload" :add-signature="true" />
     </div>
     <div v-if="request.responseData">
       <div class="">
         <span class="sysex-label faded">Received</span>
-        <span class="sysex-payload"
-          >[ F0, 0, 54, 43,
-          <template v-if="request.messageStatus !== undefined">
-            {{ convertToHex(request.messageStatus) }},
-          </template>
-          <template v-if="request.messagePart !== undefined">
-            {{ convertToHex(request.messagePart) }},
-          </template>
-          <template v-if="request.specialRequestId !== undefined">
-            {{ convertToHex(request.specialRequestId) }},
-          </template>
-          <span v-for="(val, idx) in request.responseData" :key="idx">
-            {{ convertToHex(val) }},
-          </span>
-          F7 ]</span
-        >&nbsp;<sup>Hex</sup>
+        <LogDataValue :value="receivedValue" :add-signature="true" />
       </div>
-      <div
-        v-if="
-          request.parsed &&
-          (!Array.isArray(request.parsed) || request.parsed.length)
-        "
-      >
+      <div v-if="request.parsed">
         <span class="sysex-label faded">Parsed</span>
-        <span class="sysex-payload"> {{ request.parsed }}</span>
+        <span>{{ request.parsed }}</span>
       </div>
     </div>
 
@@ -84,7 +60,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed, toRefs } from "vue";
 import { IRequestConfig } from "../device/device-store";
 import { IQueuedRequest } from "../device/device-store/request-qeueue";
 import { RequestState } from "../interface";
@@ -93,17 +69,21 @@ import {
   SectionType,
   findSectionDefinitionByConfig,
 } from "../../definitions";
-import { getDifferenceInMs, convertToHex } from "../../util";
+import { getDifferenceInMs, convertToHexString } from "../../util";
+import LogDataValue from "./LogDataValue.vue";
 
 export default defineComponent({
   name: "ActivityRequest",
+  components: {
+    LogDataValue,
+  },
   props: {
     request: {
       required: true,
       type: Object as () => IQueuedRequest,
     },
   },
-  setup() {
+  setup(props) {
     const getDefinitionLabel = (config: IRequestConfig): string => {
       const sectionDef = findSectionDefinitionByConfig(config);
       if (!sectionDef) {
@@ -120,12 +100,33 @@ export default defineComponent({
       }`;
     };
 
+    const { request } = toRefs(props);
+
+    const receivedValue = computed(() => {
+      const data = [];
+      const fieldsToAdd = [
+        request.value.messageStatus,
+        request.value.messagePart,
+        request.value.specialRequestId,
+      ];
+      fieldsToAdd.forEach((field: number) => {
+        if (field !== undefined) {
+          data.push(field);
+        }
+      });
+      if (Array.isArray(request.value.responseData)) {
+        data.push(...request.value.responseData);
+      }
+      return data;
+    });
+
     return {
       getDefinitionLabel,
       getDifferenceInMs,
-      convertToHex,
+      convertToHexString,
       RequestState,
       Block,
+      receivedValue,
     };
   },
 });

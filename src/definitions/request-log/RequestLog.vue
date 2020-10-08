@@ -12,6 +12,16 @@
           clear
         </button>
         <span v-if="showRequestLog" class="float-right mt-1 clearfix">
+          <span class="inline-block mr-6">
+            <FormToggle
+              :value="showHexValues"
+              class="toggle-sm labeled"
+              @changed="toggleHexValues"
+            >
+              hex
+            </FormToggle>
+          </span>
+
           <span
             v-for="(type, idx) in LogFilter"
             :key="idx"
