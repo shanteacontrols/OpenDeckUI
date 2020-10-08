@@ -1,4 +1,5 @@
-import { computed } from "vue";
+import { computed, Ref } from "vue";
+import { Block } from "../definitions";
 
 export interface GridSegment {
   title: string;
@@ -6,21 +7,6 @@ export interface GridSegment {
   endIndex: number;
   indexArray?: number[]; // Calculated here in a computed
 }
-interface gridSegmentComposable {
-  segments: Computed<GridSegment[]>;
-}
-
-export const useGridSegments = (
-  gridSegments: Ref<GridSegment[]>,
-): gridSegmentComposable => {
-  const segments = computed(() =>
-    gridSegments.value ? gridSegments.value.map(addGridSegmentIndexArray) : [],
-  );
-
-  return {
-    segments,
-  };
-};
 
 const addGridSegmentIndexArray = (seg: GridSegment): GridSegment => {
   const indexArray: Array<number> = [];
@@ -31,4 +17,60 @@ const addGridSegmentIndexArray = (seg: GridSegment): GridSegment => {
     ...seg,
     indexArray,
   };
+};
+
+// Note: calculated for Buttons and Leds
+export const useGridSegments = (
+  numberOfComponents: Ref<Array<number>>,
+  block: Ref<number>,
+  gridSegmentTitle: Ref<string>,
+): Computed<GridSegment[]> => {
+  const touchscreenCount = computed(
+    () => numberOfComponents.value[Block.Touchscreen] || 0,
+  );
+  const analogCount = computed(
+    () => numberOfComponents.value[Block.Analog] || 0,
+  );
+  const sectionCount = computed(
+    () => numberOfComponents.value[block.value] || 0,
+  );
+  const sectionEnd = computed(
+    () => sectionCount.value - touchscreenCount.value - analogCount.value - 1,
+  );
+  const analogEnd = computed(() => sectionEnd.value + analogCount.value);
+
+  return computed(() => {
+    if (analogCount.value === 0 && touchscreenCount.value === 0) {
+      return;
+    }
+
+    const segments: GridSegment[] =
+      sectionEnd.value > 0
+        ? [
+            {
+              title: gridSegmentTitle.value,
+              startIndex: 0,
+              endIndex: sectionEnd.value,
+            },
+          ]
+        : [];
+
+    segments.push({
+      title: "Analog",
+      startIndex: sectionEnd.value + 1,
+      endIndex: analogEnd.value,
+    });
+
+    if (touchscreenCount.value === 0) {
+      return segments;
+    }
+
+    segments.push({
+      title: "Touchscreen",
+      startIndex: analogEnd.value + 1,
+      endIndex: sectionCount.value - 1,
+    });
+
+    return segments.map(addGridSegmentIndexArray);
+  });
 };

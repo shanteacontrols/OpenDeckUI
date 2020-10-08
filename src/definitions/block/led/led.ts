@@ -162,6 +162,7 @@ export const LedBlock: IBlockDefinition = {
           props: {
             block: Block.Led,
             routeName: "device-leds-form",
+            gridSegmentTitle: "LEDs",
           },
         },
         {

@@ -12,7 +12,7 @@ import {
 
 import RouteWrapper from "../../../components/RouteWrapper.vue";
 import DeviceForm from "../../device/DeviceForm.vue";
-import ButtonList from "./ButtonList.vue";
+import DeviceGrid from "../../device/DeviceGrid.vue";
 import ButtonIcon from "./ButtonIcon.vue";
 
 const sections: Dictionary<ISectionDefinition> = {
@@ -141,7 +141,12 @@ export const ButtonBlock: IBlockDefinition = {
         {
           path: "list",
           name: "device-buttons-list",
-          component: ButtonList,
+          component: DeviceGrid,
+          props: {
+            block: Block.Button,
+            routeName: "device-buttons-form",
+            gridSegmentTitle: "Buttons",
+          },
         },
         {
           path: "buttons/:index",

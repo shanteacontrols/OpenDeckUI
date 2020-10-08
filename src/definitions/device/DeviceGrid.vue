@@ -52,7 +52,7 @@
     </div>
 
     <template v-if="!viewSetting.viewListAsTable">
-      <div v-if="!segments || !segments.length" class="device-grid">
+      <div v-if="!segments" class="device-grid">
         <DeviceGridButton
           v-for="index in componentCount"
           :key="`button-${index}`"
@@ -112,7 +112,6 @@ import {
   useDeviceTableView,
   useViewSettings,
   useGridSegments,
-  GridSegment,
 } from "../../composables";
 import DeviceGridButton from "./DeviceGridButton.vue";
 import DeviceTableComponentRow from "./DeviceTableComponentRow.vue";
@@ -132,8 +131,8 @@ export default defineComponent({
       required: true,
       type: Number as () => Block,
     },
-    gridSegments: {
-      type: Array as () => GridSegment[],
+    gridSegmentTitle: {
+      type: String,
       default: null,
     },
     routeName: {
@@ -142,10 +141,18 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { outputId, setViewSetting, showMsbControls } = deviceStoreMapped;
+    const {
+      outputId,
+      setViewSetting,
+      showMsbControls,
+      numberOfComponents,
+    } = deviceStoreMapped;
     const { highlights } = requestLogMapped;
-    const { block, gridSegments } = toRefs(props);
-    const { segments } = useGridSegments(gridSegments);
+    const { block, gridSegmentTitle } = toRefs(props);
+
+    const segments = gridSegmentTitle.value
+      ? useGridSegments(numberOfComponents, block, gridSegmentTitle)
+      : undefined;
 
     const {
       columnViewData,
