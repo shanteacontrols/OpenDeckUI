@@ -11,7 +11,7 @@
       class="w-full"
       :route-name="routeName"
       :block="block"
-      :grid-segment-title="gridSegmentTitle"
+      :segment-grid="segmentGrid"
     />
   </div>
 </template>
@@ -34,9 +34,9 @@ export default defineComponent({
       default: "Global",
       type: String,
     },
-    gridSegmentTitle: {
-      type: String,
-      default: null,
+    segmentGrid: {
+      type: Boolean,
+      default: false,
     },
   },
 });

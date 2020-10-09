@@ -145,7 +145,7 @@ export const ButtonBlock: IBlockDefinition = {
           props: {
             block: Block.Button,
             routeName: "device-buttons-form",
-            gridSegmentTitle: "Buttons",
+            segmentGrid: true,
           },
         },
         {

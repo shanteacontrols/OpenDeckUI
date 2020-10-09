@@ -131,9 +131,9 @@ export default defineComponent({
       required: true,
       type: Number as () => Block,
     },
-    gridSegmentTitle: {
-      type: String,
-      default: null,
+    segmentGrid: {
+      type: Boolean,
+      default: false,
     },
     routeName: {
       required: true,
@@ -148,10 +148,10 @@ export default defineComponent({
       numberOfComponents,
     } = deviceStoreMapped;
     const { highlights } = requestLogMapped;
-    const { block, gridSegmentTitle } = toRefs(props);
+    const { block, segmentGrid } = toRefs(props);
 
-    const segments = gridSegmentTitle.value
-      ? useGridSegments(numberOfComponents, block, gridSegmentTitle)
+    const segments = segmentGrid.value
+      ? useGridSegments(numberOfComponents, block)
       : undefined;
 
     const {
