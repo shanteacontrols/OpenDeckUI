@@ -3,7 +3,7 @@ import { Request } from "../../request";
 import { sendMessage } from "./request-qeueue";
 import { deviceState } from "./state";
 
-const bytesPerSecondLimit = 3000; // cca 3 x 1024 - 3kb/s
+const bytesPerSecondLimit = 2000; // cca 2 x 1024 - 2kb/s
 
 export const newLineCharacter = "\n";
 
