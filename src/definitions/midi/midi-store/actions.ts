@@ -35,8 +35,13 @@ const connectionWatcher = async (): Promise<void> => {
 
     // If only one input is available, open it right away
     if (midiState.outputs.length === 1 && !isDevicePageOpen) {
+      // Redirect directly to FW page to prevent global section clogging msg stack
+      const name = midiState.outputs[0].name.includes("OpenDeck DFU")
+        ? "device-firmware-update"
+        : "device";
+
       router.push({
-        name: "device",
+        name,
         params: {
           outputId: midiState.outputs[0].id,
         },

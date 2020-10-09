@@ -52,7 +52,7 @@ export default defineComponent({
           router.currentRoute.value.params.outputId as string,
         );
         if (isBootloaderMode.value) {
-          router.push({ name: "device-firmware-update" });
+          return router.push({ name: "device-firmware-update" });
         }
       } catch (err) {
         logger.error(err);

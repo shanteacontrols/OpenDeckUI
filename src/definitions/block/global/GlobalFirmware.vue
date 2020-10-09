@@ -59,7 +59,7 @@
     <p v-if="!availableUpdates.length" class="text-sm leading-5 text-gray-500">
       Your firmware is up to date.
     </p>
-    <div v-else class="text-sm">
+    <div v-else class="text-sm pb-6">
       <div
         v-for="update in availableUpdates"
         :key="update.name"
@@ -119,7 +119,7 @@ export default defineComponent({
     const onFirmwareFileSelected = async (fileList) => {
       if (!fileList.length) return;
 
-      startFirmwareUdate(fileList[0]);
+      await startFirmwareUdate(fileList[0]);
     };
 
     return {

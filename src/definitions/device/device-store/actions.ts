@@ -52,8 +52,10 @@ export const disableControl = (
 const resetDeviceStore = async (): void => {
   resetQueue();
 
-  deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
-  detachMidiEventHandlers(deviceState.input);
+  if (deviceState.input) {
+    deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
+    detachMidiEventHandlers(deviceState.input);
+  }
 
   Object.assign(deviceState, defaultState);
 };
@@ -210,6 +212,8 @@ export const startBootLoaderMode = async (): Promise<void> => {
 };
 
 const startFirmwareUdate = async (file: File): Promise<void> => {
+  resetQueue();
+
   const success = await sendMessagesFromFileWithRateLimiter(
     file,
     Request.FirmwareUpdate,
@@ -222,13 +226,13 @@ const startFirmwareUdate = async (file: File): Promise<void> => {
 };
 
 export const startFirmwareUpdateRemote = async (
-  tagNameTouse: string,
+  tagNameToUse: string,
 ): Promise<Array<IOpenDeckTag>> => {
   try {
     const tags: IOpenDeckTag[] = await fetch(GitHubTagsUrl).then((response) =>
       response.json(),
     );
-    const release = tags.filter((tag) => tag.name === tagNameTouse);
+    const release = tags.filter((tag) => tag.name === tagNameToUse);
 
     if (!release.length) {
       logger.error("Cannot find firmware upate tag");

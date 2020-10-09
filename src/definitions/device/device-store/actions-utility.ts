@@ -30,13 +30,12 @@ export const sendMessagesFromFileWithRateLimiter = async (
   file: File,
   command: Request,
 ): Promise<void> => {
-  const messages = await convertFileToMessageArray(file);
-
   const timeLimiter = {};
   let sentMessageCount = 0;
-  deviceState.systemOperationPercentage = 0;
+  deviceState.systemOperationPercentage = 1;
 
-  // Limit to 10 mesages per second
+  const messages = await convertFileToMessageArray(file);
+
   const sendMessageWithLimiter = async (payload) => {
     const bytes = payload.length + 5;
     const absSeconds = getAbsoluteSeconds();
@@ -52,9 +51,10 @@ export const sendMessagesFromFileWithRateLimiter = async (
 
     sentMessageCount += 1;
 
-    deviceState.systemOperationPercentage = Math.floor(
-      (sentMessageCount / messages.length) * 100,
-    ); // eslint-disable-line
+    const percentage = Math.floor((sentMessageCount / messages.length) * 100); // eslint-disable-line
+
+    // Make sure we show the overlay by keeping % at 1 at least
+    deviceState.systemOperationPercentage = percentage > 0 ? percentage : 1;
 
     return sendMessage({
       command,
