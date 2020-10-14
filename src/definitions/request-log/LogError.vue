@@ -1,5 +1,11 @@
 <template>
-  <div class="p-2 border-b border-gray-800 last:border-b-0">
+  <div class="py-2 border-b border-gray-800 last:border-b-0">
+    <strong v-if="logEntry.requestId" class="text-red-500 mr-4"
+      >Request {{ logEntry.requestId }}</strong
+    >
+    <strong v-if="logEntry.errorCode" class="text-red-500 mr-2"
+      >Error Code {{ logEntry.errorCode }}</strong
+    >
     <span class="text-red-500">
       {{ logEntry.message }}
       {{
@@ -11,8 +17,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { RequestState } from "../interface";
-import { Block, getErrorDefinition } from "../../definitions";
+import { getErrorDefinition } from "../../definitions";
 import { ILogEntryError } from "./request-log-store";
 
 export default defineComponent({
@@ -25,8 +30,6 @@ export default defineComponent({
   },
   setup() {
     return {
-      RequestState,
-      Block,
       getErrorDefinition,
     };
   },
