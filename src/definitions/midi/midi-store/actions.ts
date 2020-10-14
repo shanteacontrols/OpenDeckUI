@@ -98,13 +98,15 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
     const handleInitialHandShake = (event: InputEventBase<"sysex">): void => {
       input = event.target;
 
+      const valueSize = event.data.length === 7 ? 1 : 2;
+
       inputs.forEach((input: Input) => {
         input.removeListener("sysex", "all");
       });
 
       resolved = true;
 
-      resolve({ input, output, isBootloaderMode });
+      resolve({ input, output, isBootloaderMode, valueSize });
     };
 
     inputs.forEach((input: Input) => {
@@ -126,7 +128,7 @@ const pingOutput = async (output: Output, inputs: Inputs[]) => {
 
 export const matchInputOutput = async (
   outputId: string,
-): Promise<{ input: Input; output: Output }> => {
+): Promise<InputOutputMatch> => {
   await loadMidi();
 
   const output = WebMidi.outputs.find((output: Output) => {
@@ -183,12 +185,17 @@ const newMidiLoadPromise = async (): Promise<void> =>
 
 // Export
 
+interface InputOutputMatch {
+  input: Input;
+  output: Output;
+  isBootloaderMode: number;
+  valueSize: number;
+}
+
 export interface IMidiActions {
   loadMidi: () => Promise<void>;
   assignInputs: () => Promise<void>;
-  matchInputOutput: (
-    outputId: string,
-  ) => Promise<{ input: Input; output: Output }>;
+  matchInputOutput: (outputId: string) => Promise<InputOutputMatch>;
   startMidiConnectionWatcher: () => void;
   stopMidiConnectionWatcher: () => void;
 }

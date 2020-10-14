@@ -113,13 +113,13 @@ export const connectDeviceStoreToInput = async (
   outputId: string,
 ): Promise<any> => {
   const matched = await midiStore.actions.matchInputOutput(outputId);
-  const { input, output, isBootloaderMode } = matched;
+  const { input, output, isBootloaderMode, valueSize } = matched;
 
   deviceState.isBootloaderMode = isBootloaderMode;
   deviceState.outputId = outputId;
   deviceState.input = input as Input;
   deviceState.output = output as Output;
-  deviceState.valueSize = null;
+  deviceState.valueSize = valueSize;
   deviceState.valuesPerMessageRequest = null;
   deviceState.firmwareVersion = null;
 
@@ -136,16 +136,6 @@ export const connectDeviceStoreToInput = async (
     deviceState.connectionPromise = (null as unknown) as Promise<any>;
     startDeviceConnectionWatcher();
     return;
-  }
-
-  try {
-    await sendMessage({
-      command: Request.GetValueSize,
-      handler: (valueSize: number) => setInfo({ valueSize }),
-    });
-  } catch (err) {
-    setInfo({ valueSize: 1 });
-    logger.error("Failed to read valueSize, assuming 1", err);
   }
 
   await sendMessage({
