@@ -362,9 +362,11 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
   const definition = getDefinition(request.command);
   const { hasMultiPartResponse } = definition;
   const isBackupReq = request.command === Request.Backup;
+  const isDoubleByteProtocol = deviceState.valueSize === 2;
 
   // Note: Fix issue with input output matching handshake response
   if (
+    isDoubleByteProtocol &&
     !isBackupReq &&
     request.specialRequestId &&
     event.data[6] !== request.specialRequestId
@@ -389,10 +391,9 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   let parsed;
   if (!isBackupReq) {
-    parsed =
-      deviceState.valueSize === 2
-        ? parseEventDataDoubleByte(processed, definition, request)
-        : parseEventDataSingleByte(processed, definition);
+    parsed = isDoubleByteProtocol
+      ? parseEventDataDoubleByte(processed, definition, request)
+      : parseEventDataSingleByte(processed, definition);
   }
 
   const { handler } = request;
