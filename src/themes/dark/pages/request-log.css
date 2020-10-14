@@ -45,6 +45,9 @@
 .request-status.done .status {
   @apply text-green-400;
 }
+.request-status.error .status {
+  @apply text-red-400;
+}
 .request-status > .timing {
   @apply ml-2;
 }

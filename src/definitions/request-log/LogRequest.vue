@@ -1,17 +1,21 @@
 <template>
   <div class="activity request-request">
-    <strong class="request-command">{{ request.command }}</strong>
-    <strong v-if="request.config" class="request-command">
-      {{ getDefinitionLabel(request.config) }}
-    </strong>
+    <span :class="{ 'text-red-500': !!request.errorMessage }">
+      <strong class="request-command">{{ request.id }}</strong
+      >.&nbsp;
 
-    <strong
-      v-if="request.config && typeof request.config.value === 'number'"
-      class="request-config"
-    >
-      {{ request.config.value }}
-    </strong>
+      <strong class="request-command">{{ request.command }}</strong>
+      <strong v-if="request.config" class="request-command">
+        {{ getDefinitionLabel(request.config) }}
+      </strong>
 
+      <strong
+        v-if="request.config && typeof request.config.value === 'number'"
+        class="request-config"
+      >
+        {{ request.config.value }}
+      </strong>
+    </span>
     <span class="request-status" :class="request.state">
       <span class="status">{{ request.state }}</span>
       <span v-if="request.time.finished" class="timing">
@@ -51,7 +55,7 @@
     </div>
 
     <div v-if="request.errorMessage">
-      <span class="sysex-label faded">Error message</span>
+      <span class="sysex-label text-red-700">Error</span>
       <span class="text-red-500">
         {{ request.errorMessage }}
       </span>
