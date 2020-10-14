@@ -40,7 +40,7 @@ let connectionWatcherTimer = null;
 
 // Actions
 
-const isControlDisabled = (def: ISectionDefinition): boolean =>
+const isControlDisabled = (def: ISectionDefinition): ControlDisableType =>
   deviceState.unsupportedComponents[def.block][def.key];
 
 export const disableControl = (
