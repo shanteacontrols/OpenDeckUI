@@ -25,6 +25,11 @@ export const useDeviceTableView = (block: Block): IDeviceTableView => {
     sectionDef && (!sectionDef.showIf || sectionDef.showIf(formData));
 
   const loadData = async () => {
+    // Old protocol doesn't support table view
+    if (deviceStore.state.valueSize !== 2) {
+      return;
+    }
+
     loading.value = true;
 
     const fetchedValues = await deviceStore.actions.getSectionValues(block);
