@@ -34,7 +34,7 @@ export const defaultState: IDeviceState = {
   valueSize: (null as unknown) as number,
   valuesPerMessageRequest: (null as unknown) as number,
   boardName: (null as unknown) as string,
-  firmwareFileLocation: (null as unknown) as string,
+  firmwareFileName: (null as unknown) as string,
   firmwareVersion: (null as unknown) as string,
   bootLoaderSupport: false,
   activePreset: (null as unknown) as number,

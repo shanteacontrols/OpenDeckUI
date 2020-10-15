@@ -12,9 +12,6 @@ import {
   Block,
   BlockMap,
   IOpenDeckRelease,
-  IOpenDeckTag,
-  GitHubTagsUrl,
-  GitHubContentsUrl,
   GitHubReleasesUrl,
   getBoardDefinition,
 } from "../../../definitions";
@@ -215,47 +212,9 @@ const startFirmwareUdate = async (file: File): Promise<void> => {
   alert(msg);
 };
 
-export const startFirmwareUpdateRemote = async (
-  tagNameToUse: string,
-): Promise<Array<IOpenDeckTag>> => {
-  try {
-    const tags: IOpenDeckTag[] = await fetch(GitHubTagsUrl).then((response) =>
-      response.json(),
-    );
-    const release = tags.filter((tag) => tag.name === tagNameToUse);
-
-    if (!release.length) {
-      logger.error("Cannot find firmware upate tag");
-      return;
-    }
-
-    if (release.length > 1) {
-      logger.error("Multiple firmware update tags found");
-      return;
-    }
-
-    const fwFilePath = deviceState.firmwareFileLocation;
-
-    const tag = release[0];
-    const sourceFileUrl = `${GitHubContentsUrl}/${fwFilePath}?ref=${tag.name}`;
-
-    const sourceFileJson: IOpenDeckTag[] = await fetch(
-      sourceFileUrl,
-    ).then((response) => response.json());
-
-    const sourceFileRaw: IOpenDeckTag[] = await fetch(
-      sourceFileJson.download_url,
-    );
-
-    const firmwareContents = await sourceFileRaw.text();
-
-    logger.log(firmwareContents);
-  } catch (error) {
-    logger.error("Error while processing firmware update", error);
-  }
-};
-
-export const startUpdatesCheck = async (): Promise<Array<IOpenDeckRelease>> => {
+export const startUpdatesCheck = async (
+  firmwareFileName?: string,
+): Promise<Array<IOpenDeckRelease>> => {
   const releases = await fetch(GitHubReleasesUrl).then((response) =>
     response.json(),
   );
@@ -269,6 +228,9 @@ export const startUpdatesCheck = async (): Promise<Array<IOpenDeckRelease>> => {
     )
     .map((release) => ({
       html_description: marked(release.body, { headerIds: false }),
+      firmwareFileLink: release.assets.find(
+        (asset) => asset.name === firmwareFileName,
+      ),
       ...release,
     }));
 };
@@ -362,9 +324,9 @@ const loadDeviceInfo = async (): Promise<void> => {
     handler: (value: number[]) => {
       const board = getBoardDefinition(value);
       const boardName = (board && board.name) || "Generic OpenDeck board";
-      const firmwareFileLocation = board && board.firmwareFileLocation;
+      const firmwareFileName = board && board.firmwareFileName;
 
-      setInfo({ boardName, firmwareFileLocation });
+      setInfo({ boardName, firmwareFileName });
     },
   });
   await sendMessage({
@@ -517,7 +479,6 @@ export const deviceStoreActions = {
   startReboot,
   startDeviceConnectionWatcher,
   stopDeviceConnectionWatcher,
-  startFirmwareUpdateRemote,
   startFirmwareUdate,
   isControlDisabled,
   disableControl,

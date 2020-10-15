@@ -69,13 +69,14 @@
           :href="`https://github.com/paradajz/OpenDeck/releases/tag/${update.tag_name}`"
           >{{ update.tag_name }}</a
         >
-        <button
+        <a
+          v-if="update.firmwareFileLink"
           class="my-3 ml-4 py-1 px-2 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-          @click.prevent="() => updateFirmwareToVersion(update.tag_name)"
+          target="_blank"
+          :href="update.firmwareFileLink.browser_download_url"
         >
-          update to this version
-        </button>
-        <br />
+          Download FW file ({{ firmwareFileName }})
+        </a>
         <div v-html="update.html_description"></div>
       </div>
     </div>
@@ -91,12 +92,12 @@ export default defineComponent({
   name: "GlobalFirmware",
   setup() {
     const {
+      firmwareFileName,
       isBootloaderMode,
       startUpdatesCheck,
       bootLoaderSupport,
       startBootLoaderMode,
       startFirmwareUdate,
-      startFirmwareUpdateRemote,
     } = deviceStoreMapped;
 
     const loading = ref(false);
@@ -105,15 +106,9 @@ export default defineComponent({
 
     const checkForUpdates = async () => {
       loading.value = true;
-      availableUpdates.value = await startUpdatesCheck();
+      availableUpdates.value = await startUpdatesCheck(firmwareFileName.value);
       loading.value = false;
       updatesChecked.value = true;
-    };
-
-    const updateFirmwareToVersion = async (tagName: string) => {
-      loading.value = true;
-      await startFirmwareUpdateRemote(tagName);
-      loading.value = false;
     };
 
     const onFirmwareFileSelected = async (fileList) => {
@@ -123,6 +118,7 @@ export default defineComponent({
     };
 
     return {
+      firmwareFileName,
       loading,
       isBootloaderMode,
       bootLoaderSupport,
@@ -130,7 +126,6 @@ export default defineComponent({
       updatesChecked,
       checkForUpdates,
       availableUpdates,
-      updateFirmwareToVersion,
       onFirmwareFileSelected,
     };
   },

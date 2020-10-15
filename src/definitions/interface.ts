@@ -165,7 +165,7 @@ export interface IBoardDefinition {
   name: string;
   id: number[];
   oldId?: number[];
-  firmwareFileLocation?: string;
+  firmwareFileName?: string;
 }
 
 export enum RequestState {
@@ -227,6 +227,11 @@ export interface IOpenDeckRelease {
   body: string;
   assets: Array<any>;
   html_description: string;
+  firmwareFileLink?: {
+    id: string;
+    url: string;
+    browser_download_url: string;
+  };
 }
 
 interface IOpenDeckTag {
