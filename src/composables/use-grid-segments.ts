@@ -42,7 +42,7 @@ export const useGridSegments = (
     }
 
     // If all LEDS are taken for touchscreens
-    if (sectionCount.value === 0) {
+    if (sectionCount.value === 0 || sectionEnd.value === -1) {
       return [
         {
           title: "Touchscreen",
