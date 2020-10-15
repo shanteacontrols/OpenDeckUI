@@ -440,7 +440,10 @@ const onRequestFail = (request: IQueuedRequest, messageStatus: number) => {
 
   if (request.config) {
     const sectionDef = findSectionDefinitionByConfig(request.config);
-    if (sectionDef && messageStatus === ErrorCode.NOT_SUPPORTED) {
+    if (
+      sectionDef &&
+      [ErrorCode.BLOCK, ErrorCode.NOT_SUPPORTED].includes(messageStatus)
+    ) {
       disableControl(sectionDef, ControlDisableType.NotSupported);
     }
     if (sectionDef && messageStatus === ErrorCode.INDEX) {
