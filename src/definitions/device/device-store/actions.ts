@@ -361,7 +361,7 @@ const loadDeviceInfo = async (): Promise<void> => {
     command: Request.IdentifyBoard,
     handler: (value: number[]) => {
       const board = getBoardDefinition(value);
-      const boardName = (board && board.name) || "UNKNOWN BOARD";
+      const boardName = (board && board.name) || "Generic OpenDeck board";
       const firmwareFileLocation = board && board.firmwareFileLocation;
 
       setInfo({ boardName, firmwareFileLocation });

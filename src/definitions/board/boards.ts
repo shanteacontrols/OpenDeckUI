@@ -3,50 +3,44 @@ import { IBoardDefinition } from "../interface";
 export const Boards: IBoardDefinition[] = [
   {
     name: "Arduino Leonardo",
-    id: [24, 58, 76, 24],
-    oldId: [],
+    id: [1, 58, 76, 24],
+    oldId: [1, 52, 50, 124],
     firmwareFileLocation: null,
   },
   {
     name: "Arduino Mega",
     id: [9, 16, 0, 18],
-    oldId: [],
+    oldId: [1, 16, 0, 18],
     firmwareFileLocation: "mega2560.hex",
   },
   {
-    name: "Arduino Mega 6mux",
-    id: [21, 118, 38, 40],
-    oldId: [],
-    firmwareFileLocation: "mega2560_6mux.sysex",
-  },
-  {
     name: "Arduino Pro Micro",
-    id: [27, 107, 33, 98],
-    oldId: [],
+    id: [1, 107, 33, 98],
+    oldId: [1, 5, 13, 73],
     firmwareFileLocation: null,
   },
   {
     name: "Arduino Uno",
-    id: [105, 67, 14, 63],
-    oldId: [],
+    id: [1, 67, 14, 63],
+    oldId: [1, 11, 120, 50],
     firmwareFileLocation: null,
   },
   {
     name: "Teensy++ 2.0",
     id: [112, 11, 64, 30],
-    oldId: [],
+    oldId: [1, 11, 64, 30],
     firmwareFileLocation: "teensy2pp.sysex",
   },
   {
     name: "DubFocus v1",
-    id: [57, 92, 109, 93],
-    oldId: [],
+    id: [],
+    oldId: [1, 92, 109, 93],
     firmwareFileLocation: null,
   },
   {
     name: "DubFocus 12",
     id: [125, 74, 109, 51],
-    oldId: [],
+    oldId: [1, 5, 75, 68],
     firmwareFileLocation: "dubfocus12.sysex",
   },
   {
@@ -56,12 +50,6 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileLocation: "dubfocus16.sysex",
   },
   {
-    name: "Bergamot",
-    id: [48, 106, 107, 21],
-    oldId: [],
-    firmwareFileLocation: null,
-  },
-  {
     name: "STM32F4 Discovery",
     id: [43, 19, 68, 122],
     oldId: [],
@@ -69,8 +57,8 @@ export const Boards: IBoardDefinition[] = [
   },
   {
     name: "Jamiel",
-    id: [125, 12, 108, 80],
-    oldId: [],
+    id: [1, 12, 108, 80],
+    oldId: [1, 78, 126, 38],
     firmwareFileLocation: null,
   },
   {
@@ -84,6 +72,12 @@ export const Boards: IBoardDefinition[] = [
     id: [122, 56, 41, 19],
     oldId: [],
     firmwareFileLocation: "opendeckv2.sysex",
+  },
+  {
+    name: "OpenDeck v1",
+    id: [1, 112, 51, 106],
+    oldId: [1, 91, 42, 85],
+    firmwareFileLocation: null,
   },
 ];
 
