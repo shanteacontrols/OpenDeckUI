@@ -168,13 +168,6 @@ export default defineComponent({
     const segments = segmentGrid.value
       ? useGridSegments(numberOfComponents, block)
       : undefined;
-
-    const {
-      columnViewData,
-      loading,
-      showField,
-      onValueChange,
-    } = useDeviceTableView(block.value);
     const {
       componentCount,
       indexRange,
@@ -183,6 +176,13 @@ export default defineComponent({
       sections,
       viewSetting,
     } = useViewSettings(block.value);
+
+    const {
+      columnViewData,
+      loading,
+      showField,
+      onValueChange,
+    } = useDeviceTableView(block.value, viewSetting);
 
     return {
       outputId,

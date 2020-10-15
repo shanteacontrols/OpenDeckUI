@@ -1,4 +1,4 @@
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, ComputedRef, watch, computed } from "vue";
 import {
   Block,
   SectionType,
@@ -7,6 +7,7 @@ import {
 } from "../definitions";
 import { delay, logger } from "../util";
 import { deviceStore } from "../store";
+import { IViewSettingState } from "../definitions/device/device-store/state";
 
 interface IDeviceTableView {
   loadData: Promise<void>;
@@ -16,17 +17,21 @@ interface IDeviceTableView {
   showField(definition: ISectionDefinition): boolean;
 }
 
-export const useDeviceTableView = (block: Block): IDeviceTableView => {
+export const useDeviceTableView = (
+  block: Block,
+  viewSetting: ComputedRef<IViewSettingState>,
+): IDeviceTableView => {
   const loading = ref(true);
   const defaultData = getDefaultDataForBlock(block, SectionType.Value);
   const columnViewData = reactive({});
+  const tableViewActive = computed(() => !!viewSetting.value.viewListAsTable);
 
   const showField = (sectionDef: ISectionDefinition, formData: any): boolean =>
     sectionDef && (!sectionDef.showIf || sectionDef.showIf(formData));
 
   const loadData = async () => {
     // Old protocol doesn't support table view
-    if (deviceStore.state.valueSize !== 2) {
+    if (deviceStore.state.valueSize !== 2 || !tableViewActive.value) {
       return;
     }
 
@@ -81,6 +86,7 @@ export const useDeviceTableView = (block: Block): IDeviceTableView => {
   };
 
   onMounted(() => loadData());
+  watch([tableViewActive], () => tableViewActive.value && loadData());
 
   return {
     columnViewData,
