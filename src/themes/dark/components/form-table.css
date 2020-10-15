@@ -1,8 +1,8 @@
 .form-table {
-  @apply w-full surface-neutral border;
+  @apply w-full surface-elevated border-t;
 }
 .form-table-row {
-  @apply grid surface-neutral border-b;
+  @apply grid surface-elevated border-b;
 }
 
 /* highlighted buttons */
@@ -53,7 +53,7 @@
     @apply table-cell py-2;
   }
   .form-table-row > div:first-child {
-    @apply surface-neutral border-none h-full align-bottom pb-4;
+    @apply surface-elevated border-none h-full align-bottom pb-4;
   }
   .form-table-row .label {
     @apply h-6 mb-1;

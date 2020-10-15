@@ -1,92 +1,69 @@
 <template>
-  <Section :title="title" :wide="viewSetting.viewListAsTable">
-    <div v-if="!showMsbControls" class="-mt-2 pb-6 clearfix">
-      <span class="">
-        <span
-          class="btn btn-xs mr-2"
-          :class="{ 'btn-active': !viewSetting.viewListAsTable }"
-          @click="() => setViewSetting(block, { viewListAsTable: false })"
-        >
-          Grid
+  <div class="section" :class="{ wide: viewSetting.viewListAsTable }">
+    <div class="section-heading">
+      <h2 v-if="title" class="section-heading-inner text-center">
+        {{ title }}
+      </h2>
+    </div>
+    <div v-if="!showMsbControls" class="section-heading">
+      <div class="section-heading-inner-sm clearfix">
+        <span class="">
+          <span
+            class="btn btn-xs mr-2"
+            :class="{ 'btn-active': !viewSetting.viewListAsTable }"
+            @click="() => setViewSetting(block, { viewListAsTable: false })"
+          >
+            Grid
+          </span>
+          <span
+            class="btn btn-xs"
+            :class="{ 'btn-active': viewSetting.viewListAsTable }"
+            @click="() => setViewSetting(block, { viewListAsTable: true })"
+          >
+            Table
+          </span>
         </span>
-        <span
-          class="btn btn-xs"
-          :class="{ 'btn-active': viewSetting.viewListAsTable }"
-          @click="() => setViewSetting(block, { viewListAsTable: true })"
-        >
-          Table
-        </span>
-      </span>
 
-      <span
-        v-if="viewSetting.viewListAsTable && pageSizes.length"
-        class="ml-6 float-right"
-      >
-        <span class="text-xs">Show</span>
         <span
-          v-for="itemsPerPage in pageSizes"
-          :key="`page-size-${itemsPerPage}`"
-          class="btn btn-xs ml-1"
-          :class="{ 'btn-active': itemsPerPage === viewSetting.itemsPerPage }"
-          @click="() => setViewSetting(block, { itemsPerPage })"
+          v-if="viewSetting.viewListAsTable && pageSizes.length"
+          class="ml-6 float-right"
         >
-          {{ itemsPerPage }}
+          <span class="text-xs">Show</span>
+          <span
+            v-for="itemsPerPage in pageSizes"
+            :key="`page-size-${itemsPerPage}`"
+            class="btn btn-xs ml-1"
+            :class="{ 'btn-active': itemsPerPage === viewSetting.itemsPerPage }"
+            @click="() => setViewSetting(block, { itemsPerPage })"
+          >
+            {{ itemsPerPage }}
+          </span>
         </span>
-      </span>
 
-      <span
-        v-if="viewSetting.viewListAsTable && pages > 1"
-        class="ml-6 mt-4 md:mt-0 float-right"
-      >
-        <span class="text-xs ml-4">Page</span>
         <span
-          v-for="page in pages"
-          :key="`page-size-${page}`"
-          class="btn btn-xs ml-1"
-          :class="{ 'btn-active': page === viewSetting.currentPage }"
-          @click="() => setViewSetting(block, { currentPage: page })"
+          v-if="viewSetting.viewListAsTable && pages > 1"
+          class="ml-6 mt-4 md:mt-0 float-right"
         >
-          {{ page }}
+          <span class="text-xs ml-4">Page</span>
+          <span
+            v-for="page in pages"
+            :key="`page-size-${page}`"
+            class="btn btn-xs ml-1"
+            :class="{ 'btn-active': page === viewSetting.currentPage }"
+            @click="() => setViewSetting(block, { currentPage: page })"
+          >
+            {{ page }}
+          </span>
         </span>
-      </span>
+      </div>
     </div>
 
-    <template v-if="!viewSetting.viewListAsTable">
-      <div v-if="!segments" class="device-grid">
-        <DeviceGridButton
-          v-for="index in componentCount"
-          :key="`button-${index}`"
-          :output-id="outputId"
-          :route-name="routeName"
-          :index="index - 1"
-          :highlight="highlights[block][index - 1]"
-        >
-          <span class="text-xl font-bold">{{ index - 1 }}</span>
-        </DeviceGridButton>
-      </div>
-      <template v-else>
-        <Section
-          v-for="(segment, idx) in segments"
-          :key="`grid-segment-${idx}`"
-        >
-          <h3 class="mb-8 font-lg text-center">{{ segment.title }}</h3>
-          <div class="device-grid">
-            <DeviceGridButton
-              v-for="index in segment.indexArray"
-              :key="`button-${index}`"
-              :output-id="outputId"
-              :route-name="routeName"
-              :index="index"
-              :highlight="highlights[block][index]"
-            >
-              <span class="text-xl font-bold">{{ index }}</span>
-            </DeviceGridButton>
-          </div>
-        </Section>
-      </template>
-    </template>
-
-    <form v-else class="relative pb-8" novalidate @submit.prevent="">
+    <form
+      v-if="viewSetting.viewListAsTable"
+      class="relative"
+      novalidate
+      @submit.prevent=""
+    >
       <SpinnerOverlay v-if="loading" />
       <div class="form-table">
         <DeviceTableComponentRow
@@ -101,7 +78,45 @@
         />
       </div>
     </form>
-  </Section>
+    <div v-else-if="!segments && componentCount > 0" class="device-grid">
+      <DeviceGridButton
+        v-for="index in componentCount"
+        :key="`button-${index}`"
+        :output-id="outputId"
+        :route-name="routeName"
+        :index="index - 1"
+        :highlight="highlights[block][index - 1]"
+      >
+        <span class="text-xl font-bold">{{ index - 1 }}</span>
+      </DeviceGridButton>
+    </div>
+    <template v-else-if="segments && segments.length">
+      <div
+        v-for="(segment, idx) in segments"
+        :key="`grid-segment-${idx}`"
+        class="grid-segment"
+      >
+        <h3 class="section-heading text-center">
+          <div class="section-heading-inner-sm">
+            {{ segment.title }}
+          </div>
+        </h3>
+
+        <div class="device-grid">
+          <DeviceGridButton
+            v-for="index in segment.indexArray"
+            :key="`button-${index}`"
+            :output-id="outputId"
+            :route-name="routeName"
+            :index="index"
+            :highlight="highlights[block][index]"
+          >
+            <span class="text-xl font-bold">{{ index }}</span>
+          </DeviceGridButton>
+        </div>
+      </div>
+    </template>
+  </div>
 </template>
 
 <script lang="ts">

@@ -7,6 +7,9 @@
 .section-heading-inner {
   @apply max-w-6xl px-8 py-4 mx-auto;
 }
+.section-heading-inner-sm {
+  @apply max-w-6xl px-8 pt-2 pb-3 mx-auto;
+}
 .section-content {
   @apply max-w-6xl px-8 pt-6 mx-auto;
 }

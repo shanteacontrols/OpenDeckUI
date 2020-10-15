@@ -185,6 +185,7 @@ export const AnalogBlock: IBlockDefinition = {
           props: {
             block: Block.Analog,
             routeName: "device-analogs-form",
+            title: "Analog",
           },
         },
         {

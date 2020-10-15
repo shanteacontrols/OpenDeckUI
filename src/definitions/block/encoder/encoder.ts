@@ -178,6 +178,7 @@ export const EncoderBlock: IBlockDefinition = {
           props: {
             block: Block.Encoder,
             routeName: "device-encoders-form",
+            title: "Encoder",
           },
         },
         {

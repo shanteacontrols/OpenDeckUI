@@ -1,5 +1,15 @@
 .device-grid {
-  @apply pb-10 grid grid-cols-4 gap-8 text-center;
+  @apply p-8 grid grid-cols-4 gap-6 text-center;
+}
+
+/* segments */
+
+.grid-segment {
+  @apply border-gray-800 border-b;
+}
+
+.grid-segment:last-child {
+  @apply border-none;
 }
 
 /* buttons */
