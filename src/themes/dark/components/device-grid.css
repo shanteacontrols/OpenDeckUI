@@ -1,5 +1,5 @@
 .device-grid {
-  @apply p-8 grid grid-cols-4 gap-6 text-center;
+  @apply max-w-6xl mx-auto p-8 grid grid-cols-4 gap-6 text-center;
 }
 
 /* segments */
