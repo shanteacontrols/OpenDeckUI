@@ -41,6 +41,17 @@ export const useGridSegments = (
       return; // Don't segment if only LEDS to be displayed
     }
 
+    // If all LEDS are taken for touchscreens
+    if (sectionCount.value === 0) {
+      return [
+        {
+          title: "Touchscreen",
+          startIndex: 0,
+          endIndex: touchscreenCount.value - 1,
+        },
+      ].map(addGridSegmentIndexArray);
+    }
+
     return computed(() =>
       [
         {
