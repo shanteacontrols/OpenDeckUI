@@ -107,7 +107,7 @@ export const useDeviceForm = (
 
   onMounted(() => loadData());
   if (indexRef) {
-    watch([indexRef], () => loadData());
+    watch([indexRef], () => indexRef && indexRef.value && loadData());
   }
 
   return {
