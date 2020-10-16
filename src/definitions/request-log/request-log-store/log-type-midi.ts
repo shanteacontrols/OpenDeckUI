@@ -1,4 +1,4 @@
-import { LogType, ILogEntryBase } from "./state";
+import { LogType, ILogEntryBase, state } from "./state";
 import { addBuffered } from "./actions";
 import { convertToHexString, ensureString } from "../../../util";
 
@@ -83,6 +83,10 @@ export interface MidiEventParams {
 }
 
 export const addMidi = (params: MidiEventParams): void => {
+  if (state.suspendMidiLogs) {
+    return;
+  }
+
   const { type, channel, data, controller } = params;
   const dataArray = data ? Array.from(data) : [];
   const value =

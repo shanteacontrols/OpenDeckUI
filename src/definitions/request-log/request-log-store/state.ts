@@ -51,6 +51,7 @@ export const defaultState = {
   logFilter: defaultLogFilter,
   showRequestLog: false,
   showHexValues: false,
+  suspendMidiLogs: false,
 };
 
 export type IRequestLogState = typeof defaultState;

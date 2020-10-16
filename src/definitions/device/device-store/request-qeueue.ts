@@ -24,6 +24,7 @@ import {
 import { ErrorCode, getErrorDefinition } from "../../error";
 import {
   requestLog,
+  setSuspendMidi,
   MidiEventTypeMMC,
 } from "../../request-log/request-log-store";
 import { clearRequestLog } from "../../request-log/request-log-store/actions";
@@ -153,6 +154,8 @@ export const purgeFinishedRequests = (): void => {
 };
 
 const startRequest = async (id: number) => {
+  setSuspendMidi(true);
+
   const request = requestStack.value[id];
   if (!request) {
     requestLog.actions.addError({
@@ -337,6 +340,7 @@ export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
 
   // Note: MMC MIDI messages are sent as regular SYSEX events
   if (isEventMidiMMC(event)) {
+    // Skip midi events to prevent delays when loading data
     requestLog.actions.addMidi({
       type: MidiEventTypeMMC[event.data[4]],
       data: [event.data[4]],
@@ -480,6 +484,7 @@ const continueNextRequest = () => {
   if (nextId) {
     return startRequest(nextId);
   }
+  setSuspendMidi(false);
 };
 
 const prepareRequestPayload = (

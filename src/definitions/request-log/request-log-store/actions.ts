@@ -22,6 +22,10 @@ export const toggleLog = (): void => {
   saveToStorage("showRequestLog", state.showRequestLog);
 };
 
+export const setSuspendMidi = (value: boolean): void => {
+  state.suspendMidiLogs = value;
+};
+
 export const toggleHexValues = (): void => {
   state.showHexValues = !state.showHexValues;
   saveToStorage("showHexValues", state.showHexValues);
@@ -74,18 +78,13 @@ export const addBuffered = (logEntry: ILogEntry): void => {
     blockHighlights[index] = timeAbs;
   }
 
-  // Skip logging if Log is disabled
-  if (!state.showRequestLog) {
-    return;
-  }
-
   // Skip log types not included in filter (better memory handling)
   const skipLogging =
     type === LogType.Midi
       ? !state.logFilter[LogFilter.Midi]
       : !state.logFilter[LogFilter.System];
 
-  if (skipLogging) {
+  if (!state.showRequestLog || skipLogging) {
     return;
   }
 
@@ -122,6 +121,7 @@ export const requestLogActions = {
   toggleLogFilter,
   toggleLog,
   toggleHexValues,
+  setSuspendMidi,
 };
 
 export type IRequestLogActions = typeof requestLogActions;

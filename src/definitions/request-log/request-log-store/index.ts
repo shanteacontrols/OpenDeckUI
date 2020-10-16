@@ -17,6 +17,7 @@ export const requestLog: IRequestLog = {
 export const requestLogMapped: IMappedRequestLog = mapStore(requestLog);
 
 export * from "./state";
+export * from "./actions";
 export * from "./log-type-error";
 export * from "./log-type-info";
 export * from "./log-type-midi";
