@@ -11,14 +11,14 @@
           <span
             class="btn btn-xs mr-2"
             :class="{ 'btn-active': !viewSetting.viewListAsTable }"
-            @click="() => setViewSetting(block, { viewListAsTable: false })"
+            @click="setViewSetting(block, { viewListAsTable: false })"
           >
             Grid
           </span>
           <span
             class="btn btn-xs"
             :class="{ 'btn-active': viewSetting.viewListAsTable }"
-            @click="() => setViewSetting(block, { viewListAsTable: true })"
+            @click="setViewSetting(block, { viewListAsTable: true })"
           >
             Table
           </span>
@@ -34,7 +34,7 @@
             :key="`page-size-${itemsPerPage}`"
             class="btn btn-xs ml-1"
             :class="{ 'btn-active': itemsPerPage === viewSetting.itemsPerPage }"
-            @click="() => setViewSetting(block, { itemsPerPage })"
+            @click="setViewSetting(block, { itemsPerPage })"
           >
             {{ itemsPerPage }}
           </span>
@@ -50,7 +50,7 @@
             :key="`page-size-${page}`"
             class="btn btn-xs ml-1"
             :class="{ 'btn-active': page === viewSetting.currentPage }"
-            @click="() => setViewSetting(block, { currentPage: page })"
+            @click="setViewSetting(block, { currentPage: page })"
           >
             {{ page }}
           </span>
