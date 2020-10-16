@@ -92,7 +92,7 @@ export const addMidi = (params: MidiEventParams): void => {
     : undefined;
   const note = ["noteon", "noteoff"].includes(type) ? data[1] : undefined;
   const controllerNumber = controller && controller.number;
-  const velocity = data && data.length > 2 ? data[2] : undefined;
+  const velocity = data && data.length > 2 ? data[2] : 0;
   const label = MidiEventTypeLabel[type];
 
   const dataDec = data && ensureString(dataArray);
