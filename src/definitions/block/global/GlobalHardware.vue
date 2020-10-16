@@ -24,12 +24,13 @@
           Firmware section
         </ButtonLink>
         <p class="help-text">
-          Section used to reboot the device into bootloader mode and update the firmware.
+          Section used to reboot the device into bootloader mode and update the
+          firmware.
         </p>
       </div>
     </div>
   </Section>
-  <Section title="Backup & Restore" class="w-full">
+  <Section v-if="valueSize === 2" title="Backup & Restore" class="w-full">
     <div class="form-grid">
       <div class="form-field">
         <Button @click.prevent="onBackupClicked">
