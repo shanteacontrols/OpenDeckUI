@@ -10,9 +10,12 @@ export const convertToHex = (value: number | number[]): string | string[] => {
 
 export const convertToHexString = (value: number | number[]): string => {
   return Array.isArray(value)
-    ? value.map((val: number) => val.toString(16)).join(", ")
+    ? value.map((val: number) => val.toString(16)).join(" ")
     : value.toString(16);
 };
+
+export const ensureString = (stringOrArray: string | Array): string =>
+  Array.isArray(stringOrArray) ? stringOrArray.join(" ") : stringOrArray;
 
 // Byte conversion
 

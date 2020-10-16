@@ -19,8 +19,9 @@ export enum LogFilter {
 }
 
 export interface ILogEntryBase {
+  id: string;
   time: Date;
-  timeAbs: number;
+  timeString: string;
   type: LogType;
   requestId?: number;
 }

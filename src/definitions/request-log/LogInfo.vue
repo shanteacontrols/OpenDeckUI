@@ -5,9 +5,9 @@
     <strong v-if="Number.isInteger(logEntry.index)">
       #{{ logEntry.index }}
     </strong>
-    <div v-if="logEntry.payload && logEntry.payload.length">
+    <div v-if="logEntry.payloadDec">
       <span class="sysex-label faded">Raw data</span>
-      <LogDataValue :value="logEntry.payload" />
+      <LogDataValue :dec="logEntry.payloadDec" :hex="logEntry.payloadHex" />
     </div>
   </div>
 </template>
@@ -20,7 +20,7 @@ import { convertToHexString } from "../../util";
 import LogDataValue from "./LogDataValue.vue";
 
 export default defineComponent({
-  name: "ActivityInfo",
+  name: "LogInfo",
   components: {
     LogDataValue,
   },

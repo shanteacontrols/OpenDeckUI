@@ -3,7 +3,7 @@ import { addError } from "./log-type-error";
 import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
 import { addInfo } from "./log-type-info";
-import { saveToStorage } from "../../../util";
+import { saveToStorage, formatDate } from "../../../util";
 import { debounce } from "lodash-es";
 
 // Actions
@@ -46,10 +46,22 @@ const debouncedLogUpdate = debounce(pushBuffer, trimDebounceMS, {
   trailing: false,
 });
 
+function makeid(length) {
+  let result = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 export const addBuffered = (logEntry: ILogEntry): void => {
   const { type, block, index } = logEntry;
   const time = new Date();
   const timeAbs = time.getTime();
+  const timeString = formatDate(time);
 
   // Add highlights
   if (type === LogType.Info) {
@@ -90,9 +102,10 @@ export const addBuffered = (logEntry: ILogEntry): void => {
   // Push to log stack
   state.stack.unshift({
     ...logEntry,
+    id: makeid(9),
     payload,
     time,
-    timeAbs,
+    timeString,
   });
   debouncedLogUpdate();
 };

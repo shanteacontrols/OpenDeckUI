@@ -41,12 +41,12 @@
 
     <div v-if="request.payload">
       <span class="sysex-label faded">Sent</span>
-      <LogDataValue :value="request.payload" :add-signature="true" />
+      <LogDataValue :dec="logEntry.payloadDec" :hex="logEntry.payloadHex" />
     </div>
     <div v-if="request.responseData">
       <div class="">
         <span class="sysex-label faded">Received</span>
-        <LogDataValue :value="receivedValue" :add-signature="true" />
+        <LogDataValue :hex="logEntry.dataHex" :dec="logEntry.dataDec" />
       </div>
       <div v-if="request.parsed">
         <span class="sysex-label faded">Parsed</span>
@@ -64,30 +64,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, toRefs } from "vue";
+import { defineComponent, ref } from "vue";
 import { IRequestConfig } from "../device/device-store";
-import { IQueuedRequest } from "../device/device-store/request-qeueue";
 import { RequestState } from "../interface";
+import { ILogEntryRequest } from "./request-log-store";
 import {
   Block,
   SectionType,
   findSectionDefinitionByConfig,
 } from "../../definitions";
+import { requestStack } from "../device/device-store/request-qeueue";
 import { getDifferenceInMs, convertToHexString } from "../../util";
 import LogDataValue from "./LogDataValue.vue";
 
 export default defineComponent({
-  name: "ActivityRequest",
+  name: "LogRequest",
   components: {
     LogDataValue,
   },
   props: {
-    request: {
+    logEntry: {
       required: true,
-      type: Object as () => IQueuedRequest,
+      type: Object as () => ILogEntryRequest,
+    },
+    requestId: {
+      required: true,
+      type: Number,
     },
   },
   setup(props) {
+    const request = ref(requestStack.value[props.requestId]);
+
     const getDefinitionLabel = (config: IRequestConfig): string => {
       const sectionDef = findSectionDefinitionByConfig(config);
       if (!sectionDef) {
@@ -104,33 +111,13 @@ export default defineComponent({
       }`;
     };
 
-    const { request } = toRefs(props);
-
-    const receivedValue = computed(() => {
-      const data = [];
-      const fieldsToAdd = [
-        request.value.messageStatus,
-        request.value.messagePart,
-        request.value.specialRequestId,
-      ];
-      fieldsToAdd.forEach((field: number) => {
-        if (field !== undefined) {
-          data.push(field);
-        }
-      });
-      if (Array.isArray(request.value.responseData)) {
-        data.push(...request.value.responseData);
-      }
-      return data;
-    });
-
     return {
+      request,
       getDefinitionLabel,
       getDifferenceInMs,
       convertToHexString,
       RequestState,
       Block,
-      receivedValue,
     };
   },
 });

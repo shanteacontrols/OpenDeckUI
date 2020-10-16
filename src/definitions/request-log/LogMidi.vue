@@ -1,32 +1,27 @@
 <template>
   <div class="border-b border-gray-800 last:border-b-0">
     <strong class="mr-2 text-yellow-300">
-      <span v-if="MidiRealtimeEvent.includes(logEntry.eventType)" class="faded"
-        >real time:</span
-      >
-      {{ MidiEventTypeLabel[logEntry.eventType] }}
-      <template v-if="['noteon', 'noteoff'].includes(logEntry.eventType)">
-        {{ logEntry.data[1] }}
+      <span v-if="logEntry.realTime" class="faded">real time:</span>
+      {{ logEntry.label }}
+      <template v-if="logEntry.note">
+        {{ logEntry.note }}
       </template>
     </strong>
     <span v-if="logEntry.channel" class="mr-2">
       <span class="faded">channel</span> {{ logEntry.channel }}
     </span>
-    <span
-      v-if="logEntry.value && logEntry.eventType !== 'controlchange'"
-      class="mr-2"
-    >
+    <span v-if="logEntry.value" class="mr-2">
       <span class="faded">value</span> {{ logEntry.value }}
     </span>
-    <span v-if="logEntry.controller && logEntry.controller.number" class="mr-2">
-      <span class="faded">controller</span> {{ logEntry.controller.number }}
+    <span v-if="logEntry.controllerNumber" class="mr-2">
+      <span class="faded">controller</span> {{ logEntry.controllerNumber }}
     </span>
-    <span v-if="logEntry.data && logEntry.data.length > 2" class="mr-2">
-      <span class="faded">velocity</span> {{ logEntry.data[2] }}
+    <span v-if="logEntry.velocity" class="mr-2">
+      <span class="faded">velocity</span> {{ logEntry.velocity }}
     </span>
-    <div v-if="logEntry.data && logEntry.data.length">
+    <div v-if="logEntry.dataDec && logEntry.dataDec.length">
       <span class="sysex-label faded">Raw data</span>
-      <LogDataValue :value="logEntry.data" />
+      <LogDataValue :hex="logEntry.dataHex" :dec="logEntry.dataDec" />
     </div>
   </div>
 </template>
@@ -42,7 +37,7 @@ import { convertToHexString } from "../../util";
 import LogDataValue from "./LogDataValue.vue";
 
 export default defineComponent({
-  name: "ActivityMidi",
+  name: "LogMidi",
   components: {
     LogDataValue,
   },

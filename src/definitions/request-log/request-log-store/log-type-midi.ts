@@ -1,5 +1,6 @@
 import { LogType, ILogEntryBase } from "./state";
 import { addBuffered } from "./actions";
+import { convertToHexString, ensureString } from "../../../util";
 
 export type MidiEventType =
   | "noteon"
@@ -56,15 +57,18 @@ export const MidiRealtimeEvent = [
 ];
 
 export interface ILogEntryMidi extends ILogEntryBase {
+  label: string;
   type: LogType.Midi;
   eventType: MidiEventType;
   channel?: number;
   data?: number[];
   value?: number;
-  controller?: {
-    number?: number;
-    name?: string;
-  };
+  note?: number;
+  realTime?: string;
+  controllerNumber?: number;
+  velocity?: number;
+  dataHex?: string;
+  dataDec?: string;
 }
 
 export interface MidiEventParams {
@@ -79,16 +83,33 @@ export interface MidiEventParams {
 }
 
 export const addMidi = (params: MidiEventParams): void => {
-  const { type, channel, data, value, controller } = params;
+  const { type, channel, data, controller } = params;
   const dataArray = data ? Array.from(data) : [];
+  const value =
+    params.value && type !== "controlchange" ? params.value : undefined;
+  const realTime = MidiRealtimeEvent.includes(type)
+    ? MidiEventTypeLabel[type]
+    : undefined;
+  const note = ["noteon", "noteoff"].includes(type) ? data[1] : undefined;
+  const controllerNumber = controller && controller.number;
+  const velocity = data && data.length > 2 ? data[2] : undefined;
+  const label = MidiEventTypeLabel[type];
+
+  const dataDec = data && ensureString(dataArray);
+  const dataHex = data && ensureString(convertToHexString(dataArray));
 
   const logEntry = {
+    label,
     type: LogType.Midi,
     eventType: type,
     channel,
-    data: dataArray,
+    dataHex,
+    dataDec,
     value,
-    controller,
+    controllerNumber,
+    note,
+    realTime,
+    velocity,
   } as ILogEntryMidi;
 
   addBuffered(logEntry);
