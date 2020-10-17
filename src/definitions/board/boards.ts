@@ -71,7 +71,7 @@ export const Boards: IBoardDefinition[] = [
     name: "OpenDeck v2",
     id: [122, 56, 41, 19],
     oldId: [],
-    firmwareFileName: "opendeckv2.sysex",
+    firmwareFileName: "opendeck2.sysex",
   },
   {
     name: "OpenDeck v1",
