@@ -39,8 +39,8 @@ export const Boards: IBoardDefinition[] = [
   },
   {
     name: "DubFocus 12",
-    id: [125, 74, 109, 51],
-    oldId: [1, 5, 75, 68],
+    id: [85, 74, 109, 41],
+    oldId: [],
     firmwareFileName: "dubfocus12.sysex",
   },
   {
