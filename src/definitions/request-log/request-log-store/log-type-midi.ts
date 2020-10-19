@@ -22,7 +22,7 @@ export type MidiEventType =
 
 export const MidiEventTypeLabel = {
   noteon: "Note On",
-  noteoff: "Note On",
+  noteoff: "Note Off",
   controlchange: "Control Change",
   programchange: "Program Change",
   pitchbend: "Pitch Bend",
