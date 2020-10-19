@@ -75,10 +75,7 @@ export interface MidiEventParams {
   channel?: number;
   data?: Uint8Array;
   value?: number;
-  controller?: {
-    number?: number;
-    name?: string;
-  };
+  controller?: number;
 }
 
 export const addMidi = (params: MidiEventParams): void => {
