@@ -1,7 +1,6 @@
 <template>
   <div class="border-b border-gray-800 last:border-b-0">
     <strong class="mr-2 text-yellow-300">
-      <span v-if="logEntry.realTime" class="faded">real time:</span>
       {{ logEntry.label }}
       <template v-if="logEntry.note">
         {{ logEntry.note }}

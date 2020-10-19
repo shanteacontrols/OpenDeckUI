@@ -26,12 +26,12 @@ export const MidiEventTypeLabel = {
   controlchange: "Control Change",
   programchange: "Program Change",
   pitchbend: "Pitch Bend",
-  clock: "Clock",
-  start: "Start",
-  continue: "Continue",
-  stop: "Stop",
-  activesensing: "Active Sensing",
-  reset: "Reset",
+  clock: "RealTime: Clock",
+  start: "RealTime: Start",
+  continue: "RealTime: Continue",
+  stop: "RealTime: Stop",
+  activesensing: "RealTime: Active Sensing",
+  reset: "RealTime: Reset",
   mmcstop: "MMC Stop",
   mmcplay: "MMC Play",
   mmcrecordstart: "MMC Record Start",
@@ -64,7 +64,6 @@ export interface ILogEntryMidi extends ILogEntryBase {
   data?: number[];
   value?: number;
   note?: number;
-  realTime?: string;
   controllerNumber?: number;
   velocity?: number;
   dataHex?: string;
@@ -91,9 +90,6 @@ export const addMidi = (params: MidiEventParams): void => {
   const dataArray = data ? Array.from(data) : [];
   const value =
     params.value && type !== "controlchange" ? params.value : undefined;
-  const realTime = MidiRealtimeEvent.includes(type)
-    ? MidiEventTypeLabel[type]
-    : undefined;
   const note = ["noteon", "noteoff"].includes(type) ? data[1] : undefined;
   const controllerNumber = controller && controller.number;
   const velocity = data && data.length > 2 ? data[2] : 0;
@@ -112,7 +108,6 @@ export const addMidi = (params: MidiEventParams): void => {
     value,
     controllerNumber,
     note,
-    realTime,
     velocity,
   } as ILogEntryMidi;
 
