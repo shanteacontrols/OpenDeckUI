@@ -6,17 +6,17 @@
         {{ logEntry.note }}
       </template>
     </strong>
-    <span v-if="logEntry.channel != undefined" class="mr-2">
+    <span v-if="logEntry.channel !== undefined" class="mr-2">
       <span class="faded">channel</span> {{ logEntry.channel }}
     </span>
-    <span v-if="logEntry.value != undefined" class="mr-2">
+    <span v-if="logEntry.value !== undefined" class="mr-2">
       <span class="faded">value</span> {{ logEntry.value }}
     </span>
-    <span v-if="logEntry.controllerNumber != undefined" class="mr-2">
+    <span v-if="logEntry.controllerNumber !== undefined" class="mr-2">
       <span class="faded">controller</span> {{ logEntry.controllerNumber }}
       <span class="faded">value</span> {{ logEntry.velocity }}
     </span>
-    <span v-if="logEntry.note != undefined" class="mr-2">
+    <span v-if="logEntry.note !== undefined" class="mr-2">
       <span class="faded">velocity</span> {{ logEntry.velocity }}
     </span>
     <div v-if="logEntry.dataDec && logEntry.dataDec.length">
