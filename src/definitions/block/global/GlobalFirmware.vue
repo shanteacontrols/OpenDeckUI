@@ -14,13 +14,12 @@
   </Section>
   <Section v-else title="Firmware update" class="w-full">
     <div class="form-grid">
-      <div class="form-field">
+      <div v-if="!isBootloaderMode" class="form-field">
         <Button :disabled="loading" @click.prevent="checkForUpdates">
-          Check for Updates
+          Check for updates
         </Button>
         <p class="help-text">
-          Check for newer firmware versions. If updates are available and
-          supported you can update the firmware here.
+          Check for newer firmware versions.
         </p>
       </div>
 
