@@ -56,14 +56,14 @@
   </div>
 
   <Section v-else-if="updatesChecked" title="Updates" class="w-full">
-    <p v-if="!availableUpdates.length" class="text-sm leading-5 text-gray-500">
+    <p v-if="!availableUpdates.length" class="text-sm leading-5 text-gray-200">
       Your firmware is up to date.
     </p>
     <div v-else class="text-sm pb-6">
       <div
         v-for="update in availableUpdates"
         :key="update.name"
-        class="release-description text-gray-500"
+        class="release-description text-gray-200"
       >
         <a
           :href="`https://github.com/paradajz/OpenDeck/releases/tag/${update.tag_name}`"
