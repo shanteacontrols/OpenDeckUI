@@ -28,8 +28,9 @@
           Bootloader mode
         </Button>
         <p class="help-text">
-          Starting bootloader mode is required for manual firmware updates. The
-          UI will be restricted in bootloader mode.
+          Starting bootloader mode is required for firmware updates. Once in
+          bootloader mode the device can be updated using the SysEx file
+          downloaded via "Check for updates" button.
         </p>
       </div>
 
@@ -42,7 +43,8 @@
         />
         <p class="help-text">
           Select a firmware file to start board firmware update. UI might become
-          unresponsive while updating.
+          unresponsive while updating. To exit from bootloader mode reboot the
+          device manually.
         </p>
       </div>
     </div>
