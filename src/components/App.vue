@@ -2,7 +2,7 @@
   <div class="app">
     <nav class="app-header">
       <router-link :to="{ name: 'home' }" class="app-brand">
-        OpenDeck UI
+        OpenDeck Configurator
       </router-link>
 
       <span v-if="!isHomePage && boardName" class="app-board-info">
@@ -62,9 +62,9 @@
         <nav class="app-about">
           <h3 class="heading">About</h3>
           <p class="text-sm">
-            OpenDeck is a platform suited both for prototyping and developing
-            custom MIDI controllers. Platform uses class-compliant USB MIDI
-            which makes it compatible with any MIDI software on any OS.
+            OpenDeck Configurator is a WebMIDI based configuration tool for all
+            MIDI devices running OpenDeck firmware. OpenDeck is a platform
+            suited both for prototyping and developing custom MIDI controllers.
           </p>
         </nav>
         <nav class="app-resources">
@@ -76,7 +76,9 @@
               >
             </li>
             <li>
-              <a href="https://shanteacontrols.com/">Shantea Controls</a>
+              <a href="https://shanteacontrols.com/"
+                >Shantea Controls official Web</a
+              >
             </li>
           </ul>
         </nav>
