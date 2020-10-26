@@ -149,6 +149,12 @@ export const matchInputOutput = async (
 };
 
 export const loadMidi = async (): Promise<void> => {
+  if (!WebMidi.supported) {
+    return;
+  }
+
+  midiState.isWebMidiSupported = true;
+
   if (loadMidiPromise) {
     return loadMidiPromise;
   }
