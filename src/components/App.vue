@@ -33,11 +33,13 @@
               based browser:
             </p>
             <p class="mt-4">
-              <a href="https://brave.com/">Brave</a><br />
-              <a href="https://vivaldi.com/">Vivaldi</a><br />
               <a href="https://www.google.com/chrome/index.html"
                 >Google Chrome</a
-              >
+              ><br />
+              <a href="https://brave.com/">Brave</a><br />
+              <a href="https://vivaldi.com/">Vivaldi</a><br />
+              <a href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a
+              ><br />
             </p>
           </div>
         </Section>
