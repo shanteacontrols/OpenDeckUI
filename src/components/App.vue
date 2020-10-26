@@ -26,8 +26,24 @@
 
     <div class="app-main">
       <div class="content">
+        <Section v-if="!isWebMidiSupported" class="h-screen">
+          <div class="max-w-screen-sm mx-auto px-4 pt-24 sm:px-6 lg:px-8">
+            <p class="">
+              This browser does not support WebMIDI.<br />Please use a Chrome
+              based browser:
+            </p>
+            <p class="mt-4">
+              <a href="https://brave.com/">Brave</a><br />
+              <a href="https://vivaldi.com/">Vivaldi</a><br />
+              <a href="https://www.google.com/chrome/index.html"
+                >Google Chrome</a
+              >
+            </p>
+          </div>
+        </Section>
+
         <Section
-          v-if="isConnecting"
+          v-else-if="isConnecting"
           class="h-screen"
           title="Establishing connection"
         >
@@ -105,7 +121,7 @@ export default defineComponent({
       () => router.currentRoute.value.name === "home",
     );
 
-    const { isConnected, isConnecting } = midiStoreMapped;
+    const { isConnected, isConnecting, isWebMidiSupported } = midiStoreMapped;
     const { supportedPresetsCount, isBootloaderMode } = deviceStoreMapped;
 
     onMounted(() => {
@@ -119,6 +135,7 @@ export default defineComponent({
     return {
       isHomePage,
       outputId,
+      isWebMidiSupported,
       isConnected,
       isConnecting,
       boardName,
