@@ -49,11 +49,12 @@ const sections: Dictionary<ISectionDefinition> = {
     type: SectionType.Value,
     section: 1,
     min: 0,
-    max: 1023,
+    max: 16383,
     component: FormInputComponent.Input,
     label: "X position of this icon",
     helpText: `Specifies X coordinate on touchscreen where this icon is located. Touchscreen resolution
-    needs to be taken into account here.`,
+    needs to be taken into account here. On Viewtech/Stone touchscreens, this parameter is actually icon
+    address.`,
   },
   YPosition: {
     block: Block.Touchscreen,
@@ -61,11 +62,11 @@ const sections: Dictionary<ISectionDefinition> = {
     type: SectionType.Value,
     section: 2,
     min: 0,
-    max: 639,
+    max: 16383,
     component: FormInputComponent.Input,
     label: "Y position of this icon",
     helpText: `Specifies Y coordinate on touchscreen where this icon is located. Touchscreen resolution
-    needs to be taken into account here.`,
+    needs to be taken into account here. On Viewtech/Stone touchscreens, this parameter is ignored.`,
   },
   Width: {
     block: Block.Touchscreen,
@@ -77,7 +78,7 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     label: "Width of this icon",
     helpText: `Specifies width of this icon. Touchscreen resolution
-    needs to be taken into account here.`,
+    needs to be taken into account here. On Viewtech/Stone touchscreens, this parameter is ignored.`,
   },
   Height: {
     block: Block.Touchscreen,
@@ -89,7 +90,7 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     label: "Height of this icon",
     helpText: `Specifies height of this icon. Touchscreen resolution
-    needs to be taken into account here.`,
+    needs to be taken into account here. On Viewtech/Stone touchscreens, this parameter is ignored.`,
   },
   ScreenOn: {
     block: Block.Touchscreen,
