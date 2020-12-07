@@ -79,6 +79,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [1, 91, 42, 85],
     firmwareFileName: null,
   },
+  {
+    name: "Rooibos",
+    id: [120, 82, 29, 13],
+    oldId: [],
+    firmwareFileName: "rooibos.sysex",
+  },
 ];
 
 export default Boards;
