@@ -11,6 +11,17 @@
       </div>
 
       <div class="form-field">
+        <Button @click.prevent="cdcMode">
+          CDC Mode
+        </Button>
+        <p class="help-text">
+          Reboots the device into CDC (serial) mode which can be used as USB to
+          serial converter (useful when flashing touchscreen displays). This
+          might not be available on your device.
+        </p>
+      </div>
+
+      <div class="form-field">
         <Button @click.prevent="onFactoryResetClicked">
           Reset to factory settings
         </Button>
@@ -67,6 +78,7 @@ export default defineComponent({
       bootLoaderSupport,
       startFactoryReset,
       startReboot,
+      cdcMode,
       startBackup,
     } = deviceStoreMapped;
 
@@ -98,6 +110,7 @@ export default defineComponent({
       valueSize,
       bootLoaderSupport,
       startReboot,
+      cdcMode,
       onBackupClicked,
       onBackupFileSelected,
     };

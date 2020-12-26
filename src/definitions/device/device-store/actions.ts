@@ -304,6 +304,11 @@ export const startReboot = async (): Promise<void> => {
   await sendMessageAndRebootUi(Request.Reboot, handler);
 };
 
+export const cdcMode = async (): Promise<void> => {
+  const handler = () => logger.log("CDC mode started");
+  await sendMessageAndRebootUi(Request.CDC, handler);
+};
+
 const sendMessageAndRebootUi = async (
   command: Request,
   handler: () => void,
@@ -477,6 +482,7 @@ export const deviceStoreActions = {
   startBootLoaderMode,
   startFactoryReset,
   startReboot,
+  cdcMode,
   startDeviceConnectionWatcher,
   stopDeviceConnectionWatcher,
   startFirmwareUdate,
