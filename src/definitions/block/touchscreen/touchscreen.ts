@@ -43,6 +43,47 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Touchscreen manufacturer",
     helpText: ``,
   },
+  Brightness: {
+    showIf: (formState: FormState): boolean => formState.enableTouchscreen,
+    block: Block.Touchscreen,
+    key: "touchscreenBrightness",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 2,
+    component: FormInputComponent.Select,
+    options: [
+      {
+        value: 0,
+        text: "10%",
+      },
+      {
+        value: 1,
+        text: "25%",
+      },
+      {
+        value: 2,
+        text: "50%",
+      },
+      {
+        value: 3,
+        text: "75%",
+      },
+      {
+        value: 4,
+        text: "80%",
+      },
+      {
+        value: 5,
+        text: "90%",
+      },
+      {
+        value: 6,
+        text: "100%",
+      },
+    ],
+    label: "Touchscreen brightness",
+    helpText: ``,
+  },
   XPosition: {
     block: Block.Touchscreen,
     key: "xPosition",
