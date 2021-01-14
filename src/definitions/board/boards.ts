@@ -85,6 +85,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "rooibos.sysex",
   },
+  {
+    name: "Bergamot",
+    id: [48, 106, 107, 21],
+    oldId: [],
+    firmwareFileName: "bergamot.sysex",
+  },
 ];
 
 export default Boards;
