@@ -122,14 +122,6 @@ const sections: Dictionary<ISectionDefinition> = {
         value: 1,
         text: "DIN to DIN",
       },
-      {
-        value: 2,
-        text: "OpenDeck master",
-      },
-      {
-        value: 3,
-        text: "OpenDeck slave",
-      },
     ],
     label: "MIDI merge type",
     helpText: `Interface to which incoming MIDI data is forwarded to.`,
