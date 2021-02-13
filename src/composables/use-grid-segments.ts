@@ -1,5 +1,8 @@
 import { computed, Ref } from "vue";
 import { Block } from "../definitions";
+import { deviceState } from "../definitions/device/device-store/state";
+import { logger } from "../util";
+import semver from "semver";
 
 export interface GridSegment {
   title: string;
@@ -19,88 +22,144 @@ const addGridSegmentIndexArray = (seg: GridSegment): GridSegment => {
   };
 };
 
-// Note: calculated for Buttons and Leds
 export const useGridSegments = (
   numberOfComponents: Ref<Array<number>>,
   block: Ref<number>,
 ): Computed<GridSegment[]> => {
-  const touchscreenCount = computed(
-    () => numberOfComponents.value[Block.Touchscreen] || 0,
-  );
-  const sectionCount = computed(
-    () => numberOfComponents.value[block.value] || 0,
+  const buttonCount = computed(
+    () => numberOfComponents.value[Block.Button] || 0,
   );
 
-  // LEDs
-  if (block.value === Block.Led) {
-    const sectionEnd = computed(
-      () => sectionCount.value - touchscreenCount.value - 1,
-    );
-
-    if (touchscreenCount.value === 0) {
-      return; // Don't segment if only LEDS to be displayed
-    }
-
-    // If all LEDS are taken for touchscreens
-    if (sectionCount.value === 0 || sectionEnd.value === -1) {
-      return [
-        {
-          title: "Touchscreen",
-          startIndex: 0,
-          endIndex: touchscreenCount.value - 1,
-        },
-      ].map(addGridSegmentIndexArray);
-    }
-
-    return computed(() =>
-      [
-        {
-          title: "LED",
-          startIndex: 0,
-          endIndex: sectionEnd.value,
-        },
-        {
-          title: "Touchscreen",
-          startIndex: sectionEnd.value,
-          endIndex: sectionCount.value - 1,
-        },
-      ].map(addGridSegmentIndexArray),
-    );
-  }
-
-  // Buttons
-  const sectionEnd = computed(
-    () => sectionCount.value - touchscreenCount.value - analogCount.value - 1,
-  );
   const analogCount = computed(
     () => numberOfComponents.value[Block.Analog] || 0,
   );
-  const analogEnd = computed(() => sectionEnd.value + analogCount.value);
+
+  const ledCount = computed(() => numberOfComponents.value[Block.Led] || 0);
+
+  const touchScreenCount = computed(
+    () => numberOfComponents.value[Block.Touchscreen] || 0,
+  );
 
   return computed(() => {
-    if (analogCount.value === 0 && touchscreenCount.value === 0) {
-      return; // Don't segment if only Buttons to be displayed
-    }
+    const segments: GridSegment[] = [];
 
-    const segments: GridSegment[] = [
-      {
-        title: "Button",
-        startIndex: 0,
-        endIndex: sectionEnd.value,
-      },
-      {
-        title: "Analog",
-        startIndex: sectionEnd.value + 1,
-        endIndex: analogEnd.value,
-      },
-    ];
+    switch (block.value) {
+      case Block.Button:
+        {
+          //segmentation to buttons, analog and touchscreen
+          if (semver.lt(semver.clean(deviceState.firmwareVersion), "5.4.0")) {
+            segments.push(
+              {
+                title: "Buttons",
+                startIndex: 0,
+                endIndex:
+                  buttonCount.value -
+                  analogCount.value -
+                  touchScreenCount.value -
+                  1,
+              },
+              {
+                title: "Analog",
+                startIndex:
+                  buttonCount.value -
+                  analogCount.value -
+                  touchScreenCount.value,
+                endIndex:
+                  buttonCount.value -
+                  analogCount.value -
+                  touchScreenCount.value +
+                  analogCount.value,
+              },
+            );
 
-    if (touchscreenCount.value > 0) {
-      segments.push({
-        title: "Touchscreen",
-        startIndex: analogEnd.value + 1,
-        endIndex: sectionCount.value - 1,
-      });
+            if (touchScreenCount.value > 0) {
+              segments.push({
+                title: "Touchscreen",
+                startIndex:
+                  buttonCount.value -
+                  analogCount.value +
+                  analogCount.value -
+                  touchScreenCount.value,
+                endIndex:
+                  buttonCount.value - analogCount.value + analogCount.value - 1,
+              });
+            }
+          } else {
+            segments.push(
+              {
+                title: "Buttons",
+                startIndex: 0,
+                endIndex: buttonCount.value - analogCount.value - 1,
+              },
+              {
+                title: "Analog",
+                startIndex: buttonCount.value - analogCount.value,
+                endIndex:
+                  buttonCount.value -
+                  analogCount.value +
+                  analogCount.value -
+                  touchScreenCount.value -
+                  1,
+              },
+            );
+
+            if (touchScreenCount.value > 0) {
+              segments.push({
+                title: "Touchscreen",
+                startIndex:
+                  buttonCount.value -
+                  analogCount.value +
+                  analogCount.value -
+                  touchScreenCount.value,
+                endIndex:
+                  buttonCount.value - analogCount.value + analogCount.value - 1,
+              });
+            }
+          }
+        }
+        break;
+
+      case Block.Analog:
+        {
+          //segmentation to analog and touchscreen (only on FW >=5.4.0)
+          if (semver.lt(semver.clean(deviceState.firmwareVersion), "5.4.0"))
+            return;
+
+          segments.push(
+            {
+              title: "Analog",
+              startIndex: 0,
+              endIndex: analogCount.value - touchScreenCount.value - 1,
+            },
+            {
+              title: "Touchscreen",
+              startIndex: analogCount.value - touchScreenCount.value,
+              endIndex: analogCount.value - 1,
+            },
+          );
+        }
+        break;
+
+      case Block.Led:
+        {
+          //segmentation to leds and touchscreen
+          segments.push(
+            {
+              title: "LED",
+              startIndex: 0,
+              endIndex: ledCount.value - touchScreenCount.value - 1,
+            },
+            {
+              title: "Touchscreen",
+              startIndex: ledCount.value - touchScreenCount.value,
+              endIndex: ledCount.value - 1,
+            },
+          );
+        }
+        break;
+
+      default:
+        break;
     }
 
     return segments.map(addGridSegmentIndexArray);
