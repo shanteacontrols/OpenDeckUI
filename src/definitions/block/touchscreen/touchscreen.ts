@@ -84,6 +84,18 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Touchscreen brightness",
     helpText: ``,
   },
+  InitialScreen: {
+    block: Block.Touchscreen,
+    key: "initialScreen",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 3,
+    min: 0,
+    max: 15,
+    component: FormInputComponent.Input,
+    label: "Initial screen",
+    helpText: `This will set the screen index which will be loaded on startup.`,
+  },
   XPosition: {
     block: Block.Touchscreen,
     key: "xPosition",
