@@ -65,10 +65,10 @@ const stopMidiConnectionWatcher = (): Promise<void> => {
 
 export const assignInputs = async (): Promise<void> => {
   midiState.inputs = WebMidi.inputs.filter((input: Input) =>
-    input.name.startsWith("OpenDeck"),
+    input.name.includes("OpenDeck"),
   );
   midiState.outputs = WebMidi.outputs.filter((output: Output) =>
-    output.name.startsWith("OpenDeck"),
+    output.name.includes("OpenDeck"),
   );
 };
 
