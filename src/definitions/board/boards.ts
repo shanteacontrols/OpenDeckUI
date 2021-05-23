@@ -91,6 +91,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "bergamot.sysex",
   },
+  {
+    name: "DubFocus 16C",
+    id: [44, 111, 98, 103],
+    oldId: [],
+    firmwareFileName: "dubfocus16c.sysex",
+  },
 ];
 
 export default Boards;
