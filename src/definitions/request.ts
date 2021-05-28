@@ -33,8 +33,6 @@ export enum Request {
   GetBootLoaderSupport = "GetBootLoaderSupport",
   BootloaderMode = "BootloaderMode",
   FactoryReset = "FactoryReset",
-  DisableProcessing = "DisableProcessing",
-  EnableProcessing = "EnableProcessing",
   GetValue = "GetValue",
   SetValue = "SetValue",
   GetSectionValues = "GetSectionValues",
@@ -167,16 +165,6 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     isConnectionInfoRequest: true,
     expectsNoResponse: true,
     specialRequestId: 68, // Hex: 44
-  },
-  [Request.DisableProcessing]: {
-    key: Request.DisableProcessing,
-    type: RequestType.Custom,
-    specialRequestId: 100, // Hex: 64
-  },
-  [Request.EnableProcessing]: {
-    key: Request.EnableProcessing,
-    type: RequestType.Custom,
-    specialRequestId: 101, // Hex: 65
   },
   [Request.Backup]: {
     key: Request.Backup,
