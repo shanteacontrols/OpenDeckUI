@@ -60,7 +60,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "Activation Note",
+    label: "Activation ID",
     helpText: ``,
     block: Block.Led,
   },
