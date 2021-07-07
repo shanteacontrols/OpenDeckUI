@@ -1,0 +1,31 @@
+name: Deploy UI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Deploy UI
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Prepare build env
+        run: |
+          sudo apt install yarn
+      - name: Deploy new UI
+        run: |
+          git config --global user.name "webui_bot"
+          git config --global user.email "2544094+webui_bot@users.noreply.github.com"
+          yarn
+          yarn build
+          git checkout gh-pages
+          rm -rf _assets/* index.html
+          mv dist/* .
+          git add index.html _assets*
+          git commit --allow-empty -m "update webui"
+          git push https://github.com/shanteacontrols/OpenDeckUI gh-pages
