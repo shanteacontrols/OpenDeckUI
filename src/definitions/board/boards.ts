@@ -97,6 +97,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "dubfocus16c.sysex",
   },
+  {
+    name: "OpenDeck Mini",
+    id: [62, 78, 115, 114],
+    oldId: [],
+    firmwareFileName: "opendeck_mini.sysex",
+  },
 ];
 
 export default Boards;
