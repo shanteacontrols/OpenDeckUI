@@ -85,6 +85,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
   },
   InitialScreen: {
+    showIf: (formState: FormState): boolean => formState.enableTouchscreen,
     block: Block.Touchscreen,
     key: "initialScreen",
     type: SectionType.Setting,
