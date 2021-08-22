@@ -31,6 +31,10 @@
       <template v-if="isDisabled === ControlDisableType.MissingIndex">
         Not supported on this firmware.
       </template>
+      <template v-if="isDisabled === ControlDisableType.UartInterfaceAllocated">
+        The UART interface on board required for this peripheral is already
+        taken by another peripheral.
+      </template>
     </p>
 
     <p v-if="helpText && !simpleLayout" class="help-text">

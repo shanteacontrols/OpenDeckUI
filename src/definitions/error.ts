@@ -12,6 +12,7 @@ export enum ErrorCode {
   WRITE = 12,
   NOT_SUPPORTED = 13,
   READ = 14,
+  UART_INTERFACE_ALLOCATED = 80,
   UKNOWN_ERROR = 704,
   UI_QUEUE_REQ_ID_CONFLICT = 711,
   UI_QUEUE_REQ_DATA_MISSING = 712,
@@ -89,6 +90,11 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   [ErrorCode.NOT_SUPPORTED]: {
     code: ErrorCode.NOT_SUPPORTED,
     description: "This error is returned when X is not supported by the board.",
+  },
+  [ErrorCode.UART_INTERFACE_ALLOCATED]: {
+    code: ErrorCode.UART_INTERFACE_ALLOCATED,
+    description:
+      "This error is returned when other peripheral already allocated wanted interface.",
   },
   [ErrorCode.READ]: {
     code: ErrorCode.READ,

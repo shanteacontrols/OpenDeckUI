@@ -450,6 +450,14 @@ const onRequestFail = (request: IQueuedRequest, messageStatus: number) => {
     ) {
       disableControl(sectionDef, ControlDisableType.NotSupported);
     }
+
+    if (
+      sectionDef &&
+      [ErrorCode.UART_INTERFACE_ALLOCATED].includes(messageStatus)
+    ) {
+      disableControl(sectionDef, ControlDisableType.UartInterfaceAllocated);
+    }
+
     if (sectionDef && messageStatus === ErrorCode.INDEX) {
       disableControl(sectionDef, ControlDisableType.MissingIndex);
     }
