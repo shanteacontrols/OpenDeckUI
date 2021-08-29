@@ -22,8 +22,21 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Enable",
     helpText: `Enables or disables the usage of touchscreen.`,
   },
-  DisplayManufacturer: {
+  FlashingMode: {
     showIf: (formState: FormState): boolean => formState.enableTouchscreen,
+    block: Block.Touchscreen,
+    key: "touchscreenFlashingMode",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 4,
+    component: FormInputComponent.Toggle,
+    label: "Flashing mode",
+    helpText: `Used to bypass communication with the screen to the virtual OpenDeck serial port.
+    Useful when flashing the screen via Nextion GUI. When enabled, screen is unavailable to MIDI part of the firmware.`,
+  },
+  DisplayManufacturer: {
+    showIf: (formState: FormState): boolean =>
+      formState.enableTouchscreen && !formState.touchscreenFlashingMode,
     block: Block.Touchscreen,
     key: "touchscreenManufacturer",
     type: SectionType.Setting,
@@ -44,7 +57,8 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
   },
   Brightness: {
-    showIf: (formState: FormState): boolean => formState.enableTouchscreen,
+    showIf: (formState: FormState): boolean =>
+      formState.enableTouchscreen && !formState.touchscreenFlashingMode,
     block: Block.Touchscreen,
     key: "touchscreenBrightness",
     type: SectionType.Setting,
