@@ -28,7 +28,6 @@ export enum Request {
   GetNumberOfSupportedComponents = "GetNumberOfSupportedComponents",
   GetNumberOfSupportedPresets = "GetNumberOfSupportedPresets",
   Reboot = "Reboot",
-  CDC = "CDC",
   Backup = "Backup",
   GetBootLoaderSupport = "GetBootLoaderSupport",
   BootloaderMode = "BootloaderMode",
@@ -137,13 +136,6 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     isConnectionInfoRequest: true,
     expectsNoResponse: true,
     specialRequestId: 127, // Hex: 7F
-  },
-  [Request.CDC]: {
-    key: Request.CDC,
-    type: RequestType.Custom,
-    isConnectionInfoRequest: true,
-    expectsNoResponse: true,
-    specialRequestId: 84, // Hex: 54
   },
   [Request.GetBootLoaderSupport]: {
     key: Request.GetBootLoaderSupport,
