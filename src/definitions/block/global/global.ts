@@ -126,6 +126,16 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "MIDI merge type",
     helpText: `Interface to which incoming MIDI data is forwarded to.`,
   },
+  DmxEnabled: {
+    block: Block.Global,
+    key: "dmxEnabled",
+    type: SectionType.Setting,
+    section: 3,
+    settingIndex: 0,
+    component: FormInputComponent.Toggle,
+    label: "DMX",
+    helpText: `When enabled, virtual COM port can be used with OLA through usbserial plugin as Enttec USB Pro device.`,
+  },
 };
 
 export const GlobalBlock: IBlockDefinition = {
