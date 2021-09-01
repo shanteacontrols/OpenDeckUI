@@ -444,10 +444,7 @@ const onRequestFail = (request: IQueuedRequest, messageStatus: number) => {
 
   if (request.config) {
     const sectionDef = findSectionDefinitionByConfig(request.config);
-    if (
-      sectionDef &&
-      [ErrorCode.BLOCK, ErrorCode.NOT_SUPPORTED].includes(messageStatus)
-    ) {
+    if (sectionDef && [ErrorCode.NOT_SUPPORTED].includes(messageStatus)) {
       disableControl(sectionDef, ControlDisableType.NotSupported);
     }
 
@@ -458,7 +455,12 @@ const onRequestFail = (request: IQueuedRequest, messageStatus: number) => {
       disableControl(sectionDef, ControlDisableType.UartInterfaceAllocated);
     }
 
-    if (sectionDef && messageStatus === ErrorCode.INDEX) {
+    if (
+      sectionDef &&
+      [ErrorCode.BLOCK, ErrorCode.SECTION, ErrorCode.INDEX].includes(
+        messageStatus,
+      )
+    ) {
       disableControl(sectionDef, ControlDisableType.MissingIndex);
     }
   }
