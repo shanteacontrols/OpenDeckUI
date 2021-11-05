@@ -114,7 +114,7 @@ export const sections: Dictionary<ISectionDefinition> = {
       },
       {
         value: LedControlMode.ProgramChangeSingleValue,
-        text: "Program change (Single value)",
+        text: "Program / preset change (Single value)",
       },
     ],
     label: "Control type",
