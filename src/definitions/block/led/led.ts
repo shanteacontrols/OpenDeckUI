@@ -4,6 +4,7 @@ import {
   FormInputComponent,
   SectionType,
   Block,
+  LedControlMode,
 } from "../../interface";
 
 import DeviceForm from "../../device/DeviceForm.vue";
@@ -79,15 +80,42 @@ export const sections: Dictionary<ISectionDefinition> = {
     section: 5,
     component: FormInputComponent.Select,
     options: [
-      { value: 6, text: "MIDI in / Note (Multi value)" },
-      { value: 8, text: "MIDI in / CC (Multi value)" },
-      { value: 0, text: "MIDI in / Note (Single value)" },
-      { value: 2, text: "MIDI in / CC (Single value)" },
-      { value: 7, text: "Local / Note (Multi value)" },
-      { value: 9, text: "Local / CC (Multi value)" },
-      { value: 1, text: "Local / Note (Single value)" },
-      { value: 3, text: "Local / CC (Single value)" },
-      { value: 4, text: "Program change (Single value)" },
+      {
+        value: LedControlMode.MidiInNoteMultiValue,
+        text: "MIDI in / Note (Multi value)",
+      },
+      {
+        value: LedControlMode.MidiInCcMultiValue,
+        text: "MIDI in / CC (Multi value)",
+      },
+      {
+        value: LedControlMode.MidiInNoteSingleValue,
+        text: "MIDI in / Note (Single value)",
+      },
+      {
+        value: LedControlMode.MidiInCcSingleValue,
+        text: "MIDI in / CC (Single value)",
+      },
+      {
+        value: LedControlMode.LocalNoteMultiValue,
+        text: "Local / Note (Multi value)",
+      },
+      {
+        value: LedControlMode.LocalCcMultiValue,
+        text: "Local / CC (Multi value)",
+      },
+      {
+        value: LedControlMode.LocalNoteSingleValue,
+        text: "Local / Note (Single value)",
+      },
+      {
+        value: LedControlMode.LocalCcSingleValue,
+        text: "Local / CC (Single value)",
+      },
+      {
+        value: LedControlMode.ProgramChangeSingleValue,
+        text: "Program change (Single value)",
+      },
     ],
     label: "Control type",
     helpText: ``,

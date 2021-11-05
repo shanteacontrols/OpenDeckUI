@@ -98,6 +98,18 @@ export enum EncodingMode {
   NRPN7 = 7,
 }
 
+export enum LedControlMode {
+  MidiInNoteSingleValue = 0,
+  LocalNoteSingleValue = 1,
+  MidiInCcSingleValue = 2,
+  LocalCcSingleValue = 3,
+  ProgramChangeSingleValue = 4,
+  MidiInNoteMultiValue = 6,
+  LocalNoteMultiValue = 7,
+  MidiInCcMultiValue = 8,
+  LocalCcMultiValue = 9,
+}
+
 export const HideVelocityOnTypes = [
   MidiMessageType.ProgramChange,
   MidiMessageType.ProgramChangeDec,
