@@ -7,6 +7,7 @@ import {
   LedControlMode,
   HideLedActivationValueOnControlTypes,
   HideLedMidiChannelOnControlTypes,
+  HideLedRgbEnableOnControlTypes,
 } from "../../interface";
 
 import DeviceForm from "../../device/DeviceForm.vue";
@@ -68,6 +69,8 @@ export const sections: Dictionary<ISectionDefinition> = {
     block: Block.Led,
   },
   RGBEnable: {
+    showIf: (formState: FormState): boolean =>
+      !HideLedRgbEnableOnControlTypes.includes(formState.controlType),
     key: "rgbEnable",
     type: SectionType.Value,
     section: 4,
