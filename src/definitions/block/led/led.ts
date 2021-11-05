@@ -121,14 +121,14 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
     block: Block.Led,
   },
-  ActivationVelocity: {
-    key: "activationVelocity",
+  ActivationValue: {
+    key: "activationValue",
     type: SectionType.Value,
     section: 6,
     component: FormInputComponent.Input,
     min: 1,
     max: 127,
-    label: "Activation Velocity",
+    label: "Activation Value",
     helpText: "",
     block: Block.Led,
   },
