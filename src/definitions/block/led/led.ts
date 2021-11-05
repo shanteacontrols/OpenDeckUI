@@ -6,6 +6,7 @@ import {
   Block,
   LedControlMode,
   HideLedActivationValueOnControlTypes,
+  HideLedMidiChannelOnControlTypes,
 } from "../../interface";
 
 import DeviceForm from "../../device/DeviceForm.vue";
@@ -140,6 +141,8 @@ export const sections: Dictionary<ISectionDefinition> = {
     block: Block.Led,
   },
   MidiChannel: {
+    showIf: (formState: FormState): boolean =>
+      !HideLedMidiChannelOnControlTypes.includes(formState.controlType),
     key: "midiChannel",
     type: SectionType.Value,
     section: 7,

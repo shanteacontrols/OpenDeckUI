@@ -153,6 +153,8 @@ export const HideLedActivationValueOnControlTypes = [
   LedControlMode.ProgramChange,
 ];
 
+export const HideLedMidiChannelOnControlTypes = [LedControlMode.PresetChange];
+
 export enum SectionType {
   Setting = "setting",
   Value = "value",
