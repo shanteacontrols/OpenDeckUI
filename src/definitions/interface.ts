@@ -103,7 +103,8 @@ export enum LedControlMode {
   LocalNoteSingleValue = 1,
   MidiInCcSingleValue = 2,
   LocalCcSingleValue = 3,
-  ProgramChangeSingleValue = 4,
+  PresetChange = 4,
+  ProgramChange = 5,
   MidiInNoteMultiValue = 6,
   LocalNoteMultiValue = 7,
   MidiInCcMultiValue = 8,
@@ -148,7 +149,8 @@ export const ShowAccelerationOnTypes = [
 ];
 
 export const HideLedActivationValueOnControlTypes = [
-  LedControlMode.ProgramChangeSingleValue,
+  LedControlMode.PresetChange,
+  LedControlMode.ProgramChange,
 ];
 
 export enum SectionType {
