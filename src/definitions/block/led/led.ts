@@ -5,6 +5,7 @@ import {
   SectionType,
   Block,
   LedControlMode,
+  HideLedActivationValueOnControlTypes,
 } from "../../interface";
 
 import DeviceForm from "../../device/DeviceForm.vue";
@@ -122,6 +123,8 @@ export const sections: Dictionary<ISectionDefinition> = {
     block: Block.Led,
   },
   ActivationValue: {
+    showIf: (formState: FormState): boolean =>
+      !HideLedActivationValueOnControlTypes.includes(formState.controlType),
     key: "activationValue",
     type: SectionType.Value,
     section: 6,

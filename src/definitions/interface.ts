@@ -147,6 +147,10 @@ export const ShowAccelerationOnTypes = [
   EncodingMode.NRPN7,
 ];
 
+export const HideLedActivationValueOnControlTypes = [
+  LedControlMode.ProgramChangeSingleValue,
+];
+
 export enum SectionType {
   Setting = "setting",
   Value = "value",
