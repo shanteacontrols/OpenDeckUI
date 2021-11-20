@@ -6,8 +6,8 @@ import {
   Block,
 } from "../../interface";
 
-import DeviceSettings from "../../device/DeviceSettings.vue";
-import DisplayIcon from "./DisplayIcon.vue";
+import I2CForm from "./I2CForm.vue";
+import I2CIcon from "./I2CIcon.vue";
 
 export const sections: Dictionary<ISectionDefinition> = {
   // Features
@@ -16,65 +16,29 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "enableDisplay",
     type: SectionType.Setting,
     section: 0,
-    settingIndex: 0,
+    settingIndex: 6,
     component: FormInputComponent.Toggle,
     label: "Enable",
     helpText: `Enables or disables the usage of small OLED/LCD displays.`,
   },
-  WelcomeMessage: {
+  DeviceInfoOnStartup: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
-    key: "welcomeMessage",
+    key: "deviceInfoStartup",
     type: SectionType.Setting,
     section: 0,
-    settingIndex: 1,
+    settingIndex: 0,
     component: FormInputComponent.Toggle,
-    label: "Welcome Message",
-    helpText: `Enable or disable welcome message on display when the device is powered on.`,
-  },
-  ShowVersionsOnStartup: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
-    block: Block.Display,
-    key: "showVersionsOnStartup",
-    type: SectionType.Setting,
-    section: 0,
-    settingIndex: 2,
-    component: FormInputComponent.Toggle,
-    label: "Version info on startup",
-    helpText: `Enable or disable version info on display when the device is powered on. This info is shown after welcome message.`,
-  },
-  I2CAddress: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
-    block: Block.Display,
-    key: "i2CAddress",
-    type: SectionType.Setting,
-    section: 1,
-    settingIndex: 4,
-    component: FormInputComponent.Select,
-    options: [
-      {
-        value: 0,
-        text: "Not specified",
-      },
-      {
-        value: 120,
-        text: "0x78 (120)",
-      },
-      {
-        value: 122,
-        text: "0x7A (122)",
-      },
-    ],
-    label: "I2C address",
-    helpText: ``,
+    label: "Show device info on startup",
+    helpText: `Enable or disable device info message on startup (firmware version and board name).`,
   },
   DisplayController: {
     showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "displayController",
     type: SectionType.Setting,
-    section: 1,
-    settingIndex: 0,
+    section: 0,
+    settingIndex: 1,
     component: FormInputComponent.Select,
     options: [
       {
@@ -94,8 +58,8 @@ export const sections: Dictionary<ISectionDefinition> = {
     block: Block.Display,
     key: "displayResolution",
     type: SectionType.Setting,
-    section: 1,
-    settingIndex: 1,
+    section: 0,
+    settingIndex: 2,
     component: FormInputComponent.Select,
     options: [
       {
@@ -119,8 +83,8 @@ export const sections: Dictionary<ISectionDefinition> = {
     block: Block.Display,
     key: "midiEventRetentionTime",
     type: SectionType.Setting,
-    section: 1,
-    settingIndex: 2,
+    section: 0,
+    settingIndex: 3,
     component: FormInputComponent.Select,
     options: [
       {
@@ -157,7 +121,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "alternateMidiNoteDisplay",
     type: SectionType.Setting,
     section: 0,
-    settingIndex: 3,
+    settingIndex: 4,
     component: FormInputComponent.Toggle,
     label: "Alternate MIDI note Display",
     helpText: `If enabled, MIDI note data will be displayed in note-key format (ie. C#4). If disabled, MIDI note number will be displayed instead.`,
@@ -166,19 +130,15 @@ export const sections: Dictionary<ISectionDefinition> = {
 
 export const DisplayBlock: IBlockDefinition = {
   block: Block.Display,
-  title: "Display",
-  routeName: "device-displays",
-  iconComponent: markRaw(DisplayIcon),
+  title: "I2C",
+  routeName: "device-i2c",
+  iconComponent: markRaw(I2CIcon),
   sections,
   routes: [
     {
-      name: "device-displays",
-      path: "displays",
-      component: DeviceSettings,
-      props: {
-        block: Block.Display,
-        title: "",
-      },
+      path: "i2c:",
+      name: "device-i2c",
+      component: I2CForm,
     },
   ],
 };
