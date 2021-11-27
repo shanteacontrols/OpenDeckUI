@@ -8,6 +8,7 @@ export enum ControlDisableType {
   NotSupported = "not_supported",
   MissingIndex = "missing_index",
   UartInterfaceAllocated = "uart_interface_allocated",
+  CdcInterfaceAllocated = "cdc_interface_allocated",
 }
 
 export interface IRequestConfig {

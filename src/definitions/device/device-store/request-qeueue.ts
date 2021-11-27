@@ -457,6 +457,13 @@ const onRequestFail = (request: IQueuedRequest, messageStatus: number) => {
 
     if (
       sectionDef &&
+      [ErrorCode.CDC_INTERFACE_ALLOCATED].includes(messageStatus)
+    ) {
+      disableControl(sectionDef, ControlDisableType.CdcInterfaceAllocated);
+    }
+
+    if (
+      sectionDef &&
       [ErrorCode.BLOCK, ErrorCode.SECTION, ErrorCode.INDEX].includes(
         messageStatus,
       )

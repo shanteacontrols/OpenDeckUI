@@ -35,6 +35,10 @@
         The UART interface on board required for this peripheral is already
         taken by another peripheral.
       </template>
+      <template v-if="isDisabled === ControlDisableType.CdcInterfaceAllocated">
+        CDC interface on board required for this peripheral is already taken by
+        another peripheral.
+      </template>
     </p>
 
     <p v-if="helpText && !simpleLayout" class="help-text">
