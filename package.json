@@ -1,5 +1,7 @@
 {
   "name": "opendeck-ui",
+  "description": "Configuration utility for OpenDeck MIDI platform",
+  "main": "main.js",
   "version": "0.1.0",
   "files": [
     "dist/**/*.js",
@@ -17,7 +19,8 @@
     "build": "vite build",
     "format": "prettier --config .prettierrc --write --parser typescript \"src/**/*.ts\"",
     "lint": "eslint . --ext .ts",
-    "lint-and-fix": "eslint . --ext .ts --fix"
+    "lint-and-fix": "eslint . --ext .ts --fix",
+    "start": "electron ."
   },
   "dependencies": {
     "@tailwindcss/ui": "^0.5.0",
