@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  build:
-    name: Deploy UI
+  deploy:
+    name: Deploy configurator
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
@@ -16,16 +16,49 @@ jobs:
           fetch-depth: 0
       - name: Prepare build env
         run: |
-          sudo apt install yarn
-      - name: Deploy new UI
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends \
+          yarn
+      - name: Build and deploy configurator
         run: |
           git config --global user.name "webui_bot"
           git config --global user.email "2544094+webui_bot@users.noreply.github.com"
-          yarn
-          yarn build
+          make release
           git checkout gh-pages
           rm -rf _assets/* index.html
           mv dist/* .
           git add index.html _assets*
           git commit --allow-empty -m "update webui"
           git push https://github.com/shanteacontrols/OpenDeckUI gh-pages
+  release:
+    name: Create new release
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Prepare build env
+        run: |
+          npm install -g electron-packager
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends \
+          yarn \
+          zip \
+          wine
+      - name: Build
+        run: |
+          make release
+          make elektron-pkg PLATFORM=linux
+          make elektron-pkg PLATFORM=darwin
+          make elektron-pkg PLATFORM=win32
+      - name: Generate new version number
+        run: echo "::set-output name=version::$(date +%Y%m%d%H%M)"
+        id: version
+      - name: Publish new release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          hub release create $(find ./build -type f -name "*.zip" -printf "-a %p ") -m "${{ steps.version.outputs.version }}" "${{ steps.version.outputs.version }}"
