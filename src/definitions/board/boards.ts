@@ -103,6 +103,18 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "opendeck_mini.sysex",
   },
+  {
+    name: "BlackPill F401",
+    id: [124, 40, 6, 53],
+    oldId: [],
+    firmwareFileName: "blackpill401.sysex",
+  },
+  {
+    name: "BlackPill F411",
+    id: [18, 87, 110, 75],
+    oldId: [],
+    firmwareFileName: "blackpill411.sysex",
+  },
 ];
 
 export default Boards;
