@@ -40,21 +40,27 @@
             @modified="onSettingChange"
           />
           <FormField
-            v-if="showField(sections.PassUSBtoDIN)"
-            :value="form.passUSBtoDIN"
-            :field-definition="sections.PassUSBtoDIN"
+            v-if="showField(sections.UsbToDinThru)"
+            :value="form.usbToDinThru"
+            :field-definition="sections.UsbToDinThru"
             @modified="onSettingChange"
           />
           <FormField
-            v-if="showField(sections.MidiMergeEnable)"
-            :value="form.midiMergeEnable"
-            :field-definition="sections.MidiMergeEnable"
+            v-if="showField(sections.UsbToUsbThru)"
+            :value="form.usbToUsbThru"
+            :field-definition="sections.UsbToUsbThru"
             @modified="onSettingChange"
           />
           <FormField
-            v-if="showField(sections.MidiMergeType)"
-            :value="form.midiMergeType"
-            :field-definition="sections.MidiMergeType"
+            v-if="showField(sections.DinToDinThru)"
+            :value="form.dinToDinThru"
+            :field-definition="sections.DinToDinThru"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.DinToUsbThru)"
+            :value="form.dinToUsbThru"
+            :field-definition="sections.DinToUsbThru"
             @modified="onSettingChange"
           />
         </div>
