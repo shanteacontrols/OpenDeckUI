@@ -80,6 +80,8 @@ const sections: Dictionary<ISectionDefinition> = {
         value: MidiMessageType.MultiValueIncDecCC,
         text: "Multi Value IncDec CC",
       },
+      { value: MidiMessageType.NoteOffOnly, text: "Note Off Only" },
+      { value: MidiMessageType.ControlChange0Only, text: "CC/0 only" },
     ],
     label: "MIDI message",
     helpText: ``,

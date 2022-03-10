@@ -84,6 +84,8 @@ export enum MidiMessageType {
   MultiValueIncDecNote = 19,
   MultiValueIncResetCC = 20,
   MultiValueIncDecCC = 21,
+  NoteOffOnly = 22,
+  ControlChange0Only = 23,
 }
 
 export enum EncodingMode {
