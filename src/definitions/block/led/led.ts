@@ -148,13 +148,14 @@ export const sections: Dictionary<ISectionDefinition> = {
       !HideLedMidiChannelOnControlTypes.includes(formState.controlType),
     key: "midiChannel",
     type: SectionType.Value,
+    block: Block.Led,
     section: 7,
     component: FormInputComponent.Input,
     min: 1,
-    max: 16,
+    max: 17,
     label: "MIDI channel",
-    helpText: "",
-    block: Block.Led,
+    helpText:
+      "Setting the channel to value 17 will ignore the specified MIDI channel.",
   },
 };
 

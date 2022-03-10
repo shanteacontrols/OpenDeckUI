@@ -154,13 +154,14 @@ const sections: Dictionary<ISectionDefinition> = {
       formState.type !== AnalogType.Button && !!formState.enabled,
     key: "midiChannel",
     type: SectionType.Value,
+    block: Block.Analog,
     section: 9,
     component: FormInputComponent.Input,
     min: 1,
-    max: 16,
+    max: 17,
     label: "MIDI channel",
-    helpText: "",
-    block: Block.Analog,
+    helpText:
+      "Setting the channel to value 17 will cause sending of data on each MIDI channel.",
   },
   LowerAdcOffset: {
     showIf: (formState: FormState): boolean =>

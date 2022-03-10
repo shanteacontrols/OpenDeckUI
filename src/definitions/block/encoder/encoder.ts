@@ -69,15 +69,16 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   MidiChannel: {
     showIf: (formState: FormState): boolean => formState.enabled,
-    block: Block.Encoder,
     key: "midiChannel",
     type: SectionType.Value,
+    block: Block.Encoder,
     section: 4,
     component: FormInputComponent.Input,
     min: 1,
-    max: 16,
+    max: 17,
     label: "MIDI channel",
-    helpText: "",
+    helpText:
+      "Setting the channel to value 17 will cause sending of data on each MIDI channel.",
   },
   MidiIdLSB: {
     showIf: (formState: FormState): boolean => formState.enabled,
