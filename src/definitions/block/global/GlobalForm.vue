@@ -22,6 +22,18 @@
       <Section title="MIDI">
         <div class="form-grid">
           <FormField
+            v-if="showField(sections.UseGlobalChannel)"
+            :value="form.useGlobalChannel"
+            :field-definition="sections.UseGlobalChannel"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.GlobalChannel)"
+            :value="form.globalChannel"
+            :field-definition="sections.GlobalChannel"
+            @modified="onSettingChange"
+          />
+          <FormField
             v-if="showField(sections.StandardNoteOff)"
             :value="form.standardNoteOff"
             :field-definition="sections.StandardNoteOff"
