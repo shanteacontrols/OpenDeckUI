@@ -175,7 +175,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Specifies lower offset percentage which is used to calculate minimum ADC value upon which MIDI
     values will be based. Useful for inputs which cannot reach minimum ADC value. If for example, the board has
     nominal ADC range 0-4095, setting this value to 10 will calculate MIDI values based on 409-4095 range (assuming
-    the upper offset is 0.), that is, lower 10% of ADC range will be cut off.`,
+    the upper offset is 0), that is, lower 10% of ADC range will be cut off.`,
     block: Block.Analog,
   },
   UpperAdcOffset: {
@@ -191,7 +191,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Specifies upper offset percentage which is used to calculate maximum ADC value upon which MIDI
     values will be based. Useful for inputs which cannot reach maximum ADC value. If for example, the board has
     nominal ADC range 0-4095, setting this value to 10 will calculate MIDI values based on 0-3685 range (assuming
-    the lower offset is 0.), that is, upper 10% of ADC range will be cut off.`,
+    the lower offset is 0), that is, upper 10% of ADC range will be cut off.`,
     block: Block.Analog,
   },
 };
