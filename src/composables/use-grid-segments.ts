@@ -2,7 +2,9 @@ import { computed, Ref } from "vue";
 import { Block } from "../definitions";
 import { deviceState } from "../definitions/device/device-store/state";
 import { logger } from "../util";
-import semver from "semver";
+import semverLt from "semver/functions/lt";
+import semverGt from "semver/functions/gt";
+import semverClean from "semver/functions/clean";
 
 export interface GridSegment {
   title: string;
@@ -47,7 +49,10 @@ export const useGridSegments = (
       case Block.Button:
         {
           //segmentation to buttons, analog and touchscreen
-          if (semver.lt(semver.clean(deviceState.firmwareVersion), "5.4.0")) {
+          if (
+            semverLt(semverClean(deviceState.firmwareVersion), "5.4.0") ||
+            semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
+          ) {
             segments.push(
               {
                 title: "Buttons",
@@ -121,22 +126,29 @@ export const useGridSegments = (
 
       case Block.Analog:
         {
-          //segmentation to analog and touchscreen (only on FW >=5.4.0)
-          if (semver.lt(semver.clean(deviceState.firmwareVersion), "5.4.0"))
-            return;
-
-          segments.push(
-            {
+          if (
+            semverLt(semverClean(deviceState.firmwareVersion), "5.4.0") ||
+            semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
+          ) {
+            segments.push({
               title: "Analog",
               startIndex: 0,
-              endIndex: analogCount.value - touchScreenCount.value - 1,
-            },
-            {
-              title: "Touchscreen",
-              startIndex: analogCount.value - touchScreenCount.value,
               endIndex: analogCount.value - 1,
-            },
-          );
+            });
+          } else {
+            segments.push(
+              {
+                title: "Analog",
+                startIndex: 0,
+                endIndex: analogCount.value - touchScreenCount.value - 1,
+              },
+              {
+                title: "Touchscreen",
+                startIndex: analogCount.value - touchScreenCount.value,
+                endIndex: analogCount.value - 1,
+              },
+            );
+          }
         }
         break;
 
