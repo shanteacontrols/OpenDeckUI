@@ -55,13 +55,13 @@ export enum AnalogType {
   Note = 1,
   FSR = 2,
   Button = 3,
-  NRPN7 = 4,
-  NRPN14 = 5,
+  NRPN7bit = 4,
+  NRPN14bit = 5,
   PitchBend = 6,
   ControlChange14Bit = 7,
 }
 
-export enum MidiMessageType {
+export enum ButtonMessageType {
   Note = 0,
   ProgramChange = 1,
   ProgramChangeInc = 14,
@@ -91,13 +91,13 @@ export enum MidiMessageType {
 export enum EncodingMode {
   Controlchange7F = 0,
   Controlchange3F = 1,
-  Programchange = 2,
-  ControlchangeContinuous7 = 3,
-  ControlchangeContinuous14 = 8,
-  Changepreset = 4,
-  Pitchbend = 5,
-  NRPN6 = 6,
-  NRPN7 = 7,
+  ProgramChange = 2,
+  CC7bit = 3,
+  PresetChange = 4,
+  PitchBend = 5,
+  NRPN7bit = 6,
+  NRPN14bit = 7,
+  CC14bit = 8,
 }
 
 export enum LedControlMode {
@@ -113,41 +113,71 @@ export enum LedControlMode {
   LocalCcMultiValue = 9,
 }
 
-export const HideVelocityOnTypes = [
-  MidiMessageType.ProgramChange,
-  MidiMessageType.ProgramChangeDec,
-  MidiMessageType.ProgramChangeInc,
-  MidiMessageType.MultiValueIncDecCC,
-  MidiMessageType.MultiValueIncDecNote,
-  MidiMessageType.MultiValueIncResetCC,
-  MidiMessageType.MultiValueIncResetNote,
-  MidiMessageType.None,
-  MidiMessageType.RealTimeClock,
-  MidiMessageType.RealTimeStart,
-  MidiMessageType.RealTimeContinue,
-  MidiMessageType.RealTimeStop,
-  MidiMessageType.RealTimeActiveSensing,
-  MidiMessageType.RealTimeSystemReset,
-  MidiMessageType.MmcStop,
-  MidiMessageType.MmcPlay,
-  MidiMessageType.MmcRecord,
-  MidiMessageType.MmcPause,
+export const HideButtonVelocityOnTypes = [
+  ButtonMessageType.None,
+  ButtonMessageType.ProgramChange,
+  ButtonMessageType.ProgramChangeDec,
+  ButtonMessageType.ProgramChangeInc,
+  ButtonMessageType.RealTimeClock,
+  ButtonMessageType.RealTimeStart,
+  ButtonMessageType.RealTimeContinue,
+  ButtonMessageType.RealTimeStop,
+  ButtonMessageType.RealTimeActiveSensing,
+  ButtonMessageType.RealTimeSystemReset,
+  ButtonMessageType.MmcStop,
+  ButtonMessageType.MmcPlay,
+  ButtonMessageType.MmcRecord,
+  ButtonMessageType.MmcPause,
+  ButtonMessageType.PresetChange,
+  ButtonMessageType.NoteOffOnly,
+  ButtonMessageType.ControlChange0Only,
 ];
 
-export const HideMidiIdOnTypes = [
-  MidiMessageType.None,
-  MidiMessageType.MmcStop,
-  MidiMessageType.MmcPlay,
-  MidiMessageType.MmcRecord,
-  MidiMessageType.MmcPause,
+export const HideButtonMidiIdOnTypes = [
+  ButtonMessageType.None,
+  ButtonMessageType.RealTimeClock,
+  ButtonMessageType.RealTimeStart,
+  ButtonMessageType.RealTimeContinue,
+  ButtonMessageType.RealTimeStop,
+  ButtonMessageType.RealTimeActiveSensing,
+  ButtonMessageType.RealTimeSystemReset,
 ];
 
-export const ShowAccelerationOnTypes = [
-  EncodingMode.Pitchbend,
-  EncodingMode.ControlchangeContinuous7,
-  EncodingMode.ControlchangeContinuous14,
-  EncodingMode.NRPN6,
-  EncodingMode.NRPN7,
+export const HideButtonMidiChannelOnTypes = [
+  ButtonMessageType.None,
+  ButtonMessageType.MmcStop,
+  ButtonMessageType.MmcPlay,
+  ButtonMessageType.MmcRecord,
+  ButtonMessageType.MmcPause,
+  ButtonMessageType.RealTimeClock,
+  ButtonMessageType.RealTimeStart,
+  ButtonMessageType.RealTimeContinue,
+  ButtonMessageType.RealTimeStop,
+  ButtonMessageType.RealTimeActiveSensing,
+  ButtonMessageType.RealTimeSystemReset,
+  ButtonMessageType.PresetChange,
+];
+
+export const HideAnalogMidiIdOnTypes = [AnalogType.Button];
+export const HideAnalogMidiChannelOnTypes = [AnalogType.Button];
+
+export const HideEncoderMidiIdOnTypes = [];
+export const HideEncoderMidiChannelOnTypes = [EncodingMode.PresetChange];
+
+export const ShowEncoderAccelerationOnTypes = [
+  EncodingMode.PitchBend,
+  EncodingMode.CC7bit,
+  EncodingMode.CC14bit,
+  EncodingMode.NRPN7bit,
+  EncodingMode.NRPN14bit,
+];
+
+export const ShowEncoderRemoteSyncOnTypes = [
+  EncodingMode.PitchBend,
+  EncodingMode.CC7bit,
+  EncodingMode.CC14bit,
+  EncodingMode.NRPN7bit,
+  EncodingMode.NRPN14bit,
 ];
 
 export const HideLedActivationValueOnControlTypes = [

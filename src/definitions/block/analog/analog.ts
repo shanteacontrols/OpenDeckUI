@@ -7,6 +7,8 @@ import {
   ISectionDefinition,
   Block,
   AnalogType,
+  HideAnalogMidiIdOnTypes,
+  HideAnalogMidiChannelOnTypes,
 } from "../../interface";
 
 import DeviceForm from "../../device/DeviceForm.vue";
@@ -49,8 +51,8 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: AnalogType.Note, text: "Note" },
       { value: AnalogType.FSR, text: "FSR" },
       { value: AnalogType.Button, text: "Button" },
-      { value: AnalogType.NRPN7, text: "NRPN 7-bit" },
-      { value: AnalogType.NRPN14, text: "NRPN 14-bit" },
+      { value: AnalogType.NRPN7bit, text: "NRPN 7-bit" },
+      { value: AnalogType.NRPN14bit, text: "NRPN 14-bit" },
       { value: AnalogType.PitchBend, text: "Pitch bend" },
       { value: AnalogType.ControlChange14Bit, text: "Control change 14-bit" },
     ],
@@ -60,7 +62,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   MidiIdLSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      !HideAnalogMidiIdOnTypes.includes(formState.type) && !!formState.enabled,
     key: "midiIdLSB",
     type: SectionType.Value,
     section: 3,
@@ -75,7 +77,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   MidiIdMSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      !HideAnalogMidiIdOnTypes.includes(formState.type) && !!formState.enabled,
     isMsb: true,
     key: "midiIdMSB",
     type: SectionType.Value,
@@ -87,71 +89,80 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: "",
     block: Block.Analog,
   },
-  LowerCCLimitLSB: {
+  LowerLimitLSB: {
     showIf: (formState: FormState): boolean =>
       formState.type !== AnalogType.Button && !!formState.enabled,
     isLsb: true,
-    key: "lowerCCLimitLSB",
+    key: "lowerLimitLSB",
     type: SectionType.Value,
     section: 5,
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
     max2Byte: 16383,
-    label: "Lower CC limit (LSB)",
+    label: "Lower limit (LSB)",
     helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
-    here, so this value will be sent when the analog input is at its lowest position.`,
+    here, so this value will be sent when the analog input is at its lowest position. Limit is
+    type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
-  LowerCCLimitMSB: {
+  LowerLimitMSB: {
     showIf: (formState: FormState): boolean =>
       formState.type !== AnalogType.Button && !!formState.enabled,
     isMsb: true,
-    key: "lowerCCLimitMSB",
+    key: "lowerLimitMSB",
     type: SectionType.Value,
     section: 6,
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "Lower CC limit (MSB)",
+    label: "Lower limit (MSB)",
     helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
-    here, so this value will be sent when the analog input is at its lowest position.`,
+    here, so this value will be sent when the analog input is at its lowest position. Limit is
+    type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
-  UpperCCLimitLSB: {
+  UpperLimitLSB: {
     showIf: (formState: FormState): boolean =>
       formState.type !== AnalogType.Button && !!formState.enabled,
     isLsb: true,
-    key: "upperCCLimitLSB",
+    key: "upperLimitLSB",
     type: SectionType.Value,
     section: 7,
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
     max2Byte: 16383,
-    label: "Upper CC limit (LSB)",
+    label: "Upper limit (LSB)",
     helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
-    here, so this value will be sent when the analog input is at its highest position.`,
+    here, so this value will be sent when the analog input is at its highest position. Limit is
+    type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
-  UpperCCLimitMSB: {
+  UpperLimitMSB: {
     showIf: (formState: FormState): boolean =>
       formState.type !== AnalogType.Button && !!formState.enabled,
     isMsb: true,
-    key: "upperCCLimitMSB",
+    key: "upperLimitMSB",
     type: SectionType.Value,
     section: 8,
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "Upper CC limit (MSB)",
+    label: "Upper limit (MSB)",
     helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
-    here, so this value will be sent when the analog input is at its highest position.`,
+    here, so this value will be sent when the analog input is at its highest position. Limit is
+    type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
   MidiChannel: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      !HideAnalogMidiChannelOnTypes.includes(formState.type) &&
+      !!formState.enabled,
     key: "midiChannel",
     type: SectionType.Value,
     block: Block.Analog,

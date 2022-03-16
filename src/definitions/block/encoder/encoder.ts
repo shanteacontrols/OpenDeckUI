@@ -5,7 +5,10 @@ import {
   SectionType,
   Block,
   EncodingMode,
-  ShowAccelerationOnTypes,
+  ShowEncoderAccelerationOnTypes,
+  ShowEncoderRemoteSyncOnTypes,
+  HideEncoderMidiIdOnTypes,
+  HideEncoderMidiChannelOnTypes,
 } from "../../interface";
 
 import RouteWrapper from "../../../components/RouteWrapper.vue";
@@ -48,18 +51,18 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: EncodingMode.Controlchange7F, text: "Control change - 7Fh01h" },
       { value: EncodingMode.Controlchange3F, text: "Control change - 3Fh41h" },
       {
-        value: EncodingMode.ControlchangeContinuous7,
+        value: EncodingMode.CC7bit,
         text: "Control change - Continuous 7-bit",
       },
       {
-        value: EncodingMode.ControlchangeContinuous14,
+        value: EncodingMode.CC14bit,
         text: "Control change - Continuous 14-bit",
       },
-      { value: EncodingMode.Programchange, text: "Program change" },
-      { value: EncodingMode.Pitchbend, text: "Pitch bend" },
-      { value: EncodingMode.NRPN6, text: "NRPN/7-bit" },
-      { value: EncodingMode.NRPN7, text: "NRPN/14-bit" },
-      { value: EncodingMode.Changepreset, text: "Change preset" },
+      { value: EncodingMode.ProgramChange, text: "Program change" },
+      { value: EncodingMode.PitchBend, text: "Pitch bend" },
+      { value: EncodingMode.NRPN7bit, text: "NRPN/7-bit" },
+      { value: EncodingMode.NRPN14bit, text: "NRPN/14-bit" },
+      { value: EncodingMode.PresetChange, text: "Change preset" },
     ],
     label: "MIDI message",
     helpText: `Specifies the MIDI message which will be sent by the encoder. If Change Preset type is used,
@@ -68,7 +71,9 @@ const sections: Dictionary<ISectionDefinition> = {
     inverted logic applies. Note that in order for this option to work accross all presets, Change Preset type should be set in each preset.`,
   },
   MidiChannel: {
-    showIf: (formState: FormState): boolean => formState.enabled,
+    showIf: (formState: FormState): boolean =>
+      !HideEncoderMidiChannelOnTypes.includes(formState.encodingMode) &&
+      !!formState.enabled,
     key: "midiChannel",
     type: SectionType.Value,
     block: Block.Encoder,
@@ -81,7 +86,9 @@ const sections: Dictionary<ISectionDefinition> = {
       "Setting the channel to value 17 will cause sending of data on each MIDI channel.",
   },
   MidiIdLSB: {
-    showIf: (formState: FormState): boolean => formState.enabled,
+    showIf: (formState: FormState): boolean =>
+      !HideEncoderMidiIdOnTypes.includes(formState.encodingMode) &&
+      !!formState.enabled,
     isLsb: true,
     block: Block.Encoder,
     key: "midiIdLSB",
@@ -95,7 +102,9 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: "",
   },
   MidiIdMSB: {
-    showIf: (formState: FormState): boolean => formState.enabled,
+    showIf: (formState: FormState): boolean =>
+      !HideEncoderMidiIdOnTypes.includes(formState.encodingMode) &&
+      !!formState.enabled,
     isMsb: true,
     block: Block.Encoder,
     key: "midiIdMSB",
@@ -125,7 +134,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   Acceleration: {
     showIf: (formState: FormState): boolean =>
-      ShowAccelerationOnTypes.includes(formState.encodingMode) &&
+      ShowEncoderAccelerationOnTypes.includes(formState.encodingMode) &&
       formState.enabled,
     block: Block.Encoder,
     key: "acceleration",
@@ -143,7 +152,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   RemoteSync: {
     showIf: (formState: FormState): boolean =>
-      ShowAccelerationOnTypes.includes(formState.encodingMode) &&
+      ShowEncoderRemoteSyncOnTypes.includes(formState.encodingMode) &&
       formState.enabled,
     block: Block.Encoder,
     key: "remoteSync",
