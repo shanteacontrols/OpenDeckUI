@@ -63,6 +63,7 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: EncodingMode.NRPN7bit, text: "NRPN/7-bit" },
       { value: EncodingMode.NRPN14bit, text: "NRPN/14-bit" },
       { value: EncodingMode.PresetChange, text: "Change preset" },
+      { value: EncodingMode.Dmx, text: "DMX" },
     ],
     label: "MIDI message",
     helpText: `Specifies the MIDI message which will be sent by the encoder. If Change Preset type is used,
@@ -84,6 +85,19 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "MIDI channel",
     helpText:
       "Setting the channel to value 17 will cause sending of data on each MIDI channel.",
+  },
+  DmxChannel: {
+    showIf: (formState: FormState): boolean =>
+      formState.encodingMode == EncodingMode.Dmx && !!formState.enabled,
+    key: "dmxChannel",
+    type: SectionType.Value,
+    block: Block.Encoder,
+    section: 4,
+    component: FormInputComponent.Input,
+    min: 1,
+    max: 512,
+    label: "DMX channel",
+    helpText: "",
   },
   MidiIdLSB: {
     showIf: (formState: FormState): boolean =>
