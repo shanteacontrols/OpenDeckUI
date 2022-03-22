@@ -103,7 +103,7 @@ const sections: Dictionary<ISectionDefinition> = {
     section: 0,
     settingIndex: 3,
     component: FormInputComponent.Toggle,
-    label: "DIN MIDI state",
+    label: "DIN MIDI",
     helpText: `Enable or disable DIN MIDI input and output.`,
   },
   UsbToDinThru: {
@@ -158,7 +158,7 @@ const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 0,
     component: FormInputComponent.Toggle,
     label: "DMX",
-    helpText: `When enabled, virtual COM port can be used with OLA through usbserial plugin as Enttec USB Pro device.`,
+    helpText: `When enabled, virtual COM port can be used with OLA through usbserial plugin.`,
   },
 };
 

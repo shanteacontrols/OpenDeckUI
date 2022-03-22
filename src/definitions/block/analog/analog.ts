@@ -57,7 +57,7 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: AnalogType.ControlChange14Bit, text: "Control change 14-bit" },
       { value: AnalogType.Dmx, text: "DMX" },
     ],
-    label: "Type",
+    label: "Message type",
     helpText: ``,
     block: Block.Analog,
   },

@@ -85,7 +85,7 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: ButtonMessageType.ControlChange0Only, text: "CC/0 only" },
       { value: ButtonMessageType.Dmx, text: "DMX" },
     ],
-    label: "MIDI message",
+    label: "Message type",
     helpText: ``,
     block: Block.Button,
   },

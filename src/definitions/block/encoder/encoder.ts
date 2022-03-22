@@ -65,7 +65,7 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: EncodingMode.PresetChange, text: "Change preset" },
       { value: EncodingMode.Dmx, text: "DMX" },
     ],
-    label: "MIDI message",
+    label: "Message type",
     helpText: `Specifies the MIDI message which will be sent by the encoder. If Change Preset type is used,
     encoder will be used only to switch between the presets on the device and no MIDI message will be sent. Moving the encoder
     backward will decrement the preset by 1 and moving it forward will increment it, unless Invert option is used. In that case
