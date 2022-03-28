@@ -118,7 +118,6 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `When enabled, all data received via USB will be forwarded to DIN out.`,
   },
   UsbToUsbThru: {
-    showIf: (formState: FormState): boolean => !!formState.dinMidiState,
     block: Block.Global,
     key: "usbToUsbThru",
     type: SectionType.Setting,
