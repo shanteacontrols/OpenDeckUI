@@ -46,6 +46,12 @@
             @modified="onSettingChange"
           />
           <FormField
+            v-if="showField(sections.BleMidiState)"
+            :value="form.bleMidiState"
+            :field-definition="sections.BleMidiState"
+            @modified="onSettingChange"
+          />
+          <FormField
             v-if="showField(sections.RunningStatus)"
             :value="form.runningStatus"
             :field-definition="sections.RunningStatus"
@@ -64,6 +70,12 @@
             @modified="onSettingChange"
           />
           <FormField
+            v-if="showField(sections.UsbToBleThru)"
+            :value="form.usbToBleThru"
+            :field-definition="sections.UsbToBleThru"
+            @modified="onSettingChange"
+          />
+          <FormField
             v-if="showField(sections.DinToDinThru)"
             :value="form.dinToDinThru"
             :field-definition="sections.DinToDinThru"
@@ -73,6 +85,30 @@
             v-if="showField(sections.DinToUsbThru)"
             :value="form.dinToUsbThru"
             :field-definition="sections.DinToUsbThru"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.DinToBleThru)"
+            :value="form.dinToBleThru"
+            :field-definition="sections.DinToBleThru"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.BleToDinThru)"
+            :value="form.bleToDinThru"
+            :field-definition="sections.BleToDinThru"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.BleToUsbThru)"
+            :value="form.bleToUsbThru"
+            :field-definition="sections.BleToUsbThru"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.BleToBleThru)"
+            :value="form.bleToBleThru"
+            :field-definition="sections.BleToBleThru"
             @modified="onSettingChange"
           />
         </div>
