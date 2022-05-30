@@ -121,6 +121,18 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "blackpill411.sysex",
   },
+  {
+    name: "OpenDeck 3A",
+    id: [51, 64, 66, 79],
+    oldId: [],
+    firmwareFileName: "opendeck3a.sysex",
+  },
+  {
+    name: "OpenDeck 3B",
+    id: [70, 68, 60, 41],
+    oldId: [],
+    firmwareFileName: "opendeck3b.sysex",
+  },
 ];
 
 export default Boards;
