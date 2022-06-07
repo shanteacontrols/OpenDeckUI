@@ -133,6 +133,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "opendeck3b.sysex",
   },
+  {
+    name: "nRF52840DK",
+    id: [79, 4, 3, 17],
+    oldId: [],
+    firmwareFileName: "nrf52840dk.sysex",
+  },
 ];
 
 export default Boards;
