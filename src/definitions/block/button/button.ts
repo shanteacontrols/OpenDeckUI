@@ -45,6 +45,14 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: ButtonMessageType.ProgramChange, text: "Program Change" },
       { value: ButtonMessageType.ProgramChangeInc, text: "Program Change Inc" },
       { value: ButtonMessageType.ProgramChangeDec, text: "Program Change Dec" },
+      {
+        value: ButtonMessageType.ProgramChangeOffsetInc,
+        text: "Program Change Offset Increment",
+      },
+      {
+        value: ButtonMessageType.ProgramChangeOffsetDec,
+        text: "Program Change Offset Decrement",
+      },
       { value: ButtonMessageType.ControlChange, text: "CC" },
       { value: ButtonMessageType.ControlChangeOff, text: "CC/0 Off" },
       { value: ButtonMessageType.MmcStop, text: "MMC Stop" },
@@ -140,7 +148,7 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 127,
     label: "Value",
     helpText:
-      "Velocity for notes, control value for CC, increment/decrement value for Multi Value message types.",
+      "Velocity for notes, control value for CC, increment/decrement value for Multi Value message types or offset for Program Change.",
     block: Block.Button,
   },
   DmxValue: {

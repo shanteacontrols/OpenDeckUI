@@ -88,6 +88,8 @@ export enum ButtonMessageType {
   NoteOffOnly = 22,
   ControlChange0Only = 23,
   Dmx = 24,
+  ProgramChangeOffsetInc = 25,
+  ProgramChangeOffsetDec = 26,
 }
 
 export enum EncodingMode {
@@ -146,6 +148,8 @@ export const HideButtonMidiIdOnTypes = [
   ButtonMessageType.RealTimeActiveSensing,
   ButtonMessageType.RealTimeSystemReset,
   ButtonMessageType.Dmx,
+  ButtonMessageType.ProgramChangeOffsetInc,
+  ButtonMessageType.ProgramChangeOffsetDec,
 ];
 
 export const HideButtonMidiChannelOnTypes = [
@@ -162,6 +166,8 @@ export const HideButtonMidiChannelOnTypes = [
   ButtonMessageType.RealTimeSystemReset,
   ButtonMessageType.PresetChange,
   ButtonMessageType.Dmx,
+  ButtonMessageType.ProgramChangeOffsetInc,
+  ButtonMessageType.ProgramChangeOffsetDec,
 ];
 
 export const HideAnalogMidiIdOnTypes = [AnalogType.Button, AnalogType.Dmx];
