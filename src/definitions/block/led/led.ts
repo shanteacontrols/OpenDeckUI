@@ -37,6 +37,16 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: `Enables or disables LED animation when the device is powered on.`,
     block: Block.Led,
   },
+  UseMidiProgramChangeOffset: {
+    key: "useMidiProgramChangeOffset",
+    type: SectionType.Setting,
+    section: 2,
+    settingIndex: 3,
+    component: FormInputComponent.Toggle,
+    label: "Use MIDI Program Change Offset",
+    helpText: `When enabled, current internal Program Change Offset will be appended to configured activation ID, if the LED is configured to react to Program Change.`,
+    block: Block.Led,
+  },
   // Component definitions
   LedColorTesting: {
     key: "ledColorTesting",
