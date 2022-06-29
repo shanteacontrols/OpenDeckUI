@@ -53,17 +53,18 @@ export const useGridSegments = (
             semverLt(semverClean(deviceState.firmwareVersion), "5.4.0") ||
             semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
           ) {
-            segments.push(
-              {
-                title: "Buttons",
-                startIndex: 0,
-                endIndex:
-                  buttonCount.value -
-                  analogCount.value -
-                  touchScreenCount.value -
-                  1,
-              },
-              {
+            segments.push({
+              title: "Buttons",
+              startIndex: 0,
+              endIndex:
+                buttonCount.value -
+                analogCount.value -
+                touchScreenCount.value -
+                1,
+            });
+
+            if (analogCount.value > 0) {
+              segments.push({
                 title: "Analog",
                 startIndex:
                   buttonCount.value -
@@ -74,8 +75,8 @@ export const useGridSegments = (
                   analogCount.value -
                   touchScreenCount.value +
                   analogCount.value,
-              },
-            );
+              });
+            }
 
             if (touchScreenCount.value > 0) {
               segments.push({
