@@ -139,6 +139,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "nrf52840dk.sysex",
   },
+  {
+    name: "Raspberry Pi Pico",
+    id: [59, 72, 34, 30],
+    oldId: [],
+    firmwareFileName: "pico.sysex",
+  },
 ];
 
 export default Boards;
