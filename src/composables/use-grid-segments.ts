@@ -74,7 +74,8 @@ export const useGridSegments = (
                   buttonCount.value -
                   analogCount.value -
                   touchScreenCount.value +
-                  analogCount.value,
+                  analogCount.value -
+                  1,
               });
             }
 
