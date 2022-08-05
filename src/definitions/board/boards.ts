@@ -145,6 +145,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "pico.sysex",
   },
+  {
+    name: "OpenDeck v2.1",
+    id: [78, 103, 95, 35],
+    oldId: [],
+    firmwareFileName: "opendeck21.sysex",
+  },
 ];
 
 export default Boards;
