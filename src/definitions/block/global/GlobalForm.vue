@@ -58,6 +58,12 @@
             @modified="onSettingChange"
           />
           <FormField
+            v-if="showField(sections.MIDIClock)"
+            :value="form.midiClock"
+            :field-definition="sections.MIDIClock"
+            @modified="onSettingChange"
+          />
+          <FormField
             v-if="showField(sections.UsbToDinThru)"
             :value="form.usbToDinThru"
             :field-definition="sections.UsbToDinThru"

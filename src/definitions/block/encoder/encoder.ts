@@ -64,6 +64,7 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: EncodingMode.NRPN14bit, text: "NRPN/14-bit" },
       { value: EncodingMode.PresetChange, text: "Change preset" },
       { value: EncodingMode.Dmx, text: "DMX" },
+      { value: EncodingMode.Bpm, text: "BPM" },
     ],
     label: "Message type",
     helpText: `Specifies the MIDI message which will be sent by the encoder. If Change Preset type is used,

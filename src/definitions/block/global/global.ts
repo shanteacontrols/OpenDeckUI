@@ -96,6 +96,18 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `This setting applies only to DIN MIDI out. When enabled,
     MIDI output bandwidth increases due to lower amount of bytes being sent. This setting can cause issues on older MIDI gear so it's best to leave it disabled.`,
   },
+  MIDIClock: {
+    showIf: (formState: FormState): boolean => !!formState.dinMidiState,
+    block: Block.Global,
+    key: "midiClock",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 15,
+    component: FormInputComponent.Toggle,
+    label: "Send MIDI clock",
+    helpText: `This setting applies only to DIN MIDI out.
+    When enabled, MIDI clock will be sent out at default BPM of 120. The tempo can be changed with buttons or encoders.`,
+  },
   DinMidiState: {
     block: Block.Global,
     key: "dinMidiState",

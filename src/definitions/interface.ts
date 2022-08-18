@@ -90,6 +90,8 @@ export enum ButtonMessageType {
   Dmx = 24,
   ProgramChangeOffsetInc = 25,
   ProgramChangeOffsetDec = 26,
+  BpmInc = 27,
+  BpmDec = 28,
 }
 
 export enum EncodingMode {
@@ -103,6 +105,7 @@ export enum EncodingMode {
   NRPN14bit = 7,
   CC14bit = 8,
   Dmx = 9,
+  Bpm = 10,
 }
 
 export enum LedControlMode {
@@ -137,6 +140,8 @@ export const HideButtonVelocityOnTypes = [
   ButtonMessageType.NoteOffOnly,
   ButtonMessageType.ControlChange0Only,
   ButtonMessageType.Dmx,
+  ButtonMessageType.BpmInc,
+  ButtonMessageType.BpmDec,
 ];
 
 export const HideButtonMidiIdOnTypes = [
@@ -150,6 +155,8 @@ export const HideButtonMidiIdOnTypes = [
   ButtonMessageType.Dmx,
   ButtonMessageType.ProgramChangeOffsetInc,
   ButtonMessageType.ProgramChangeOffsetDec,
+  ButtonMessageType.BpmInc,
+  ButtonMessageType.BpmDec,
 ];
 
 export const HideButtonMidiChannelOnTypes = [
@@ -168,6 +175,8 @@ export const HideButtonMidiChannelOnTypes = [
   ButtonMessageType.Dmx,
   ButtonMessageType.ProgramChangeOffsetInc,
   ButtonMessageType.ProgramChangeOffsetDec,
+  ButtonMessageType.BpmInc,
+  ButtonMessageType.BpmDec,
 ];
 
 export const HideAnalogMidiIdOnTypes = [AnalogType.Button, AnalogType.Dmx];
