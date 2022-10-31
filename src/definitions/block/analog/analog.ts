@@ -55,7 +55,6 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: AnalogType.NRPN14bit, text: "NRPN 14-bit" },
       { value: AnalogType.PitchBend, text: "Pitch bend" },
       { value: AnalogType.ControlChange14Bit, text: "Control change 14-bit" },
-      { value: AnalogType.Dmx, text: "DMX" },
     ],
     label: "Message type",
     helpText: ``,
@@ -105,7 +104,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its lowest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
-    14-bit CC, total range is 0-16383. For DMX, total range is 0-255.`,
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
   LowerLimitMSB: {
@@ -122,7 +121,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its lowest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
-    14-bit CC, total range is 0-16383. For DMX, total range is 0-255.`,
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
   UpperLimitLSB: {
@@ -140,7 +139,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its highest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
-    14-bit CC, total range is 0-16383. For DMX, total range is 0-255.`,
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
   UpperLimitMSB: {
@@ -157,7 +156,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its highest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
-    14-bit CC, total range is 0-16383. For DMX, total range is 0-255.`,
+    14-bit CC, total range is 0-16383.`,
     block: Block.Analog,
   },
   MidiChannel: {
@@ -174,19 +173,6 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "MIDI channel",
     helpText:
       "Setting the channel to value 17 will cause sending of data on each MIDI channel.",
-  },
-  DmxChannel: {
-    showIf: (formState: FormState): boolean =>
-      formState.type == AnalogType.Dmx && !!formState.enabled,
-    key: "dmxChannel",
-    type: SectionType.Value,
-    block: Block.Analog,
-    section: 9,
-    component: FormInputComponent.Input,
-    min: 1,
-    max: 512,
-    label: "DMX channel",
-    helpText: "",
   },
   LowerAdcOffset: {
     showIf: (formState: FormState): boolean =>

@@ -228,16 +228,6 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "BLE to BLE Thru",
     helpText: `When enabled, all data received via BLE will be forwarded to BLE out.`,
   },
-  DmxEnabled: {
-    block: Block.Global,
-    key: "dmxEnabled",
-    type: SectionType.Setting,
-    section: 3,
-    settingIndex: 0,
-    component: FormInputComponent.Toggle,
-    label: "DMX",
-    helpText: `When enabled, virtual COM port can be used with OLA through usbserial plugin.`,
-  },
 };
 
 export const GlobalBlock: IBlockDefinition = {

@@ -91,7 +91,6 @@ const sections: Dictionary<ISectionDefinition> = {
       },
       { value: ButtonMessageType.NoteOffOnly, text: "Note Off Only" },
       { value: ButtonMessageType.ControlChange0Only, text: "CC/0 only" },
-      { value: ButtonMessageType.Dmx, text: "DMX" },
       { value: ButtonMessageType.BpmInc, text: "BPM Inc" },
       { value: ButtonMessageType.BpmDec, text: "BPM Dec" },
     ],
@@ -112,19 +111,6 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "MIDI channel",
     helpText:
       "Setting the channel to value 17 will cause sending of data on each MIDI channel.",
-  },
-  DmxChannel: {
-    showIf: (formState: FormState): boolean =>
-      formState.messageType == ButtonMessageType.Dmx,
-    key: "dmxChannel",
-    type: SectionType.Value,
-    block: Block.Button,
-    section: 4,
-    component: FormInputComponent.Input,
-    min: 1,
-    max: 512,
-    label: "DMX channel",
-    helpText: "",
   },
   MidiId: {
     showIf: (formState: FormState): boolean =>
@@ -151,19 +137,6 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Value",
     helpText:
       "Velocity for notes, control value for CC, increment/decrement value for Multi Value message types or offset for Program Change.",
-    block: Block.Button,
-  },
-  DmxValue: {
-    showIf: (formState: FormState): boolean =>
-      formState.messageType == ButtonMessageType.Dmx,
-    key: "dmxValue",
-    type: SectionType.Value,
-    section: 3,
-    component: FormInputComponent.Input,
-    min: 0,
-    max: 255,
-    label: "DMX value",
-    helpText: "DMX value button sends when it's pressed.",
     block: Block.Button,
   },
 };

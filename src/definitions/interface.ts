@@ -59,7 +59,6 @@ export enum AnalogType {
   NRPN14bit = 5,
   PitchBend = 6,
   ControlChange14Bit = 7,
-  Dmx = 8,
 }
 
 export enum ButtonMessageType {
@@ -87,7 +86,6 @@ export enum ButtonMessageType {
   MultiValueIncDecCC = 21,
   NoteOffOnly = 22,
   ControlChange0Only = 23,
-  Dmx = 24,
   ProgramChangeOffsetInc = 25,
   ProgramChangeOffsetDec = 26,
   BpmInc = 27,
@@ -104,7 +102,6 @@ export enum EncodingMode {
   NRPN7bit = 6,
   NRPN14bit = 7,
   CC14bit = 8,
-  Dmx = 9,
   Bpm = 10,
 }
 
@@ -139,7 +136,6 @@ export const HideButtonVelocityOnTypes = [
   ButtonMessageType.PresetChange,
   ButtonMessageType.NoteOffOnly,
   ButtonMessageType.ControlChange0Only,
-  ButtonMessageType.Dmx,
   ButtonMessageType.BpmInc,
   ButtonMessageType.BpmDec,
 ];
@@ -152,7 +148,6 @@ export const HideButtonMidiIdOnTypes = [
   ButtonMessageType.RealTimeStop,
   ButtonMessageType.RealTimeActiveSensing,
   ButtonMessageType.RealTimeSystemReset,
-  ButtonMessageType.Dmx,
   ButtonMessageType.ProgramChangeOffsetInc,
   ButtonMessageType.ProgramChangeOffsetDec,
   ButtonMessageType.BpmInc,
@@ -172,22 +167,18 @@ export const HideButtonMidiChannelOnTypes = [
   ButtonMessageType.RealTimeActiveSensing,
   ButtonMessageType.RealTimeSystemReset,
   ButtonMessageType.PresetChange,
-  ButtonMessageType.Dmx,
   ButtonMessageType.ProgramChangeOffsetInc,
   ButtonMessageType.ProgramChangeOffsetDec,
   ButtonMessageType.BpmInc,
   ButtonMessageType.BpmDec,
 ];
 
-export const HideAnalogMidiIdOnTypes = [AnalogType.Button, AnalogType.Dmx];
-export const HideAnalogMidiChannelOnTypes = [AnalogType.Button, AnalogType.Dmx];
+export const HideAnalogMidiIdOnTypes = [AnalogType.Button];
+export const HideAnalogMidiChannelOnTypes = [AnalogType.Button];
 
-export const HideEncoderMidiIdOnTypes = [EncodingMode.Dmx];
+export const HideEncoderMidiIdOnTypes = [];
 
-export const HideEncoderMidiChannelOnTypes = [
-  EncodingMode.PresetChange,
-  EncodingMode.Dmx,
-];
+export const HideEncoderMidiChannelOnTypes = [EncodingMode.PresetChange];
 
 export const ShowEncoderAccelerationOnTypes = [
   EncodingMode.PitchBend,
@@ -195,7 +186,6 @@ export const ShowEncoderAccelerationOnTypes = [
   EncodingMode.CC14bit,
   EncodingMode.NRPN7bit,
   EncodingMode.NRPN14bit,
-  EncodingMode.Dmx,
 ];
 
 export const ShowEncoderRemoteSyncOnTypes = [

@@ -119,16 +119,6 @@
           />
         </div>
       </Section>
-      <Section title="DMX">
-        <div class="form-grid">
-          <FormField
-            v-if="showField(sections.DmxEnabled)"
-            :value="form.dmxEnabled"
-            :field-definition="sections.DmxEnabled"
-            @modified="onSettingChange"
-          />
-        </div>
-      </Section>
     </template>
   </DeviceSettings>
 
