@@ -151,6 +151,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "opendeck21.sysex",
   },
+  {
+    name: "OpenDeck v3.1",
+    id: [9, 65, 127, 60],
+    oldId: [],
+    firmwareFileName: "opendeck31.sysex",
+  },
 ];
 
 export default Boards;
