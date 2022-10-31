@@ -11,7 +11,7 @@ export const Boards: IBoardDefinition[] = [
     name: "Arduino Mega",
     id: [9, 16, 0, 18],
     oldId: [1, 16, 0, 18],
-    firmwareFileName: "mega2560.sysex",
+    firmwareFileName: null,
   },
   {
     name: "Arduino Pro Micro",
