@@ -478,10 +478,6 @@ const onRequestFail = (request: IQueuedRequest, messageStatus: number) => {
 const continueNextRequest = () => {
   requestQueue.activeRequestId.value = (null as unknown) as number;
 
-  if (deviceState.isSystemOperationRunning) {
-    deviceState.isSystemOperationRunning = false;
-  }
-
   const unfinishedRequests = Object.values(requestStack.value).filter(
     (req) => req.state === RequestState.Sent,
   );

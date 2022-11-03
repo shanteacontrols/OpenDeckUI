@@ -206,6 +206,8 @@ const startFirmwareUdate = async (file: File): Promise<void> => {
     Request.FirmwareUpdate,
   );
 
+  deviceState.isSystemOperationRunning = false;
+
   const msg = success
     ? "Firmware update finished"
     : "Firmware update finished with errors";
@@ -239,6 +241,8 @@ export const startUpdatesCheck = async (
 
 const startRestore = async (file: File): Promise<void> => {
   await sendMessagesFromFileWithRateLimiter(file, Request.RestoreBackup);
+
+  deviceState.isSystemOperationRunning = false;
 
   alert("Restoring from backup finished");
 };
