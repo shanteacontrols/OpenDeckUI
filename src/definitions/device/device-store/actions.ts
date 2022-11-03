@@ -238,15 +238,9 @@ export const startUpdatesCheck = async (
 // Backup
 
 const startRestore = async (file: File): Promise<void> => {
-  const success = await sendMessagesFromFileWithRateLimiter(
-    file,
-    Request.RestoreBackup,
-  );
+  await sendMessagesFromFileWithRateLimiter(file, Request.RestoreBackup);
 
-  const msg = success
-    ? "Restoring from backup finished"
-    : "Restoring from backup finished with errors";
-  alert(msg);
+  alert("Restoring from backup finished");
 };
 
 const startBackup = async (): Promise<void> => {
