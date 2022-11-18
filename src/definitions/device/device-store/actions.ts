@@ -244,7 +244,9 @@ const startRestore = async (file: File): Promise<void> => {
 
   deviceState.isSystemOperationRunning = false;
 
-  alert("Restoring from backup finished");
+  alert(
+    "Restoring from backup finished. The board will now reboot and apply the parameters. This can take up to 30 seconds.",
+  );
 };
 
 const startBackup = async (): Promise<void> => {

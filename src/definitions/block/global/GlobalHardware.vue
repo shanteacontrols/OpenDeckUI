@@ -75,7 +75,7 @@ export default defineComponent({
     const availableUpdates = ref([]);
 
     const onFactoryResetClicked = useConfirmPrompt(
-      "This will reset all parameters on the board to their factory settings. Continue?",
+      "This will reset all the parameters on the board to their factory settings. All analog inputs will be disabled as well. Depending on the board, this can take up to 30 seconds. Proceed?",
       startFactoryReset,
     );
 
@@ -86,7 +86,7 @@ export default defineComponent({
     };
 
     const onBackupClicked = useConfirmPrompt(
-      "This will initiate a full backup of all parameters stored on the board. Depending on your board this can take up to 2 minutes. Proceed?",
+      "This will initiate a full backup of all parameters stored on the board. Proceed?",
       startBackup,
     );
 
