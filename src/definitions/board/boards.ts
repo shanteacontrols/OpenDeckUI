@@ -68,13 +68,13 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "cardamom.sysex",
   },
   {
-    name: "OpenDeck v2",
+    name: "OpenDeck M v2",
     id: [122, 56, 41, 19],
     oldId: [],
     firmwareFileName: "opendeck2.sysex",
   },
   {
-    name: "OpenDeck v1",
+    name: "OpenDeck M v1",
     id: [1, 112, 51, 106],
     oldId: [1, 91, 42, 85],
     firmwareFileName: null,
@@ -98,10 +98,10 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "dubfocus16c.sysex",
   },
   {
-    name: "OpenDeck Mini",
+    name: "OpenDeck S v1",
     id: [62, 78, 115, 114],
     oldId: [],
-    firmwareFileName: "opendeck_mini.sysex",
+    firmwareFileName: "opendeck_s.sysex",
   },
   {
     name: "BlackPill F401CC",
@@ -122,13 +122,13 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "blackpill411.sysex",
   },
   {
-    name: "OpenDeck 3A",
+    name: "OpenDeck L v3A",
     id: [51, 64, 66, 79],
     oldId: [],
     firmwareFileName: "opendeck3a.sysex",
   },
   {
-    name: "OpenDeck 3B",
+    name: "OpenDeck L v3B",
     id: [70, 68, 60, 41],
     oldId: [],
     firmwareFileName: "opendeck3b.sysex",
@@ -146,19 +146,19 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "pico.sysex",
   },
   {
-    name: "OpenDeck v2.1",
+    name: "OpenDeck M v2.1",
     id: [78, 103, 95, 35],
     oldId: [],
     firmwareFileName: "opendeck21.sysex",
   },
   {
-    name: "OpenDeck v3.1",
+    name: "OpenDeck L v3.1",
     id: [9, 65, 127, 60],
     oldId: [],
     firmwareFileName: "opendeck31.sysex",
   },
   {
-    name: "OpenDeck v2.2",
+    name: "OpenDeck M v2.2",
     id: [61, 65, 31, 7],
     oldId: [],
     firmwareFileName: "opendeck22.sysex",
