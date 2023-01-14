@@ -152,6 +152,7 @@ export const HideButtonMidiIdOnTypes = [
   ButtonMessageType.ProgramChangeOffsetDec,
   ButtonMessageType.BpmInc,
   ButtonMessageType.BpmDec,
+  ButtonMessageType.PresetChange,
 ];
 
 export const HideButtonMidiChannelOnTypes = [

@@ -125,6 +125,20 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: "",
     block: Block.Button,
   },
+  Preset: {
+    showIf: (formState: FormState): boolean =>
+      formState.messageType == ButtonMessageType.PresetChange,
+    key: "preset",
+    type: SectionType.Value,
+    section: 2,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 9,
+    label: "Preset",
+    helpText:
+      "Preset to switch to once the button is pressed. Numbering starts from 0, so value 0 will load preset 1.",
+    block: Block.Button,
+  },
   Value: {
     showIf: (formState: FormState): boolean =>
       !HideButtonVelocityOnTypes.includes(formState.messageType),
