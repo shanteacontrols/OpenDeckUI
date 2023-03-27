@@ -163,6 +163,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "opendeck22.sysex",
   },
+  {
+    name: "DubFocus 12SR",
+    id: [67, 39, 10, 25],
+    oldId: [],
+    firmwareFileName: "dubfocus12sr.sysex",
+  },
 ];
 
 export default Boards;
