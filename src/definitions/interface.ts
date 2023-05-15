@@ -95,6 +95,7 @@ export enum ButtonMessageType {
 export enum EncodingMode {
   Controlchange7F = 0,
   Controlchange3F = 1,
+  Controlchange41 = 9,
   ProgramChange = 2,
   CC7bit = 3,
   PresetChange = 4,
