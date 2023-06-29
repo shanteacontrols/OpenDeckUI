@@ -147,7 +147,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     type: SectionType.Value,
     section: 6,
     component: FormInputComponent.Input,
-    min: 1,
+    min: 0,
     max: 127,
     label: "Activation Value",
     helpText: "",
