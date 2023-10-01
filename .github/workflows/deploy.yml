@@ -51,9 +51,9 @@ jobs:
       - name: Build
         run: |
           make release
-          make elektron-pkg PLATFORM=linux
-          make elektron-pkg PLATFORM=darwin
-          make elektron-pkg PLATFORM=win32
+          make pkg PLATFORM=linux
+          make pkg PLATFORM=darwin
+          make pkg PLATFORM=win32
       - name: Generate new version number
         run: echo "::set-output name=version::$(date +%Y%m%d%H%M)"
         id: version

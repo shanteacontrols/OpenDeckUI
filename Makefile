@@ -1,6 +1,6 @@
 #valid platform options: linux, win32, darwin
 
-SRC_DIR            := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+SRC_DIR            := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 BUILD_DIR_YARN     := $(SRC_DIR)/dist
 BUILD_DIR_ELECTRON := $(SRC_DIR)/build
 PLATFORM           := linux
@@ -17,7 +17,7 @@ release:
 	@yarn
 	@yarn build
 
-elektron-pkg:
+pkg:
 	@mkdir -p $(BUILD_DIR_ELECTRON)
 	@cd $(BUILD_DIR_YARN) && \
 	cp $(SRC_DIR)/package.json ./ && \
