@@ -5,7 +5,7 @@ BUILD_DIR_YARN     := $(SRC_DIR)/dist
 BUILD_DIR_ELECTRON := $(SRC_DIR)/build
 PLATFORM           := linux
 ARCH               := x64
-ELECTRON_VER       := 16.0.5
+ELECTRON_VER       := 17.1.2
 APP_TITLE          := OpenDeckConfigurator
 PACKAGE_TITLE      := $(APP_TITLE)-$(PLATFORM)-$(ARCH)
 
