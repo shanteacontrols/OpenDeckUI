@@ -14,9 +14,16 @@ The configurator is always available online via [this link](https://config.shant
 
 ## Development
 
-This project uses Vue, Vite, Tailwind and Typescript. For development usage, make sure `yarn` command is installed. After that, development version of the configurator with local server can be started with the following commands:
+This projects uses Docker container for development. To use it, run the following command from the root repository directory:
 
-```
-yarn
-yarn dev
-```
+    ./scripts/dev.sh
+
+The development version of the configurator with local server can be started with the following commands:
+
+    make
+
+To package the configurator for offline usage, `make pkg` command can be used with `PLATFORM` variable being set to the platform for which to build the configurator:
+
+* Linux: `make pkg PLATFORM=linux`
+* Windows: `make PLATFORM=win32`
+* macOS: `make PLATFORM=darwin`
