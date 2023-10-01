@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  opendeck-ui:
+    image: opendeck-ui
+    container_name: opendeck-ui
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    volumes:
+      - $PWD:/home/ubuntu/OpenDeckUI
+      - $HOME/.ssh:/home/ubuntu/.ssh
+    hostname: localhost
+    working_dir: /home/ubuntu/OpenDeckUI
+    command: tail -f /dev/null

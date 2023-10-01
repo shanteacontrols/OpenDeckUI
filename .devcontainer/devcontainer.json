@@ -1,0 +1,16 @@
+{
+    "name": "Existing Docker Compose (Extend)",
+    "dockerComposeFile": [
+        "../docker-compose.yml",
+    ],
+    "service": "opendeck-ui",
+    "workspaceFolder": "/home/ubuntu/OpenDeckUI",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "eamodio.gitlens",
+                "timonwong.shellcheck"
+            ]
+        }
+    }
+}
