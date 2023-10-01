@@ -9,6 +9,10 @@ ELECTRON_VER       := 16.0.5
 APP_TITLE          := OpenDeckConfigurator
 PACKAGE_TITLE      := $(APP_TITLE)-$(PLATFORM)-$(ARCH)
 
+dev:
+	@yarn
+	@yarn dev
+
 release:
 	@yarn
 	@yarn build
