@@ -23,7 +23,7 @@ jobs:
         run: |
           git config --global user.name "webui_bot"
           git config --global user.email "2544094+webui_bot@users.noreply.github.com"
-          make release
+          make prod
           git checkout gh-pages
           rm -rf _assets/* index.html
           mv dist/* .
@@ -51,7 +51,7 @@ jobs:
           hub
       - name: Build
         run: |
-          make release
+          make prod
           make pkg PLATFORM=linux
           make pkg PLATFORM=darwin
           make pkg PLATFORM=win32

@@ -13,7 +13,7 @@ dev:
 	@yarn
 	@yarn dev
 
-release:
+prod:
 	@yarn
 	@yarn build
 
