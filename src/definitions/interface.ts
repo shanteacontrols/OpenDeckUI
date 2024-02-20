@@ -104,6 +104,7 @@ export enum EncodingMode {
   NRPN14bit = 7,
   CC14bit = 8,
   Bpm = 10,
+  Note = 11
 }
 
 export enum LedControlMode {
@@ -188,6 +189,7 @@ export const ShowEncoderAccelerationOnTypes = [
   EncodingMode.CC14bit,
   EncodingMode.NRPN7bit,
   EncodingMode.NRPN14bit,
+  EncodingMode.Note,
 ];
 
 export const ShowEncoderRemoteSyncOnTypes = [
