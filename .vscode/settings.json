@@ -5,8 +5,8 @@
   "editor.formatOnSave": true,
   "editor.formatOnPaste": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.fixAll.tslint": false
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.tslint": "never"
   },
   // VETUR - disable
   "vetur.validation.template": false,

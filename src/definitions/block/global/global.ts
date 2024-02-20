@@ -25,6 +25,16 @@ const sections: Dictionary<ISectionDefinition> = {
       Otherwise, preset specified with "Active preset" option is remembered. This is not related to saving of configuration
       to specified preset - the configuration data is always retained even after power off.`,
   },
+  DisableForcedValueRefreshAfterPresetChange: {
+    block: Block.Global,
+    key: "disableForcedValueRefreshAfterPresetChange",
+    type: SectionType.Setting,
+    section: 2,
+    settingIndex: 2,
+    component: FormInputComponent.Toggle,
+    label: "Disable forced value refresh after preset change",
+    helpText: `If this option isn't enabled, all components will resend their current values once the preset changes.`,
+  },
   ActivePreset: {
     block: Block.Global,
     key: "activePreset",
