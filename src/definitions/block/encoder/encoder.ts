@@ -7,6 +7,7 @@ import {
   EncodingMode,
   ShowEncoderAccelerationOnTypes,
   ShowEncoderRemoteSyncOnTypes,
+  ShowEncoderLimitsOnTypes,
   HideEncoderMidiIdOnTypes,
   HideEncoderMidiChannelOnTypes,
 } from "../../interface";
@@ -167,6 +168,39 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Used only when continuous CC (7-bit and 14-bit) or pitch bend MIDI messages are used.
     If enabled, CC/pitch bend value received via MIDI IN will be applied internally to the encoder with same MIDI ID and MIDI channel,
     so that next encoder turn increments or decrements received value instead of the last value it sent.`,
+  },
+  LowerLimit: {
+    showIf: (formState: FormState): boolean =>
+      ShowEncoderLimitsOnTypes.includes(formState.encodingMode) &&
+      formState.enabled,
+    block: Block.Encoder,
+    key: "lowerLimit",
+    type: SectionType.Value,
+    section: 9,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 16383,
+    label: "Lower limit",
+    helpText: `Specifies the minimum value which is sent by the encoder input. Limit is
+    type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
+    14-bit CC, total range is 0-16383.`,
+  },
+  UpperLimit: {
+    showIf: (formState: FormState): boolean =>
+      ShowEncoderLimitsOnTypes.includes(formState.encodingMode) &&
+      formState.enabled,
+    block: Block.Encoder,
+    key: "upperLimit",
+    type: SectionType.Value,
+    section: 10,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 16383,
+    label: "Upper limit",
+    helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
+    here, so this value will be sent when the analog input is at its lowest position. Limit is
+    type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
+    14-bit CC, total range is 0-16383.`,
   },
 };
 

@@ -200,6 +200,15 @@ export const ShowEncoderRemoteSyncOnTypes = [
   EncodingMode.NRPN14bit,
 ];
 
+export const ShowEncoderLimitsOnTypes = [
+  EncodingMode.PitchBend,
+  EncodingMode.CC7bit,
+  EncodingMode.CC14bit,
+  EncodingMode.NRPN7bit,
+  EncodingMode.NRPN14bit,
+  EncodingMode.Note,
+];
+
 export const HideLedActivationValueOnControlTypes = [
   LedControlMode.PresetChange,
   LedControlMode.ProgramChange,
