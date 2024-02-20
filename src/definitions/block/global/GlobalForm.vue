@@ -3,6 +3,12 @@
     <template #default="{ form, showField, onSettingChange }">
       <Section v-if="supportedPresetsCount > 1" title="Presets">
         <div class="form-grid">
+        <FormField
+            v-if="showField(sections.ForceValueRefreshAfterPresetChange)"
+            :value="form.forceValueRefreshAfterPresetChange"
+            :field-definition="sections.ForceValueRefreshAfterPresetChange"
+            @modified="onSettingChange"
+          />
           <FormField
             v-if="showField(sections.PreservePresetState)"
             class="col-span-2"
