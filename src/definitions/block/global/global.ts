@@ -35,6 +35,16 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Disable forced value refresh after preset change",
     helpText: `If this option isn't enabled, all components will resend their current values once the preset changes.`,
   },
+  EnablePresetChangeWithProgramChangeIn: {
+    block: Block.Global,
+    key: "enablePresetChangeWithProgramChangeIn",
+    type: SectionType.Setting,
+    section: 2,
+    settingIndex: 3,
+    component: FormInputComponent.Toggle,
+    label: "Enable preset change with MIDI Program Change In",
+    helpText: `When enabled, upon receiving MIDI Program Change message (on any interface and any channel) the board will change the preset to cooresponding program change value.`,
+  },
   ActivePreset: {
     block: Block.Global,
     key: "activePreset",

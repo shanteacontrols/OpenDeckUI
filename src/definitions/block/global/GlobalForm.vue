@@ -9,6 +9,12 @@
             :field-definition="sections.DisableForcedValueRefreshAfterPresetChange"
             @modified="onSettingChange"
           />
+        <FormField
+            v-if="showField(sections.EnablePresetChangeWithProgramChangeIn)"
+            :value="form.enablePresetChangeWithProgramChangeIn"
+            :field-definition="sections.EnablePresetChangeWithProgramChangeIn"
+            @modified="onSettingChange"
+          />
           <FormField
             v-if="showField(sections.PreservePresetState)"
             class="col-span-2"
