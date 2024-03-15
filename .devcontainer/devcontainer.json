@@ -9,7 +9,8 @@
         "vscode": {
             "extensions": [
                 "eamodio.gitlens",
-                "timonwong.shellcheck"
+                "timonwong.shellcheck",
+                "dbaeumer.vscode-eslint"
             ]
         }
     }
