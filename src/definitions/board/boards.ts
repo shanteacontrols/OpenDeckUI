@@ -169,6 +169,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "dubfocus12sr.sysex",
   },
+  {
+    name: "Arduino Nano 33 BLE",
+    id: [33, 108, 99, 106],
+    oldId: [],
+    firmwareFileName: "nano33ble.sysex",
+  },
 ];
 
 export default Boards;
