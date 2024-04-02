@@ -175,6 +175,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "nano33ble.sysex",
   },
+  {
+    name: "Adafruit ItsyBitsy nRF52840 Express",
+    id: [59, 48, 3, 95],
+    oldId: [],
+    firmwareFileName: "af_ib_nrf52840.sysex",
+  },
 ];
 
 export default Boards;
