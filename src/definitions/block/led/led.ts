@@ -6,6 +6,7 @@ import {
   Block,
   LedControlMode,
   HideLedActivationValueOnControlTypes,
+  HideLedActivationIdOnControlTypes,
   HideLedMidiChannelOnControlTypes,
   HideLedRgbEnableOnControlTypes,
 } from "../../interface";
@@ -67,8 +68,10 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
     block: Block.Led,
   },
-  ActivationNote: {
-    key: "activationNote",
+  ActivationId: {
+    showIf: (formState: FormState): boolean =>
+      !HideLedActivationIdOnControlTypes.includes(formState.controlType),
+    key: "activationId",
     type: SectionType.Value,
     section: 3,
     component: FormInputComponent.Input,
