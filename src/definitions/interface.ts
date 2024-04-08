@@ -118,6 +118,7 @@ export enum LedControlMode {
   LocalNoteMultiValue = 7,
   MidiInCcMultiValue = 8,
   LocalCcMultiValue = 9,
+  Static = 10,
 }
 
 export const HideButtonVelocityOnTypes = [
@@ -212,9 +213,14 @@ export const ShowEncoderLimitsOnTypes = [
 export const HideLedActivationValueOnControlTypes = [
   LedControlMode.PresetChange,
   LedControlMode.ProgramChange,
+  LedControlMode.Static,
 ];
 
-export const HideLedMidiChannelOnControlTypes = [LedControlMode.PresetChange];
+export const HideLedMidiChannelOnControlTypes = [
+  LedControlMode.PresetChange,
+  LedControlMode.Static,
+];
+
 export const HideLedRgbEnableOnControlTypes = [LedControlMode.PresetChange];
 
 export enum SectionType {
