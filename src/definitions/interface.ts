@@ -105,6 +105,8 @@ export enum EncodingMode {
   CC14bit = 8,
   Bpm = 10,
   SingleNoteWithVariableValue = 11,
+  SingleNoteWithFixedValueBothDirections = 12,
+  SingleNoteWithFixedValueOneDirection0OtherDirection = 13,
 }
 
 export enum LedControlMode {
@@ -208,6 +210,11 @@ export const ShowEncoderLimitsOnTypes = [
   EncodingMode.NRPN7bit,
   EncodingMode.NRPN14bit,
   EncodingMode.SingleNoteWithVariableValue,
+];
+
+export const ShowEncoderRepeatedValueOnTypes = [
+  EncodingMode.SingleNoteWithFixedValueBothDirections,
+  EncodingMode.SingleNoteWithFixedValueOneDirection0OtherDirection,
 ];
 
 export const HideLedActivationValueOnControlTypes = [

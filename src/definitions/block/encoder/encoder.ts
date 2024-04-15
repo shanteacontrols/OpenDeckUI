@@ -8,6 +8,7 @@ import {
   ShowEncoderAccelerationOnTypes,
   ShowEncoderRemoteSyncOnTypes,
   ShowEncoderLimitsOnTypes,
+  ShowEncoderRepeatedValueOnTypes,
   HideEncoderMidiIdOnTypes,
   HideEncoderMidiChannelOnTypes,
 } from "../../interface";
@@ -55,6 +56,15 @@ const sections: Dictionary<ISectionDefinition> = {
       {
         value: EncodingMode.SingleNoteWithVariableValue,
         text: "Single note with variable value",
+      },
+      {
+        value: EncodingMode.SingleNoteWithFixedValueBothDirections,
+        text: "Single note with fixed value in both directions",
+      },
+      {
+        value: EncodingMode.SingleNoteWithFixedValueOneDirection0OtherDirection,
+        text:
+          "Single note with fixed value in one direction and 0 value in other",
       },
       {
         value: EncodingMode.CC7bit,
@@ -171,6 +181,20 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Used only when continuous CC (7-bit and 14-bit) or pitch bend MIDI messages are used.
     If enabled, CC/pitch bend value received via MIDI IN will be applied internally to the encoder with same MIDI ID and MIDI channel,
     so that next encoder turn increments or decrements received value instead of the last value it sent.`,
+  },
+  RepeatedValue: {
+    showIf: (formState: FormState): boolean =>
+      ShowEncoderRepeatedValueOnTypes.includes(formState.encodingMode) &&
+      formState.enabled,
+    block: Block.Encoder,
+    key: "repeatedValue",
+    type: SectionType.Value,
+    section: 11,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 16383,
+    label: "Repeated value",
+    helpText: `Specifies the constant note value to be sent when encoder is moved.`,
   },
   LowerLimit: {
     showIf: (formState: FormState): boolean =>
