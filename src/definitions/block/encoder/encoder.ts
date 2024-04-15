@@ -52,7 +52,10 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: EncodingMode.Controlchange7F, text: "Control change - 7Fh01h" },
       { value: EncodingMode.Controlchange3F, text: "Control change - 3Fh41h" },
       { value: EncodingMode.Controlchange41, text: "Control change - 41h01h" },
-      { value: EncodingMode.Note, text: "Note" },
+      {
+        value: EncodingMode.SingleNoteWithVariableValue,
+        text: "Single note with variable value",
+      },
       {
         value: EncodingMode.CC7bit,
         text: "Control change - Continuous 7-bit",
