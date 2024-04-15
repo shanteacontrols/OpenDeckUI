@@ -216,9 +216,7 @@ export const HideLedActivationValueOnControlTypes = [
   LedControlMode.Static,
 ];
 
-export const HideLedActivationIdOnControlTypes = [
-  LedControlMode.Static,
-];
+export const HideLedActivationIdOnControlTypes = [LedControlMode.Static];
 
 export const HideLedMidiChannelOnControlTypes = [
   LedControlMode.PresetChange,
