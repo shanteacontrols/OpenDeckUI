@@ -60,15 +60,15 @@ const sections: Dictionary<ISectionDefinition> = {
       },
       {
         value: EncodingMode.SingleNoteWithFixedValueBothDirections,
-        text: "Single note / fixed value both directions",
+        text: "Single note / repeated value both directions",
       },
       {
         value: EncodingMode.SingleNoteWithFixedValueOneDirection0OtherDirection,
-        text: "Single note / fixed value one direction, 0 value other",
+        text: "Single note / repeated value one direction, 0 value other",
       },
       {
         value: EncodingMode.TwoNoteWithFixedValueBothDirections,
-        text: "Two note / fixed value both directions",
+        text: "Two note / repeated value both directions",
       },
       {
         value: EncodingMode.CC7bit,
