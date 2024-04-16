@@ -9,6 +9,7 @@ import {
   ShowEncoderRemoteSyncOnTypes,
   ShowEncoderLimitsOnTypes,
   ShowEncoderRepeatedValueOnTypes,
+  ShowEncoder2ndIdOnTypes,
   HideEncoderMidiIdOnTypes,
   HideEncoderMidiChannelOnTypes,
 } from "../../interface";
@@ -55,16 +56,19 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: EncodingMode.Controlchange41, text: "Control change - 41h01h" },
       {
         value: EncodingMode.SingleNoteWithVariableValue,
-        text: "Single note with variable value",
+        text: "Single note / variable value",
       },
       {
         value: EncodingMode.SingleNoteWithFixedValueBothDirections,
-        text: "Single note with fixed value in both directions",
+        text: "Single note / fixed value both directions",
       },
       {
         value: EncodingMode.SingleNoteWithFixedValueOneDirection0OtherDirection,
-        text:
-          "Single note with fixed value in one direction and 0 value in other",
+        text: "Single note / fixed value one direction, 0 value other",
+      },
+      {
+        value: EncodingMode.TwoNoteWithFixedValueBothDirections,
+        text: "Two note / fixed value both directions",
       },
       {
         value: EncodingMode.CC7bit,
@@ -118,6 +122,20 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "MIDI ID (LSB)",
     helpText: "",
   },
+  MidiId2: {
+    showIf: (formState: FormState): boolean =>
+      ShowEncoder2ndIdOnTypes.includes(formState.encodingMode) &&
+      !!formState.enabled,
+    block: Block.Encoder,
+    key: "midiId2",
+    type: SectionType.Value,
+    section: 12,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 16383,
+    label: "2nd MIDI ID",
+    helpText: "",
+  },
   MidiIdMSB: {
     showIf: (formState: FormState): boolean =>
       !HideEncoderMidiIdOnTypes.includes(formState.encodingMode) &&
@@ -132,22 +150,6 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 127,
     label: "MIDI ID (MSB)",
     helpText: "",
-  },
-  PulsesPerStep: {
-    showIf: (formState: FormState): boolean => formState.enabled,
-    block: Block.Encoder,
-    key: "pulsesPerStep",
-    type: SectionType.Value,
-    section: 5,
-    colspan: 2,
-    component: FormInputComponent.Select,
-    options: [
-      { value: 2, text: "2" },
-      { value: 3, text: "3" },
-      { value: 4, text: "4" },
-    ],
-    label: "Pulses per step",
-    helpText: `Amount of pulses encoder must generate in order for firmware to register it as single step. Usually 4.`,
   },
   Acceleration: {
     showIf: (formState: FormState): boolean =>
@@ -195,6 +197,21 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 16383,
     label: "Repeated value",
     helpText: `Specifies the constant note value to be sent when encoder is moved.`,
+  },
+  PulsesPerStep: {
+    showIf: (formState: FormState): boolean => formState.enabled,
+    block: Block.Encoder,
+    key: "pulsesPerStep",
+    type: SectionType.Value,
+    section: 5,
+    component: FormInputComponent.Select,
+    options: [
+      { value: 2, text: "2" },
+      { value: 3, text: "3" },
+      { value: 4, text: "4" },
+    ],
+    label: "Pulses per step",
+    helpText: `Amount of pulses encoder must generate in order for firmware to register it as single step. Usually 4.`,
   },
   LowerLimit: {
     showIf: (formState: FormState): boolean =>

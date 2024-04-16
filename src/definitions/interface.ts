@@ -107,6 +107,7 @@ export enum EncodingMode {
   SingleNoteWithVariableValue = 11,
   SingleNoteWithFixedValueBothDirections = 12,
   SingleNoteWithFixedValueOneDirection0OtherDirection = 13,
+  TwoNoteWithFixedValueBothDirections = 14,
 }
 
 export enum LedControlMode {
@@ -215,6 +216,11 @@ export const ShowEncoderLimitsOnTypes = [
 export const ShowEncoderRepeatedValueOnTypes = [
   EncodingMode.SingleNoteWithFixedValueBothDirections,
   EncodingMode.SingleNoteWithFixedValueOneDirection0OtherDirection,
+  EncodingMode.TwoNoteWithFixedValueBothDirections,
+];
+
+export const ShowEncoder2ndIdOnTypes = [
+  EncodingMode.TwoNoteWithFixedValueBothDirections,
 ];
 
 export const HideLedActivationValueOnControlTypes = [
