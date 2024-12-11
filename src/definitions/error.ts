@@ -13,7 +13,6 @@ export enum ErrorCode {
   NOT_SUPPORTED = 13,
   READ = 14,
   UART_INTERFACE_ALLOCATED = 80,
-  CDC_INTERFACE_ALLOCATED = 81,
   UKNOWN_ERROR = 704,
   UI_QUEUE_REQ_ID_CONFLICT = 711,
   UI_QUEUE_REQ_DATA_MISSING = 712,
@@ -94,11 +93,6 @@ export const errorDefinitions: Record<ErrorCode, IErrorDefinition> = {
   },
   [ErrorCode.UART_INTERFACE_ALLOCATED]: {
     code: ErrorCode.UART_INTERFACE_ALLOCATED,
-    description:
-      "This error is returned when other peripheral already allocated wanted interface.",
-  },
-  [ErrorCode.CDC_INTERFACE_ALLOCATED]: {
-    code: ErrorCode.CDC_INTERFACE_ALLOCATED,
     description:
       "This error is returned when other peripheral already allocated wanted interface.",
   },
