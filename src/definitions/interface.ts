@@ -90,6 +90,7 @@ export enum ButtonMessageType {
   ProgramChangeOffsetDec = 26,
   BpmInc = 27,
   BpmDec = 28,
+  MmcPlayStop = 29,
 }
 
 export enum EncodingMode {

@@ -57,6 +57,7 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: ButtonMessageType.ControlChangeOff, text: "CC/0 Off" },
       { value: ButtonMessageType.MmcStop, text: "MMC Stop" },
       { value: ButtonMessageType.MmcPlay, text: "MMC Play" },
+      { value: ButtonMessageType.MmcPlayStop, text: "MMC Play/Stop" },
       { value: ButtonMessageType.MmcRecord, text: "MMC Record" },
       { value: ButtonMessageType.MmcPause, text: "MMC Pause" },
       { value: ButtonMessageType.RealTimeClock, text: "Real Time Clock" },
