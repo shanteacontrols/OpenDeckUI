@@ -1,7 +1,7 @@
 {
     "name": "${localWorkspaceFolderBasename}",
     "build": {
-        "dockerfile": "Dockerfile.build",
+        "dockerfile": "Dockerfile.ghcr",
         "context": "${localWorkspaceFolder}"
     },
     "workspaceMount": "src=${localWorkspaceFolder},dst=/home/ubuntu/OpenDeckUI,type=bind",

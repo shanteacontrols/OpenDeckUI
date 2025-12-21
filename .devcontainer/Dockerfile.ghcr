@@ -1,1 +1,1 @@
-FROM ghcr.io/shanteacontrols/opendeckui:latest
+FROM ghcr.io/shanteacontrols/opendeckui:356ac2e6e265f809baffe7c947944014fbed7e83
