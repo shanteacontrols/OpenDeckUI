@@ -16,7 +16,7 @@ import {
   getBoardDefinition,
 } from "../../../definitions";
 import {
-  sendMessagesFromFileWithRateLimiter,
+  sendMessagesFromFileWithDelay,
   newLineCharacter,
 } from "./actions-utility";
 import { midiStore } from "../../midi";
@@ -198,10 +198,10 @@ export const startBootLoaderMode = async (): Promise<void> => {
   });
 };
 
-const startFirmwareUdate = async (file: File): Promise<void> => {
+const startFirmwareUpdate = async (file: File): Promise<void> => {
   resetQueue();
 
-  const success = await sendMessagesFromFileWithRateLimiter(
+  const success = await sendMessagesFromFileWithDelay(
     file,
     Request.FirmwareUpdate,
   );
@@ -240,7 +240,7 @@ export const startUpdatesCheck = async (
 // Backup
 
 const startRestore = async (file: File): Promise<void> => {
-  await sendMessagesFromFileWithRateLimiter(file, Request.RestoreBackup);
+  await sendMessagesFromFileWithDelay(file, Request.RestoreBackup);
 
   deviceState.isSystemOperationRunning = false;
 
@@ -479,7 +479,7 @@ export const deviceStoreActions = {
   startReboot,
   startDeviceConnectionWatcher,
   stopDeviceConnectionWatcher,
-  startFirmwareUdate,
+  startFirmwareUpdate,
   isControlDisabled,
   disableControl,
   startBackup,

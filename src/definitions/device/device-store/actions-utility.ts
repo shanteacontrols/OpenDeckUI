@@ -3,15 +3,9 @@ import { Request } from "../../request";
 import { sendMessage } from "./request-qeueue";
 import { deviceState } from "./state";
 
-const bytesPerSecondLimit = 2000; // cca 2 x 1024 - 2kb/s
+const defaultInterPacketDelayMs = 10;
 
 export const newLineCharacter = "\n";
-
-const getAbsoluteSeconds = () => {
-  const now = new Date();
-  const nowMs = now.getTime();
-  return Math.floor(nowMs / 1000);
-};
 
 const convertFileToMessageArray = async (
   file: File,
@@ -26,29 +20,17 @@ const convertFileToMessageArray = async (
     .map(trimKnownBytes);
 };
 
-export const sendMessagesFromFileWithRateLimiter = async (
+export const sendMessagesFromFileWithDelay = async (
   file: File,
   command: Request,
+  interPacketDelayMs: number = defaultInterPacketDelayMs,
 ): Promise<void> => {
-  const timeLimiter = {};
   let sentMessageCount = 0;
   deviceState.systemOperationPercentage = 1;
 
   const messages = await convertFileToMessageArray(file);
 
   const sendMessageWithLimiter = async (payload) => {
-    const bytes = payload.length + 5;
-    const absSeconds = getAbsoluteSeconds();
-    if (timeLimiter[absSeconds] > bytesPerSecondLimit) {
-      return delay(250).then(() => sendMessageWithLimiter(payload));
-    }
-
-    if (!timeLimiter[absSeconds]) {
-      timeLimiter[absSeconds] = bytes;
-    } else {
-      timeLimiter[absSeconds] = timeLimiter[absSeconds] + bytes;
-    }
-
     sentMessageCount += 1;
 
     const percentage = Math.floor((sentMessageCount / messages.length) * 100); // eslint-disable-line
@@ -60,7 +42,7 @@ export const sendMessagesFromFileWithRateLimiter = async (
       command,
       payload,
       handler: () => null,
-    });
+    }).then(() => delay(interPacketDelayMs));
   };
 
   let hadErrors = false;

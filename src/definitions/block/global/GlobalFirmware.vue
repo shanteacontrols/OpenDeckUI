@@ -98,7 +98,7 @@ export default defineComponent({
       startUpdatesCheck,
       bootLoaderSupport,
       startBootLoaderMode,
-      startFirmwareUdate,
+      startFirmwareUpdate,
     } = deviceStoreMapped;
 
     const loading = ref(false);
@@ -115,7 +115,7 @@ export default defineComponent({
     const onFirmwareFileSelected = async (fileList) => {
       if (!fileList.length) return;
 
-      await startFirmwareUdate(fileList[0]);
+      await startFirmwareUpdate(fileList[0]);
     };
 
     return {
