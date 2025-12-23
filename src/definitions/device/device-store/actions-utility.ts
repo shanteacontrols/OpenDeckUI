@@ -3,7 +3,7 @@ import { Request } from "../../request";
 import { sendMessage } from "./request-qeueue";
 import { deviceState } from "./state";
 
-const defaultInterPacketDelayMs = 10;
+const defaultInterPacketDelayMs = 15;
 
 export const newLineCharacter = "\n";
 
