@@ -181,6 +181,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "af_ib_nrf52840.sysex",
   },
+  {
+    name: "DubFocus 16T",
+    id: [48, 49, 96, 25],
+    oldId: [],
+    firmwareFileName: "dubfocus16t.sysex",
+  },
 ];
 
 export default Boards;
