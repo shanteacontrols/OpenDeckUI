@@ -54,7 +54,7 @@ export const useGridSegments = (
             semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
           ) {
             segments.push({
-              title: "Buttons",
+              title: "Digital inputs",
               startIndex: 0,
               endIndex:
                 buttonCount.value -
@@ -65,7 +65,7 @@ export const useGridSegments = (
 
             if (analogCount.value > 0) {
               segments.push({
-                title: "Analog",
+                title: "Analog inputs",
                 startIndex:
                   buttonCount.value -
                   analogCount.value -
@@ -94,12 +94,12 @@ export const useGridSegments = (
           } else {
             segments.push(
               {
-                title: "Buttons",
+                title: "Digital inputs",
                 startIndex: 0,
                 endIndex: buttonCount.value - analogCount.value - 1,
               },
               {
-                title: "Analog",
+                title: "Analog inputs",
                 startIndex: buttonCount.value - analogCount.value,
                 endIndex:
                   buttonCount.value -
@@ -133,14 +133,14 @@ export const useGridSegments = (
             semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
           ) {
             segments.push({
-              title: "Analog",
+              title: "Analog inputs",
               startIndex: 0,
               endIndex: analogCount.value - 1,
             });
           } else {
             segments.push(
               {
-                title: "Analog",
+                title: "Analog inputs",
                 startIndex: 0,
                 endIndex: analogCount.value - touchScreenCount.value - 1,
               },
@@ -159,12 +159,12 @@ export const useGridSegments = (
           //segmentation to leds and touchscreen
           segments.push(
             {
-              title: "LED",
+              title: "Digital outputs",
               startIndex: 0,
               endIndex: ledCount.value - touchScreenCount.value - 1,
             },
             {
-              title: "Touchscreen",
+              title: "Touchscreen components",
               startIndex: ledCount.value - touchScreenCount.value,
               endIndex: ledCount.value - 1,
             },

@@ -88,28 +88,35 @@
   </div>
 
   <Section v-else-if="updatesChecked" title="Updates" class="w-full">
-    <p v-if="!availableUpdates.length" class="text-sm leading-5 text-gray-200">
-      Your firmware is up to date.
-    </p>
-    <div v-else class="text-sm pb-6">
-      <div
-        v-for="update in availableUpdates"
-        :key="update.name"
-        class="release-description text-gray-200"
-      >
-        <a
-          :href="`https://github.com/paradajz/OpenDeck/releases/tag/${update.tag_name}`"
-          >{{ update.tag_name }}</a
+    <div class="form-grid firmware-form-grid">
+      <div class="form-field lg:col-span-3 md:col-span-2">
+        <p
+          v-if="!availableUpdates.length"
+          class="text-sm leading-5 text-gray-200"
         >
-        <a
-          v-if="update.firmwareFileLink"
-          class="my-3 ml-4 py-1 px-2 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
-          target="_blank"
-          :href="update.firmwareFileLink.browser_download_url"
-        >
-          Download FW file ({{ firmwareFileName }})
-        </a>
-        <div v-html="update.html_description"></div>
+          Your firmware is up to date.
+        </p>
+        <div v-else class="text-sm pb-6">
+          <div
+            v-for="update in availableUpdates"
+            :key="update.name"
+            class="release-description text-gray-200"
+          >
+            <a
+              :href="`https://github.com/paradajz/OpenDeck/releases/tag/${update.tag_name}`"
+              >{{ update.tag_name }}</a
+            >
+            <a
+              v-if="update.firmwareFileLink"
+              class="my-3 ml-4 py-1 px-2 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
+              target="_blank"
+              :href="update.firmwareFileLink.browser_download_url"
+            >
+              Download FW file ({{ firmwareFileName }})
+            </a>
+            <div v-html="update.html_description"></div>
+          </div>
+        </div>
       </div>
     </div>
   </Section>
