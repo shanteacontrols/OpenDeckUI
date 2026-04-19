@@ -1,6 +1,6 @@
 <template>
   <Section
-    v-if="!bootLoaderSupport && !isBootloaderMode"
+    v-if="!bootLoaderSupport && dfuState === DfuState.Idle && !isBootloaderMode"
     title="No bootloader support"
     class="w-full"
   >
@@ -12,9 +12,10 @@
       >.
     </p>
   </Section>
+
   <Section v-else title="Firmware update" class="w-full">
-    <div class="form-grid">
-      <div v-if="!isBootloaderMode" class="form-field">
+    <div class="form-grid firmware-form-grid">
+      <div v-if="showNormalControls" class="form-field">
         <Button :disabled="loading" @click.prevent="checkForUpdates">
           Check for updates
         </Button>
@@ -23,31 +24,61 @@
         </p>
       </div>
 
-      <div v-if="!isBootloaderMode && bootLoaderSupport" class="form-field">
-        <Button @click.prevent="startBootLoaderMode">
+      <div v-if="showNormalControls && bootLoaderSupport" class="form-field">
+        <Button :disabled="loading" @click.prevent="onBootLoaderModeClicked">
           Bootloader mode
         </Button>
         <p class="help-text">
-          Starting bootloader mode is required for firmware updates. Once in
-          bootloader mode the device can be updated using the SysEx file
-          downloaded via "Check for updates" button.
+          Reboots the board into WebUSB firmware update mode. The configurator
+          will wait for the WebUSB DFU device to appear.
         </p>
       </div>
 
-      <div v-if="isBootloaderMode" class="form-field">
+      <div v-if="showWebUsbConnectButton" class="form-field">
+        <Button :disabled="isWebUsbBusy" @click.prevent="onConnectDfuDevice">
+          Connect DFU device
+        </Button>
+        <p class="help-text">
+          Waiting for the WebUSB DFU device. Previously paired DFU devices are
+          connected automatically. Use this button only when the browser needs
+          a first-time WebUSB pairing.
+        </p>
+      </div>
+
+      <div v-if="showWebUsbInterface" class="form-field">
         <FormFileInput
-          name="backup-file"
+          name="webusb-firmware-file"
           label="Update Firmware"
-          :disabled="!isBootloaderMode"
+          :disabled="isWebUsbBusy"
           @change="onFirmwareFileSelected"
         />
         <p class="help-text">
-          Select a firmware file to start board firmware update. UI might become
-          unresponsive while updating. To exit from bootloader mode reboot the
-          device manually.
+          <template v-if="dfuDeviceLabel">
+            Connected DFU device: {{ dfuDeviceLabel }}.
+          </template>
+          <template v-else>
+            WebUSB DFU device connected.
+          </template>
+          Select a `dfu.bin` firmware file to start the update.
         </p>
       </div>
+
+      <div
+        v-if="Number.isInteger(dfuProgress)"
+        class="form-field firmware-progress lg:col-span-3 md:col-span-2"
+      >
+        <label class="text-sm leading-5 text-gray-400">Upload progress</label>
+        <div class="inline-progress mt-2">
+          <div
+            class="inline-progress-bar"
+            :style="{ width: `${dfuProgress}%` }"
+          >
+            {{ dfuProgress }}%
+          </div>
+        </div>
+      </div>
     </div>
+
   </Section>
 
   <div v-if="loading" class="lg:text-center relative" style="min-height: 50vh;">
@@ -85,9 +116,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { deviceStoreMapped } from "../../../store";
 import { IOpenDeckRelease } from "../../interface";
+import { DfuState, DfuTransport } from "../../device";
 
 export default defineComponent({
   name: "GlobalFirmware",
@@ -99,17 +131,59 @@ export default defineComponent({
       bootLoaderSupport,
       startBootLoaderMode,
       startFirmwareUpdate,
+      connectDfuDevice,
+      dfuState,
+      dfuTransport,
+      dfuProgress,
+      dfuError,
+      dfuDeviceLabel,
     } = deviceStoreMapped;
 
     const loading = ref(false);
     const updatesChecked = ref(false);
     const availableUpdates = ref<Array<IOpenDeckRelease>>([]);
 
+    const showNormalControls = computed(
+      () => dfuState.value === DfuState.Idle && !isBootloaderMode.value,
+    );
+    const showWebUsbConnectButton = computed(
+      () =>
+        [DfuState.WaitingForDfuDevice, DfuState.Error].includes(dfuState.value),
+    );
+    const showWebUsbInterface = computed(
+      () =>
+        dfuTransport.value === DfuTransport.WebUsb &&
+        [
+          DfuState.DfuReady,
+          DfuState.Uploading,
+          DfuState.WaitingForApplication,
+        ].includes(dfuState.value),
+    );
+    const isWebUsbBusy = computed(() =>
+      [
+        DfuState.RebootingToBootloader,
+        DfuState.Uploading,
+        DfuState.WaitingForApplication,
+      ].includes(dfuState.value),
+    );
     const checkForUpdates = async () => {
       loading.value = true;
       availableUpdates.value = await startUpdatesCheck(firmwareFileName.value);
       loading.value = false;
       updatesChecked.value = true;
+    };
+
+    const onBootLoaderModeClicked = async () => {
+      loading.value = true;
+      try {
+        await startBootLoaderMode();
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const onConnectDfuDevice = async () => {
+      await connectDfuDevice();
     };
 
     const onFirmwareFileSelected = async (fileList) => {
@@ -119,14 +193,24 @@ export default defineComponent({
     };
 
     return {
+      DfuState,
       firmwareFileName,
       loading,
       isBootloaderMode,
       bootLoaderSupport,
-      startBootLoaderMode,
       updatesChecked,
-      checkForUpdates,
       availableUpdates,
+      dfuState,
+      dfuProgress,
+      dfuError,
+      dfuDeviceLabel,
+      showNormalControls,
+      showWebUsbConnectButton,
+      showWebUsbInterface,
+      isWebUsbBusy,
+      checkForUpdates,
+      onBootLoaderModeClicked,
+      onConnectDfuDevice,
       onFirmwareFileSelected,
     };
   },
@@ -145,5 +229,26 @@ export default defineComponent({
 .release-description ul {
   margin-left: 2em;
   list-style: circle;
+}
+.firmware-form-grid {
+  align-items: start;
+}
+.firmware-progress {
+  align-self: start;
+}
+.inline-progress {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  background: rgba(75, 85, 99, 0.8);
+}
+.inline-progress-bar {
+  min-height: 1.5rem;
+  background: #f59e0b;
+  color: #111827;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.5rem;
+  white-space: nowrap;
 }
 </style>

@@ -3,6 +3,7 @@ import { addError } from "./log-type-error";
 import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
 import { addInfo } from "./log-type-info";
+import { addSystem } from "./log-type-system";
 import { saveToStorage, formatDate } from "../../../util";
 import { debounce } from "lodash-es";
 
@@ -114,6 +115,7 @@ export const addBuffered = (logEntry: ILogEntry): void => {
 export const requestLogActions = {
   clearRequestLog,
   getFilteredLogs,
+  addSystem,
   addRequest,
   addInfo,
   addError,

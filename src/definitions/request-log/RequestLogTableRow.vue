@@ -8,6 +8,10 @@
     </td>
     <td class="w-8/12">
       <LogError v-if="logEntry.type === LogType.Error" :log-entry="logEntry" />
+      <LogSystem
+        v-else-if="logEntry.type === LogType.System"
+        :log-entry="logEntry"
+      />
       <LogRequest
         v-else-if="logEntry.requestId && logEntry.type === LogType.Request"
         :log-entry="logEntry"
@@ -32,6 +36,7 @@ import LogMidi from "./LogMidi.vue";
 import LogRequest from "./LogRequest.vue";
 import LogInfo from "./LogInfo.vue";
 import LogError from "./LogError.vue";
+import LogSystem from "./LogSystem.vue";
 
 export default defineComponent({
   name: "RequestLogTableRow",
@@ -40,6 +45,7 @@ export default defineComponent({
     LogRequest,
     LogInfo,
     LogError,
+    LogSystem,
   },
   props: {
     logEntry: {

@@ -3,9 +3,16 @@
     <SpinnerOverlay />
   </Hero>
 
-  <div v-else-if="isConnected" class="relative">
-    <DeviceNav v-if="!isBootloaderMode" />
+  <div v-else-if="hasVisibleSession" class="relative">
+    <DeviceNav v-if="isConnected && !isBootloaderMode" />
     <router-view></router-view>
+
+    <div v-if="showTransitionOverlay" class="device-transition-overlay">
+      <Spinner class="self-center" />
+      <p class="mt-4 text-sm text-gray-200">
+        {{ transitionMessage }}
+      </p>
+    </div>
 
     <ProgressBar
       v-if="
@@ -16,16 +23,23 @@
     <SpinnerOverlay v-else-if="isSystemOperationRunning" />
   </div>
 
-  <Hero v-else custom="h-64" title="No WebMidi device found." />
+  <Hero
+    v-else
+    custom="h-64"
+    :title="isReloadingFallback ? 'Reloading' : 'No WebMidi device found.'"
+  >
+    <p v-if="isReloadingFallback">Re-establishing device connection</p>
+  </Hero>
 
   <RequestLog />
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { computed, defineComponent, onMounted } from "vue";
 import router from "../../router";
 import { logger } from "../../util";
 import { deviceStoreMapped } from "../../store";
+import { DfuState, webUsbDfuVirtualOutputId } from "./device-store";
 
 import RequestLog from "../request-log/RequestLog.vue";
 import DeviceNav from "./DeviceNav.vue";
@@ -39,17 +53,55 @@ export default defineComponent({
   setup() {
     const {
       connectDevice,
+      startDfuDiscovery,
       isConnected,
+      hasVisibleSession,
       isConnecting,
       isSystemOperationRunning,
       systemOperationPercentage,
       isBootloaderMode,
+      dfuState,
     } = deviceStoreMapped;
+
+    const showTransitionOverlay = computed(
+      () =>
+        router.currentRoute.value.name !== "device-firmware-update" &&
+        [
+          DfuState.RebootingToApplication,
+          DfuState.RebootingToBootloader,
+          DfuState.WaitingForApplication,
+        ].includes(dfuState.value),
+    );
+
+    const isReloadingFallback = computed(
+      () => router.currentRoute.value.name !== "home",
+    );
+
+    const transitionMessage = computed(() => {
+      switch (dfuState.value) {
+        case DfuState.RebootingToBootloader:
+          return "Rebooting device into DFU mode";
+        case DfuState.WaitingForApplication:
+          return "Waiting for the device to reconnect";
+        default:
+          return "Rebooting device";
+      }
+    });
 
     onMounted(async () => {
       try {
+        const outputId = router.currentRoute.value.params.outputId as string;
+
+        if (outputId === webUsbDfuVirtualOutputId) {
+          if (dfuState.value === DfuState.Idle) {
+            await startDfuDiscovery();
+          }
+
+          return;
+        }
+
         await connectDevice(
-          router.currentRoute.value.params.outputId as string,
+          outputId,
         );
         if (isBootloaderMode.value) {
           return router.push({ name: "device-firmware-update" });
@@ -61,11 +113,28 @@ export default defineComponent({
 
     return {
       isConnected,
+      hasVisibleSession,
       isConnecting,
       isBootloaderMode,
+      isReloadingFallback,
+      showTransitionOverlay,
+      transitionMessage,
       isSystemOperationRunning,
       systemOperationPercentage,
     };
   },
 });
 </script>
+
+<style>
+.device-transition-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 24, 39, 0.8);
+  z-index: 20;
+}
+</style>

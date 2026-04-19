@@ -1,9 +1,8 @@
 import semverGt from "semver/functions/gt";
 import marked from "marked";
-import { Input, Output } from "webmidi";
+import WebMidi, { Input, Output } from "webmidi";
 import FileSaver from "file-saver";
 import { logger, delay, arrayEqual, convertToHex } from "../../../util";
-import { Request } from "../../../definitions";
 import router from "../../../router";
 import {
   Request,
@@ -20,11 +19,15 @@ import {
   newLineCharacter,
 } from "./actions-utility";
 import { midiStore } from "../../midi";
+import { requestLog } from "../../request-log";
 import {
   IDeviceState,
   IRequestConfig,
   DeviceConnectionState,
   ControlDisableType,
+  DfuState,
+  DfuTransport,
+  webUsbDfuVirtualOutputId,
 } from "./interface";
 import { deviceState, defaultState, IViewSettingState } from "./state";
 import { sendMessage, handleSysExEvent, resetQueue } from "./request-qeueue";
@@ -34,6 +37,20 @@ import {
 } from "./midi-event-handlers";
 
 let connectionWatcherTimer = null;
+let dfuWatcherTimer = null;
+let activeDfuDevice = null;
+let activeDfuOutEndpoint = null;
+let activeDfuInEndpoint = null;
+let dfuStatusReaderPromise = null;
+
+const rebootDisconnectTimeoutMs = 2000;
+const appReconnectTimeoutMs = 45000;
+const dfuPollTimeoutMs = 15000;
+const devicePollIntervalMs = 250;
+const dfuChunkSize = 64;
+const webUsbFinalizeTimeoutMs = 5000;
+const opendeckUsbVendorId = 0x1209;
+const opendeckWebUsbDfuProductId = 0x8474;
 
 // Actions
 
@@ -79,6 +96,10 @@ const connectionWatcher = async (): Promise<void> => {
   stopDeviceConnectionWatcher();
 
   try {
+    if (deviceState.dfuState !== DfuState.Idle) {
+      return;
+    }
+
     if (!deviceState.outputId) {
       return router.push({ name: "home" });
     }
@@ -106,6 +127,354 @@ const stopDeviceConnectionWatcher = (): Promise<void> => {
   }
 };
 
+const stopDfuWatcher = (): void => {
+  if (dfuWatcherTimer) {
+    clearTimeout(dfuWatcherTimer);
+    dfuWatcherTimer = null;
+  }
+};
+
+const setDfuState = (state: DfuState, data: Partial<IDeviceState> = {}): void => {
+  Object.assign(deviceState, {
+    dfuState: state,
+    ...data,
+  });
+};
+
+const resetDfuState = (): void => {
+  stopDfuWatcher();
+  setDfuState(DfuState.Idle, {
+    dfuTransport: (null as unknown) as DfuTransport,
+    dfuProgress: (null as unknown) as number,
+    dfuStatusLog: [],
+    dfuError: (null as unknown) as string,
+    dfuDeviceLabel: (null as unknown) as string,
+  });
+};
+
+const appendDfuStatus = (
+  message: string,
+  source: "host" | "device" = "host",
+): void => {
+  if (!message) {
+    return;
+  }
+
+  deviceState.dfuStatusLog.push(message);
+  if (
+    [
+      "The selected WebUSB DFU device could not be opened.",
+      "No WebUSB DFU device was selected.",
+      "Failed to connect to the WebUSB DFU device.",
+      "Firmware upload failed.",
+      "The DFU device was disconnected.",
+      "Device did not leave DFU mode",
+      "Firmware uploaded, but the application did not reconnect.",
+      "No DFU device was detected after the reboot request.",
+      "The device did not reconnect in time.",
+      "Timed out while waiting for the device to reboot.",
+    ].some((pattern) => message.startsWith(pattern)) ||
+    message.startsWith("Upload failed:")
+  ) {
+    requestLog.actions.addError({ message });
+  } else {
+    requestLog.actions.addSystem(message, source);
+  }
+};
+
+const scheduleDfuWatcher = (callback: () => Promise<void>): void => {
+  stopDfuWatcher();
+  dfuWatcherTimer = setTimeout(() => {
+    callback();
+  }, 1000);
+};
+
+const getNavigatorUsb = (): any => {
+  if (typeof navigator === "undefined") {
+    return null;
+  }
+
+  return (navigator as any).usb || null;
+};
+
+const isMatchingWebUsbDfuDevice = (device: any): boolean =>
+  device.vendorId === opendeckUsbVendorId &&
+  device.productId === opendeckWebUsbDfuProductId;
+
+const disconnectCurrentMidiSession = (): void => {
+  resetQueue();
+  stopDeviceConnectionWatcher();
+  stopDfuWatcher();
+
+  if (deviceState.input) {
+    deviceState.input.removeListener("sysex", "all");
+    detachMidiEventHandlers(deviceState.input);
+  }
+
+  deviceState.input = (null as unknown) as Input;
+  deviceState.output = (null as unknown) as Output;
+  deviceState.outputId = (null as unknown) as string;
+  deviceState.connectionPromise = (null as unknown) as Promise<any>;
+  deviceState.connectionState = DeviceConnectionState.Closed;
+  deviceState.isBootloaderMode = false;
+};
+
+const hardReloadToRoute = (target: { name: string; params?: Record<string, any> }): boolean => {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  const resolvedTarget = router.resolve(target).href;
+  const reloadUrl = new URL(window.location.href);
+  const targetHash = resolvedTarget.includes("#")
+    ? resolvedTarget.slice(resolvedTarget.indexOf("#") + 1)
+    : resolvedTarget.replace(/^\/+/, "");
+
+  reloadUrl.search = `reconnect=${Date.now()}`;
+  reloadUrl.hash = targetHash.startsWith("/") ? targetHash : `/${targetHash}`;
+  console.info("[OpenDeck UI] Performing hard navigation", {
+    resolvedTarget,
+    reloadUrl: reloadUrl.toString(),
+  });
+  window.location.replace(reloadUrl.toString());
+  return true;
+};
+
+const waitForCondition = async (
+  condition: () => Promise<boolean>,
+  timeoutMs: number,
+): Promise<boolean> => {
+  const startedAt = Date.now();
+
+  while (Date.now() - startedAt < timeoutMs) {
+    if (await condition()) {
+      return true;
+    }
+
+    await delay(devicePollIntervalMs);
+  }
+
+  return false;
+};
+
+const waitForMidiDisconnect = async (outputId: string): Promise<boolean> =>
+  waitForCondition(async () => {
+    await midiStore.actions.assignInputs();
+    if (!midiStore.actions.findOutputById(outputId)) {
+      return true;
+    }
+
+    return false;
+  }, rebootDisconnectTimeoutMs);
+
+const waitForMidiReconnect = async (): Promise<Output | null> => {
+  const reconnected = await waitForCondition(async () => {
+    await midiStore.actions.assignInputs();
+    return !!WebMidi.outputs.find(
+      (output: Output) =>
+        !output.name.includes("OpenDeck DFU") &&
+        output.name === deviceState.lastApplicationOutputName,
+    );
+  }, appReconnectTimeoutMs);
+
+  if (!reconnected) {
+    return null;
+  }
+
+  return (
+    WebMidi.outputs.find(
+      (output: Output) =>
+        !output.name.includes("OpenDeck DFU") &&
+        output.name === deviceState.lastApplicationOutputName,
+    ) || null
+  );
+};
+
+const waitForDfuDisconnect = async (): Promise<boolean> =>
+  waitForCondition(async () => {
+    if (!activeDfuDevice) {
+      return true;
+    }
+
+    try {
+      await activeDfuDevice.transferIn(activeDfuInEndpoint || 0x81, 1);
+      return false;
+    } catch (error) {
+      return true;
+    }
+  }, webUsbFinalizeTimeoutMs);
+
+const closeDfuDevice = async (): Promise<void> => {
+  if (activeDfuDevice && activeDfuDevice.opened) {
+    try {
+      await activeDfuDevice.close();
+    } catch (error) {
+      logger.warn("Failed to close DFU device", error);
+    }
+  }
+
+  activeDfuDevice = null;
+  activeDfuOutEndpoint = null;
+  activeDfuInEndpoint = null;
+  dfuStatusReaderPromise = null;
+};
+
+const decodeDfuStatusChunk = (value: DataView | undefined): void => {
+  if (!value || !value.byteLength) {
+    return;
+  }
+
+  const decoder = new TextDecoder();
+  const text = decoder.decode(value);
+
+  text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .forEach((line) => appendDfuStatus(line, "device"));
+};
+
+const startDfuStatusReader = async (): Promise<void> => {
+  if (!activeDfuDevice || !activeDfuInEndpoint || dfuStatusReaderPromise) {
+    return;
+  }
+
+  dfuStatusReaderPromise = (async () => {
+    while (activeDfuDevice && activeDfuInEndpoint) {
+      try {
+        const result = await activeDfuDevice.transferIn(activeDfuInEndpoint, 128);
+        decodeDfuStatusChunk(result.data);
+      } catch (error) {
+        if (
+          [DfuState.Uploading, DfuState.WaitingForApplication].includes(
+            deviceState.dfuState,
+          )
+        ) {
+          appendDfuStatus("DFU device disconnected");
+        }
+        break;
+      }
+    }
+  })();
+
+  await Promise.resolve();
+};
+
+const openWebUsbDfuDevice = async (device: any): Promise<boolean> => {
+  try {
+    if (!device.opened) {
+      await device.open();
+    }
+
+    if (!device.configuration) {
+      await device.selectConfiguration(1);
+    }
+
+    await device.claimInterface(0);
+
+    const alternate = device.configuration.interfaces[0].alternate;
+    const outEndpoint = alternate.endpoints.find(
+      (endpoint) => endpoint.direction === "out",
+    );
+    const inEndpoint = alternate.endpoints.find(
+      (endpoint) => endpoint.direction === "in",
+    );
+
+    if (!outEndpoint) {
+      throw new Error("Missing DFU OUT endpoint");
+    }
+
+    activeDfuDevice = device;
+    activeDfuOutEndpoint = outEndpoint.endpointNumber;
+    activeDfuInEndpoint = inEndpoint ? inEndpoint.endpointNumber : null;
+    deviceState.isBootloaderMode = true;
+    deviceState.outputId = webUsbDfuVirtualOutputId;
+    deviceState.boardName =
+      device.productName || device.serialNumber || "OpenDeck DFU";
+    setDfuState(DfuState.DfuReady, {
+      dfuTransport: DfuTransport.WebUsb,
+      dfuDeviceLabel:
+        device.productName || device.serialNumber || "OpenDeck DFU",
+      dfuError: (null as unknown) as string,
+    });
+    appendDfuStatus("WebUSB DFU device connected");
+    startDfuStatusReader();
+    return true;
+  } catch (error) {
+    try {
+      if (device.forget) {
+        await device.forget();
+      }
+    } catch (forgetError) {
+      logger.warn("Failed to forget stale DFU device", forgetError);
+    }
+
+    logger.warn("Failed to open WebUSB DFU device", error);
+    return false;
+  }
+};
+
+export const restoreCachedDfuSession = async (): Promise<boolean> => {
+  return false;
+};
+
+export const startDfuDiscovery = async (): Promise<void> => {
+  if (deviceState.dfuState !== DfuState.Idle || activeDfuDevice) {
+    return;
+  }
+
+  await waitForDfuTarget();
+};
+
+const requestWebUsbDfuDevice = async (): Promise<boolean> => {
+  const usb = getNavigatorUsb();
+  if (!usb) {
+    setDfuState(DfuState.Error, {
+      dfuTransport: DfuTransport.WebUsb,
+      dfuError: "This browser does not support WebUSB.",
+    });
+    return false;
+  }
+
+  try {
+    const device = await usb.requestDevice({
+      filters: [
+        {
+          vendorId: opendeckUsbVendorId,
+          productId: opendeckWebUsbDfuProductId,
+        },
+      ],
+    });
+
+    const opened = await openWebUsbDfuDevice(device);
+    if (!opened) {
+      appendDfuStatus("The selected WebUSB DFU device could not be opened");
+      setDfuState(DfuState.Error, {
+        dfuTransport: DfuTransport.WebUsb,
+        dfuError: "The selected WebUSB DFU device could not be opened.",
+      });
+    }
+
+    return opened;
+  } catch (error) {
+    logger.warn("WebUSB DFU device selection canceled", error);
+    appendDfuStatus("WebUSB device picker was canceled");
+    return false;
+  }
+};
+
+const waitForDfuTarget = async (): Promise<void> => {
+  setDfuState(DfuState.WaitingForDfuDevice, {
+    dfuTransport: (null as unknown) as DfuTransport,
+    dfuProgress: (null as unknown) as number,
+    dfuError: (null as unknown) as string,
+    dfuDeviceLabel: (null as unknown) as string,
+    dfuStatusLog: ["Waiting for DFU device"],
+  });
+
+  appendDfuStatus("Waiting for DFU device permission or appearance");
+};
+
 export const connectDeviceStoreToInput = async (
   outputId: string,
 ): Promise<any> => {
@@ -119,6 +488,7 @@ export const connectDeviceStoreToInput = async (
   deviceState.valueSize = valueSize;
   deviceState.valuesPerMessageRequest = null;
   deviceState.firmwareVersion = null;
+  deviceState.dfuError = (null as unknown) as string;
 
   // make sure we don't duplicate listeners
   deviceState.input.removeListener("sysex", "all");
@@ -128,12 +498,19 @@ export const connectDeviceStoreToInput = async (
 
   // In bootloader mode, we cannot send regular requests
   if (isBootloaderMode) {
+    setDfuState(DfuState.DfuReady, {
+      dfuTransport: DfuTransport.Midi,
+      dfuDeviceLabel: output.name,
+    });
     deviceState.boardName = output.name;
     deviceState.connectionState = DeviceConnectionState.Open;
     deviceState.connectionPromise = (null as unknown) as Promise<any>;
     startDeviceConnectionWatcher();
     return;
   }
+
+  resetDfuState();
+  deviceState.lastApplicationOutputName = output.name;
 
   await sendMessage({
     command: Request.GetValuesPerMessage,
@@ -170,6 +547,8 @@ const connectDevice = async (outputId: string): Promise<void> => {
 
 export const closeConnection = (): Promise<void> => {
   stopDeviceConnectionWatcher();
+  stopDfuWatcher();
+  closeDfuDevice();
   resetDeviceStore();
 };
 
@@ -191,27 +570,290 @@ export const ensureConnection = async (): Promise<void> => {
 
 // Firmware updates
 
-export const startBootLoaderMode = async (): Promise<void> => {
+const sendRebootRequest = async (
+  command: Request,
+  targetState: DfuState,
+): Promise<void> => {
+  const currentOutputId = deviceState.outputId;
+  const reconnectRouteName = router.currentRoute.value.name;
+  const reconnectRouteParams = {
+    ...router.currentRoute.value.params,
+  };
+
+  stopDeviceConnectionWatcher();
+  setDfuState(targetState, {
+    dfuTransport: (null as unknown) as DfuTransport,
+    dfuProgress: (null as unknown) as number,
+    dfuError: (null as unknown) as string,
+    dfuStatusLog: [],
+  });
+  appendDfuStatus(
+    targetState === DfuState.RebootingToBootloader
+      ? "Rebooting device to bootloader mode"
+      : "Rebooting device",
+  );
+  console.info("[OpenDeck UI] Reboot flow started", {
+    command,
+    targetState,
+    currentOutputId,
+    reconnectRouteName,
+    reconnectRouteParams,
+  });
+
   await sendMessage({
-    command: Request.BootloaderMode,
-    handler: () => logger.log("Bootloader mode started"),
+    command,
+    handler: () => null,
+  });
+  console.info("[OpenDeck UI] Reboot command sent");
+
+  const disconnected = await waitForMidiDisconnect(currentOutputId);
+  console.info("[OpenDeck UI] MIDI disconnect wait finished", {
+    disconnected,
+    currentOutputId,
+  });
+  disconnectCurrentMidiSession();
+
+  if (targetState === DfuState.RebootingToBootloader) {
+    if (!disconnected) {
+      appendDfuStatus("Reboot timeout reached, checking for DFU device anyway");
+    }
+
+    router.replace({
+      name: "device-firmware-update",
+      params: {
+        outputId: currentOutputId,
+      },
+    });
+    await waitForDfuTarget();
+
+    if (
+      ![DfuState.DfuReady, DfuState.Uploading, DfuState.WaitingForApplication].includes(
+        deviceState.dfuState,
+      )
+    ) {
+      setDfuState(DfuState.Error, {
+        dfuError: "No DFU device was detected after the reboot request.",
+      });
+    }
+
+    return;
+  }
+
+  if (!disconnected) {
+    appendDfuStatus("Reboot timeout reached, checking for application anyway");
+    console.info("[OpenDeck UI] Reboot disconnect timeout, continuing to reconnect wait");
+    resetDfuState();
+
+    if (
+      hardReloadToRoute({
+        name: reconnectRouteName && reconnectRouteName !== "device-firmware-update"
+          ? reconnectRouteName
+          : "device",
+        params: {
+          ...reconnectRouteParams,
+          outputId: currentOutputId,
+        },
+      })
+    ) {
+      return;
+    }
+  }
+
+  setDfuState(DfuState.WaitingForApplication, {
+    dfuTransport: (null as unknown) as DfuTransport,
+  });
+  appendDfuStatus("Waiting for the application to reconnect");
+
+  const output = await waitForMidiReconnect();
+  console.info("[OpenDeck UI] MIDI reconnect wait finished", {
+    outputId: output && output.id,
+    outputName: output && output.name,
+  });
+
+  if (!output) {
+    setDfuState(DfuState.Error, {
+      dfuError: "The device did not reconnect in time.",
+    });
+    return;
+  }
+
+  const reconnectTarget =
+    reconnectRouteName && reconnectRouteName !== "device-firmware-update"
+      ? {
+          name: reconnectRouteName,
+          params: {
+            ...reconnectRouteParams,
+            outputId: output.id,
+          },
+        }
+      : {
+          name: "device",
+          params: {
+            outputId: output.id,
+          },
+        };
+
+  resetDfuState();
+
+  if (hardReloadToRoute(reconnectTarget)) {
+    return;
+  }
+
+  await router.replace({
+    ...reconnectTarget,
   });
 };
 
-const startFirmwareUpdate = async (file: File): Promise<void> => {
-  resetQueue();
+export const startBootLoaderMode = async (): Promise<void> =>
+  sendRebootRequest(Request.BootloaderMode, DfuState.RebootingToBootloader);
 
-  const success = await sendMessagesFromFileWithDelay(
-    file,
-    Request.FirmwareUpdate,
-  );
+const startFirmwareUpdate = async (
+  file: File,
+  allowReconnectRetry = true,
+): Promise<void> => {
+  if (!file.name.endsWith(".bin")) {
+    appendDfuStatus("Selected file does not look like a firmware binary");
+  }
 
-  deviceState.isSystemOperationRunning = false;
+  if (!activeDfuDevice || !activeDfuOutEndpoint) {
+    const connected = await requestWebUsbDfuDevice();
 
-  const msg = success
-    ? "Firmware update finished"
-    : "Firmware update finished with errors";
-  alert(msg);
+    if (!connected) {
+      setDfuState(DfuState.Error, {
+        dfuTransport: DfuTransport.WebUsb,
+        dfuError: "Failed to connect to the WebUSB DFU device.",
+      });
+      return;
+    }
+  }
+
+  const payload = new Uint8Array(await file.arrayBuffer());
+
+  setDfuState(DfuState.Uploading, {
+    dfuTransport: DfuTransport.WebUsb,
+    dfuProgress: 1,
+    dfuError: (null as unknown) as string,
+  });
+  appendDfuStatus(`Uploading ${file.name}`);
+  appendDfuStatus(`File size: ${payload.length} bytes`);
+
+  try {
+    for (let offset = 0; offset < payload.length; offset += dfuChunkSize) {
+      const chunk = payload.slice(offset, offset + dfuChunkSize);
+      await activeDfuDevice.transferOut(activeDfuOutEndpoint, chunk);
+      deviceState.dfuProgress = Math.max(
+        1,
+        Math.floor(((offset + chunk.length) / payload.length) * 100),
+      );
+    }
+
+    appendDfuStatus("Upload transfer complete");
+    appendDfuStatus("Waiting for device-side finalize messages");
+    await delay(500);
+    appendDfuStatus("Waiting for device to reboot");
+
+    const disconnectedFromDfu = await waitForDfuDisconnect();
+
+    if (!disconnectedFromDfu) {
+      setDfuState(DfuState.Error, {
+        dfuTransport: DfuTransport.WebUsb,
+        dfuProgress: 100,
+        dfuError:
+          "Upload finished, but the device remained in DFU mode. Make sure you selected the generated dfu.bin file.",
+      });
+      appendDfuStatus("Device did not leave DFU mode");
+      return;
+    }
+
+    setDfuState(DfuState.WaitingForApplication, {
+      dfuTransport: DfuTransport.WebUsb,
+      dfuProgress: 100,
+    });
+    await closeDfuDevice();
+
+    const output = await waitForMidiReconnect();
+
+    if (!output) {
+      setDfuState(DfuState.Error, {
+        dfuTransport: DfuTransport.WebUsb,
+        dfuError: "Firmware uploaded, but the application did not reconnect.",
+      });
+      return;
+    }
+    resetDfuState();
+
+    if (
+      hardReloadToRoute({
+        name: "device",
+        params: {
+          outputId: output.id,
+        },
+      })
+    ) {
+      return;
+    }
+
+    await router.replace({
+      name: "device",
+      params: {
+        outputId: output.id,
+      },
+    });
+
+    await connectDevice(output.id);
+  } catch (error) {
+    logger.error("WebUSB firmware upload failed", error);
+    appendDfuStatus(
+      `Upload failed: ${error && error.message ? error.message : String(error)}`,
+    );
+
+    const errorMessage =
+      error && error.message ? String(error.message) : String(error);
+
+    if (errorMessage.includes("The device was disconnected")) {
+      await closeDfuDevice();
+
+      if (allowReconnectRetry) {
+        appendDfuStatus("Retrying with a fresh DFU connection");
+        const reconnected = await requestWebUsbDfuDevice();
+
+        if (reconnected) {
+          return startFirmwareUpdate(file, false);
+        }
+      }
+
+      setDfuState(DfuState.Error, {
+        dfuTransport: DfuTransport.WebUsb,
+        dfuProgress: (null as unknown) as number,
+        dfuError:
+          "The DFU device was disconnected. Reconnect it and click Connect DFU device again.",
+      });
+      return;
+    }
+
+    setDfuState(DfuState.Error, {
+      dfuTransport: DfuTransport.WebUsb,
+      dfuError: "Firmware upload failed.",
+    });
+  }
+};
+
+export const connectDfuDevice = async (): Promise<boolean> => {
+  setDfuState(DfuState.WaitingForDfuDevice, {
+    dfuTransport: DfuTransport.WebUsb,
+    dfuError: (null as unknown) as string,
+  });
+
+  const connected = await requestWebUsbDfuDevice();
+
+  if (!connected && !deviceState.dfuError) {
+    setDfuState(DfuState.Error, {
+      dfuTransport: DfuTransport.WebUsb,
+      dfuError: "No WebUSB DFU device was selected.",
+    });
+  }
+
+  return connected;
 };
 
 export const startUpdatesCheck = async (
@@ -295,27 +937,11 @@ const startBackup = async (): Promise<void> => {
 // Other hardware
 
 export const startFactoryReset = async (): Promise<void> => {
-  const handler = () => logger.log("Bootloader mode started");
-  await sendMessageAndRebootUi(Request.FactoryReset, handler);
+  await sendRebootRequest(Request.FactoryReset, DfuState.RebootingToApplication);
 };
 
 export const startReboot = async (): Promise<void> => {
-  const handler = () => logger.log("Reboot mode started");
-  await sendMessageAndRebootUi(Request.Reboot, handler);
-};
-
-const sendMessageAndRebootUi = async (
-  command: Request,
-  handler: () => void,
-): Promise<any> => {
-  await sendMessage({
-    command,
-    handler,
-  });
-
-  deviceState.connectionState = DeviceConnectionState.Closed;
-
-  return delay(200).then(() => router.push({ name: "home" }));
+  await sendRebootRequest(Request.Reboot, DfuState.RebootingToApplication);
 };
 
 const loadDeviceInfo = async (): Promise<void> => {
@@ -475,6 +1101,9 @@ export const deviceStoreActions = {
   ensureConnection,
   startUpdatesCheck,
   startBootLoaderMode,
+  startDfuDiscovery,
+  restoreCachedDfuSession,
+  connectDfuDevice,
   startFactoryReset,
   startReboot,
   startDeviceConnectionWatcher,

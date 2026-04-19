@@ -6,7 +6,7 @@
       </router-link>
 
       <span v-if="!isHomePage && boardName" class="app-board-info">
-        <template v-if="isBootloaderMode">OpenDeck DFU mode</template>
+        <template v-if="isBootloaderMode || isDfuActive">OpenDeck DFU mode</template>
         <template v-else>
           <small>Board</small>
           <strong>{{ boardName }}</strong>
@@ -60,14 +60,16 @@
         </Section>
 
         <Section
-          v-else-if="!isConnected"
+          v-else-if="!isConnected && !isDfuActive"
           class="h-screen"
-          title="Problem connecting"
+          :title="isDeviceRoute ? 'Reloading' : 'Problem connecting'"
         >
           <div
             class="lg:text-center max-w-screen-xl mx-auto px-4 pt-24 sm:px-6 lg:px-8"
           >
-            <p>WebMidi failed to conect</p>
+            <p>
+              {{ isDeviceRoute ? "Re-establishing device connection" : "WebMidi failed to conect" }}
+            </p>
           </div>
         </Section>
 
@@ -122,9 +124,13 @@ export default defineComponent({
     const isHomePage = computed(
       () => router.currentRoute.value.name === "home",
     );
+    const isDeviceRoute = computed(
+      () => router.currentRoute.value.name !== "home",
+    );
 
     const { isConnected, isConnecting, isWebMidiSupported } = midiStoreMapped;
-    const { supportedPresetsCount, isBootloaderMode } = deviceStoreMapped;
+    const { supportedPresetsCount, isBootloaderMode, isDfuActive } =
+      deviceStoreMapped;
 
     onMounted(() => {
       midiStoreMapped.loadMidi();
@@ -136,6 +142,7 @@ export default defineComponent({
 
     return {
       isHomePage,
+      isDeviceRoute,
       outputId,
       isWebMidiSupported,
       isConnected,
@@ -145,6 +152,7 @@ export default defineComponent({
       activePreset,
       supportedPresetsCount,
       isBootloaderMode,
+      isDfuActive,
     };
   },
 });

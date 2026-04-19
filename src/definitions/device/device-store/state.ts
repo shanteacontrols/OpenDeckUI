@@ -1,6 +1,6 @@
 import { reactive } from "vue";
 import { Input, Output } from "webmidi";
-import { DeviceConnectionState, IDeviceState } from "./interface";
+import { DeviceConnectionState, DfuState, DfuTransport, IDeviceState } from "./interface";
 import { Block } from "../../interface";
 
 // State
@@ -43,6 +43,13 @@ export const defaultState: IDeviceState = {
   unsupportedComponents,
   isSystemOperationRunning: false,
   systemOperationPercentage: (null as unknown) as number,
+  lastApplicationOutputName: (null as unknown) as string,
+  dfuState: DfuState.Idle,
+  dfuTransport: (null as unknown) as DfuTransport,
+  dfuProgress: (null as unknown) as number,
+  dfuStatusLog: [],
+  dfuError: (null as unknown) as string,
+  dfuDeviceLabel: (null as unknown) as string,
   viewSettings,
 };
 

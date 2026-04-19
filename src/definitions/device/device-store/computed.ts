@@ -1,5 +1,5 @@
 import { deviceState } from "./state";
-import { DeviceConnectionState } from "./interface";
+import { DeviceConnectionState, DfuState } from "./interface";
 import { computed, ComputedRef } from "vue";
 
 // Interface
@@ -9,6 +9,8 @@ export interface IDeviceComputed {
   manufacturer: ComputedRef<string>;
   isConnected: ComputedRef<boolean>;
   isConnecting: ComputedRef<boolean>;
+  hasVisibleSession: ComputedRef<boolean>;
+  isDfuActive: ComputedRef<boolean>;
   showMsbControls: ComputedRef<boolean>;
 }
 
@@ -24,6 +26,10 @@ const isConnecting = computed(
 const isConnected = computed(
   () => deviceState.connectionState === DeviceConnectionState.Open,
 );
+const isDfuActive = computed(() => deviceState.dfuState !== DfuState.Idle);
+const hasVisibleSession = computed(
+  () => isConnected.value || isDfuActive.value,
+);
 const showMsbControls = computed(() => deviceState.valueSize === 1);
 
 export const deviceStoreComputed: IDeviceComputed = {
@@ -31,5 +37,7 @@ export const deviceStoreComputed: IDeviceComputed = {
   manufacturer,
   isConnecting,
   isConnected,
+  hasVisibleSession,
+  isDfuActive,
   showMsbControls,
 };

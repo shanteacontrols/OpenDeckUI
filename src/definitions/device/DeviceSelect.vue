@@ -4,7 +4,20 @@
     custom="h-64"
     title="No OpenDeck board found. Please connect the board in order to use the
       interface."
-  />
+  >
+    <div class="surface-neutral border px-8 py-6 rounded inline-block">
+      <p class="mb-4 text-sm leading-6">
+        OpenDeck MIDI device not found. If the board is already in DFU mode,
+        open the firmware page directly.
+      </p>
+      <router-link
+        :to="{ name: 'device-firmware-update', params: { outputId: webUsbDfuVirtualOutputId } }"
+        class="btn"
+      >
+        Open Firmware Update
+      </router-link>
+    </div>
+  </Hero>
   <Hero
     v-else-if="outputs.length > 1"
     custom="h-64"
@@ -35,20 +48,22 @@
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
 import { midiStoreMapped, deviceStoreMapped } from "../../store";
+import { webUsbDfuVirtualOutputId } from "./device-store";
 
 export default defineComponent({
   name: "DeviceSelect",
   setup() {
-    onMounted(() => {
+    onMounted(async () => {
       midiStoreMapped.assignInputs();
       midiStoreMapped.startMidiConnectionWatcher();
 
       // Note: this should be in Device.vue onUnmounted, but it is unreliable for some reason
-      deviceStoreMapped.closeConnection();
+      await deviceStoreMapped.closeConnection();
     });
 
     return {
       outputs: midiStoreMapped.outputs,
+      webUsbDfuVirtualOutputId,
     };
   },
 });

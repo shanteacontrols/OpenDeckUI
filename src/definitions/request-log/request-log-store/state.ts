@@ -3,10 +3,12 @@ import { ILogEntryError } from "./log-type-error";
 import { ILogEntryRequest } from "./log-type-request";
 import { ILogEntryMidi } from "./log-type-midi";
 import { ILogEntryInfo } from "./log-type-info";
+import { ILogEntrySystem } from "./log-type-system";
 import { Block } from "../../interface";
 import { readFromStorage } from "../../../util";
 
 export enum LogType {
+  System = "system",
   Info = "info",
   Midi = "midi",
   Request = "request",
@@ -27,6 +29,7 @@ export interface ILogEntryBase {
 }
 
 export type ILogEntry =
+  | ILogEntrySystem
   | ILogEntryError
   | ILogEntryMidi
   | ILogEntryInfo
