@@ -32,6 +32,18 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "teensy2pp.dfu.bin",
   },
   {
+    name: "Teensy 4.0",
+    id: [6, 71, 114, 16],
+    oldId: [],
+    firmwareFileName: "teensy4.dfu.bin",
+  },
+  {
+    name: "Teensy 4.1",
+    id: [84, 8, 82, 102],
+    oldId: [],
+    firmwareFileName: "teensy41.dfu.bin",
+  },
+  {
     name: "DubFocus v1",
     id: [],
     oldId: [1, 92, 109, 93],
