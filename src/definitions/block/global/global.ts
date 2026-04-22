@@ -69,7 +69,7 @@ const sections: Dictionary<ISectionDefinition> = {
       deviceStore.state.activePreset = value;
     },
     label: "Active preset",
-    helpText: `Preset stores the entire configuration for device.`,
+    helpText: `Selects which preset is currently active. Presets store preset-scoped configuration, while some global system settings are stored separately.`,
   },
   UseGlobalChannel: {
     block: Block.Global,
@@ -124,7 +124,7 @@ const sections: Dictionary<ISectionDefinition> = {
     section: 0,
     settingIndex: 15,
     component: FormInputComponent.Toggle,
-    label: "Send MIDI clock",
+    label: "Send MIDI clock on DIN",
     helpText: `This setting applies only to DIN MIDI out.
     When enabled, MIDI clock will be sent out at default BPM of 120. The tempo can be changed with buttons or encoders.`,
   },

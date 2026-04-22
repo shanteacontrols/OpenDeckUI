@@ -136,7 +136,7 @@ export const sections: Dictionary<ISectionDefinition> = {
       },
       {
         value: LedControlMode.PresetChange,
-        text: "Preset change",
+        text: "Preset",
       },
       {
         value: LedControlMode.Static,

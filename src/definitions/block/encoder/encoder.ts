@@ -89,7 +89,7 @@ const sections: Dictionary<ISectionDefinition> = {
     helpText: `Specifies the MIDI message which will be sent by the encoder. If Change Preset type is used,
     encoder will be used only to switch between the presets on the device and no MIDI message will be sent. Moving the encoder
     backward will decrement the preset by 1 and moving it forward will increment it, unless Invert option is used. In that case
-    inverted logic applies. Note that in order for this option to work accross all presets, Change Preset type should be set in each preset.`,
+    inverted logic applies. Note that in order for this option to work across all presets, Change Preset type should be set in each preset.`,
   },
   MidiChannel: {
     showIf: (formState: FormState): boolean =>
@@ -241,8 +241,7 @@ const sections: Dictionary<ISectionDefinition> = {
     min: 0,
     max: 16383,
     label: "Upper limit",
-    helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
-    here, so this value will be sent when the analog input is at its lowest position. Limit is
+    helpText: `Specifies the maximum value which is sent by the encoder input. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
     14-bit CC, total range is 0-16383.`,
   },
