@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Prepare build env
@@ -32,12 +32,12 @@ jobs:
           git push https://github.com/shanteacontrols/OpenDeckUI gh-pages
   release:
     name: Create new release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
       - name: Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v6
         with:
           node-version: '16'
       - name: Prepare build env
@@ -53,7 +53,8 @@ jobs:
         run: |
           make prod
           make pkg PLATFORM=linux
-          make pkg PLATFORM=darwin
+          make pkg PLATFORM=darwin ARCH=x64
+          make pkg PLATFORM=darwin ARCH=arm64
           make pkg PLATFORM=win32
       - name: Generate new version number
         run: echo "::set-output name=version::$(date +%Y%m%d%H%M)"

@@ -1,4 +1,5 @@
-#valid platform options: linux, win32, darwin
+# valid platform options: linux, win32, darwin
+# valid arch options: x64, arm64
 
 SRC_DIR            := $(realpath $(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
 BUILD_DIR_YARN     := $(SRC_DIR)/dist
