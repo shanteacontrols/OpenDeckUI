@@ -49,6 +49,8 @@ jobs:
           zip \
           wine \
           hub
+          sudo sh -c 'printf "#!/bin/sh\nwine \"\$@\"\n" > /usr/local/bin/wine64'
+          sudo chmod +x /usr/local/bin/wine64
       - name: Build
         run: |
           make prod
