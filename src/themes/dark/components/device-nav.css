@@ -1,20 +1,21 @@
 .device-nav {
-  @apply grid grid-flow-row grid-cols-2 gap-y-0 capitalize border-b;
+  @apply grid grid-flow-row grid-cols-2 gap-y-0 capitalize;
   background: theme("colors.surface");
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  padding-bottom: 0.72rem;
-  padding-top: 0.72rem;
+  padding-bottom: 0.58rem;
+  padding-top: 0.58rem;
   position: sticky;
   top: 84px;
   z-index: 39;
 }
 
 .device-nav .item {
-  @apply relative block px-4 ml-2 border-transparent;
+  @apply relative block px-3 border-transparent;
   @apply cursor-pointer text-foreground;
   font-weight: 400;
   letter-spacing: 0.08rem;
+  text-align: center;
   text-transform: uppercase;
 }
 
@@ -61,7 +62,7 @@
 }
 .device-nav .active .label:before {
   background-color: theme("colors.accent");
-  bottom: -8px;
+  bottom: -5px;
   content: "";
   display: block;
   height: 1px;
@@ -105,7 +106,13 @@
 
 @screen lg {
   .device-nav {
-    @apply grid-cols-none flex items-stretch mx-auto text-center justify-center;
+    @apply grid-cols-none flex items-start mx-auto text-center justify-center;
+    gap: 0.35rem;
+  }
+  .device-nav .item {
+    padding-left: 0;
+    padding-right: 0;
+    width: 7.25rem;
   }
   .device-nav .label {
     @apply block w-full pt-2;

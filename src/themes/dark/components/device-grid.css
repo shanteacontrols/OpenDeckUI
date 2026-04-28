@@ -55,14 +55,23 @@
 }
 
 .device-grid-view-controls .view-mode-controls {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
   order: 1;
 }
 
 .device-grid-view-controls .view-page-controls {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.4rem;
   order: 3;
 }
 
 .device-grid-view-controls .view-page-size-controls {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.4rem;
   order: 2;
 }
 

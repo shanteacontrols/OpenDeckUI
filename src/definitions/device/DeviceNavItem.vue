@@ -16,7 +16,6 @@
     <span class="lg:inline-block text-sm label">
       {{ title }}
     </span>
-    <br />
   </router-link>
 </template>
 

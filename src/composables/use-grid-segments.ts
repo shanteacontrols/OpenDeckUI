@@ -126,34 +126,6 @@ export const useGridSegments = (
         }
         break;
 
-      case Block.Analog:
-        {
-          if (
-            semverLt(semverClean(deviceState.firmwareVersion), "5.4.0") ||
-            semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
-          ) {
-            segments.push({
-              title: "Analog inputs",
-              startIndex: 0,
-              endIndex: analogCount.value - 1,
-            });
-          } else {
-            segments.push(
-              {
-                title: "Analog inputs",
-                startIndex: 0,
-                endIndex: analogCount.value - touchScreenCount.value - 1,
-              },
-              {
-                title: "Touchscreen",
-                startIndex: analogCount.value - touchScreenCount.value,
-                endIndex: analogCount.value - 1,
-              },
-            );
-          }
-        }
-        break;
-
       case Block.Led:
         {
           //segmentation to leds and touchscreen

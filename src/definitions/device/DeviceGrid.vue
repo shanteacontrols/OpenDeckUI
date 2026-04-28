@@ -9,7 +9,7 @@
       <div class="section-heading-inner-sm device-grid-view-controls">
         <span class="view-mode-controls">
           <span
-            class="btn btn-xs mr-2"
+            class="btn btn-xs"
             :class="{ 'btn-active': !viewSetting.viewListAsTable }"
             @click="setViewSetting(block, { viewListAsTable: false })"
           >
@@ -32,7 +32,7 @@
           <span
             v-for="itemsPerPage in pageSizes"
             :key="`page-size-${itemsPerPage}`"
-            class="btn btn-xs ml-1"
+            class="btn btn-xs"
             :class="{ 'btn-active': itemsPerPage === viewSetting.itemsPerPage }"
             @click="setViewSetting(block, { itemsPerPage })"
           >
@@ -44,11 +44,11 @@
           v-if="viewSetting.viewListAsTable && pages > 1"
           class="view-page-controls"
         >
-          <span class="view-control-label ml-4">Page</span>
+          <span class="view-control-label">Page</span>
           <span
             v-for="page in pages"
             :key="`page-size-${page}`"
-            class="btn btn-xs ml-1"
+            class="btn btn-xs"
             :class="{ 'btn-active': page === viewSetting.currentPage }"
             @click="setViewSetting(block, { currentPage: page })"
           >
