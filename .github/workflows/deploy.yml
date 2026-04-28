@@ -25,9 +25,9 @@ jobs:
           git config --global user.email "2544094+webui_bot@users.noreply.github.com"
           make prod
           git checkout gh-pages
-          rm -rf _assets/* index.html
+          rm -rf _assets images index.html
           mv dist/* .
-          git add index.html _assets*
+          git add index.html _assets images
           git commit --allow-empty -m "update webui"
           git push https://github.com/shanteacontrols/OpenDeckUI gh-pages
   release:
