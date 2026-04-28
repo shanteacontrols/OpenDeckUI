@@ -5,7 +5,9 @@
   @apply ml-2;
 }
 .form-field .help-text {
-  @apply mt-3 text-sm text-gray-200;
+  @apply mt-3 text-foreground;
+  font-size: 1.08rem;
+  line-height: 1.45;
 }
 .form-field.not-supported {
   @apply text-red-900;
@@ -15,5 +17,97 @@
 .form-field.error {
 }
 .form-field .error-message {
-  @apply mt-3 text-sm text-red-500;
+  @apply mt-3 text-red-500;
+  font-size: 1.08rem;
+  line-height: 1.45;
+}
+
+.form-select-custom {
+  @apply relative;
+  font-size: 1rem;
+}
+
+.form-select-button {
+  @apply flex items-center justify-between w-full rounded border-2 px-3 py-1 text-left outline-none;
+  background-color: theme("colors.surface");
+  border-color: theme("colors.gray.500");
+  color: theme("colors.foreground");
+  min-height: 2.1rem;
+}
+
+.form-select-button:hover,
+.form-select-button:focus,
+.form-select-custom.open .form-select-button {
+  border-color: theme("colors.accent");
+}
+
+.form-select-chevron {
+  border-color: theme("colors.foreground") transparent transparent transparent;
+  border-style: solid;
+  border-width: 0.35rem 0.3rem 0 0.3rem;
+  height: 0;
+  margin-left: 0.75rem;
+  width: 0;
+}
+
+.form-select-options {
+  @apply absolute left-0 right-0 z-50 overflow-y-auto border;
+  background-color: theme("colors.surface");
+  border-color: theme("colors.gray.500");
+  color: theme("colors.foreground");
+  list-style: none;
+  margin: 0.15rem 0 0;
+  max-height: 18rem;
+  padding: 0;
+}
+
+.form-select-option {
+  @apply cursor-pointer py-1;
+  padding-left: 1.9rem;
+  padding-right: 0.75rem;
+  position: relative;
+}
+
+.form-select-option.selected {
+  color: theme("colors.accent");
+  font-weight: 700;
+}
+
+.form-select-option.selected:before {
+  background-color: theme("colors.accent");
+  border-radius: 999px;
+  content: "";
+  height: 1.15rem;
+  left: 0.75rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.18rem;
+}
+
+.form-select-option.highlighted {
+  background-color: theme("colors.accent");
+  color: theme("colors.on-accent");
+}
+
+.form-select-option.highlighted:before {
+  background-color: theme("colors.on-accent");
+}
+
+.form-select option {
+  background-color: theme("colors.surface");
+  color: theme("colors.foreground");
+}
+
+.form-select option:checked {
+  background-color: theme("colors.accent");
+  color: theme("colors.on-accent");
+}
+
+.form-select option:hover,
+.form-select option:focus,
+.form-select option:active {
+  background-color: theme("colors.accent");
+  box-shadow: 0 0 0 999px theme("colors.accent") inset;
+  color: theme("colors.on-accent");
 }

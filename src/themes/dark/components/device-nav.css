@@ -1,25 +1,40 @@
 .device-nav {
-  @apply grid grid-flow-row grid-cols-2 gap-y-0 pb-6 pt-2 capitalize;
+  @apply grid grid-flow-row grid-cols-2 gap-y-0 capitalize border-b;
+  background: theme("colors.surface");
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding-bottom: 0.72rem;
+  padding-top: 0.72rem;
+  position: sticky;
+  top: 84px;
+  z-index: 39;
 }
 
 .device-nav .item {
-  @apply relative block px-4 pt-4 ml-2 border-transparent;
-  @apply font-bold cursor-pointer text-gray-400;
+  @apply relative block px-4 ml-2 border-transparent;
+  @apply cursor-pointer text-foreground;
+  font-weight: 400;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
 }
 
 /* icon */
 
 .device-nav .item > .icon-wrapper {
   @apply relative inline-block mx-2 rounded-full;
-  @apply border-gray-800 border-2;
+  @apply border-accent border-2;
 }
 .device-nav .item > .icon-wrapper svg {
-  @apply relative inline-block w-8 h-8 rounded-full;
-  @apply border-black border-2;
+  @apply relative inline-block rounded-full;
+  @apply border-surface border-2;
+  height: 2.75rem;
+  width: 2.75rem;
 }
 .device-nav .icon-wrapper > .icon-label {
-  @apply absolute left-0 top-0 -ml-5;
-  @apply text-xs bg-gray-900 font-medium;
+  @apply absolute left-0 top-0 -ml-6;
+  @apply bg-surface font-medium;
+  font-size: 0.82rem;
+  line-height: 1;
 }
 
 /* adjust icons */
@@ -30,31 +45,45 @@
 /* active */
 
 .device-nav .active {
-  @apply text-gray-800;
+  @apply text-accent;
 }
 .device-nav .active .label {
-  @apply text-yellow-500;
+  @apply text-accent;
 }
 .device-nav .active > .icon-wrapper .icon-label {
-  @apply text-yellow-500;
+  @apply text-foreground;
 }
 .device-nav .active > .icon-wrapper {
-  @apply bg-yellow-400;
+  @apply bg-accent;
+}
+.device-nav .active .label {
+  @apply relative;
+}
+.device-nav .active .label:before {
+  background-color: theme("colors.accent");
+  bottom: -8px;
+  content: "";
+  display: block;
+  height: 1px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 50%;
 }
 .device-nav .active > .icon-wrapper svg {
-  @apply border-black text-black;
+  @apply border-surface text-on-accent;
 }
 .device-nav .item.active:hover > .icon-wrapper svg {
-  @apply border-yellow-400 text-black;
+  @apply border-accent text-on-accent;
 }
 
 /* reactive */
 
 .device-nav .item:hover {
-  @apply text-yellow-400;
+  @apply text-accent;
 }
 .device-nav .item:hover > .icon-wrapper svg {
-  @apply border-yellow-400 text-yellow-400;
+  @apply border-accent text-accent;
 }
 
 /* highlighted nav items */
@@ -63,7 +92,7 @@
 .device-nav .item.btn-highlight .icon-label,
 .device-nav .item.btn-highlight > .icon-wrapper svg,
 .device-nav .item.btn-highlight:hover > .icon-wrapper svg {
-  @apply text-green-400;
+  @apply text-accent;
 }
 
 /* responsive */
@@ -76,7 +105,7 @@
 
 @screen lg {
   .device-nav {
-    @apply grid-cols-none pb-0 flex items-stretch mx-auto text-center justify-center;
+    @apply grid-cols-none flex items-stretch mx-auto text-center justify-center;
   }
   .device-nav .label {
     @apply block w-full pt-2;

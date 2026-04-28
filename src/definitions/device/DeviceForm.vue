@@ -6,7 +6,7 @@
           <h2>{{ blockDefinition.title }}s</h2>
         </router-link>
         <span class="mr-6">&rsaquo;</span>
-        <div class="mr-6 text-gray-400">
+        <div class="mr-6 text-foreground">
           {{ blockDefinition.title }}
           <strong>
             {{ index }}

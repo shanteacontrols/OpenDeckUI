@@ -6,8 +6,8 @@
       </h2>
     </div>
     <div v-if="!showMsbControls" class="section-heading">
-      <div class="section-heading-inner-sm clearfix">
-        <span class="">
+      <div class="section-heading-inner-sm device-grid-view-controls">
+        <span class="view-mode-controls">
           <span
             class="btn btn-xs mr-2"
             :class="{ 'btn-active': !viewSetting.viewListAsTable }"
@@ -26,9 +26,9 @@
 
         <span
           v-if="viewSetting.viewListAsTable && pageSizes.length"
-          class="ml-6 float-right"
+          class="view-page-size-controls"
         >
-          <span class="text-xs">Show</span>
+          <span class="view-control-label">Show</span>
           <span
             v-for="itemsPerPage in pageSizes"
             :key="`page-size-${itemsPerPage}`"
@@ -42,9 +42,9 @@
 
         <span
           v-if="viewSetting.viewListAsTable && pages > 1"
-          class="ml-6 mt-4 md:mt-0 float-right"
+          class="view-page-controls"
         >
-          <span class="text-xs ml-4">Page</span>
+          <span class="view-control-label ml-4">Page</span>
           <span
             v-for="page in pages"
             :key="`page-size-${page}`"

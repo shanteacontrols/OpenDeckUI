@@ -9,7 +9,7 @@
 
     <div v-if="showTransitionOverlay" class="device-transition-overlay">
       <Spinner class="self-center" />
-      <p class="mt-4 text-sm text-gray-200">
+      <p class="mt-4 text-sm text-foreground">
         {{ transitionMessage }}
       </p>
     </div>

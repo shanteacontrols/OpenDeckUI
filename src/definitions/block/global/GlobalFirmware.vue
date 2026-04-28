@@ -67,7 +67,7 @@
         v-if="Number.isInteger(dfuProgress)"
         class="form-field firmware-progress lg:col-span-3 md:col-span-2"
       >
-        <label class="text-sm leading-5 text-gray-400">Upload progress</label>
+        <label class="text-sm leading-5 text-foreground">Upload progress</label>
         <div class="inline-progress mt-2">
           <div
             class="inline-progress-bar"
@@ -82,7 +82,7 @@
   </Section>
 
   <div v-if="loading" class="lg:text-center relative" style="min-height: 50vh;">
-    <div class="absolute flex inset-0 opacity-75 bg-gray-900">
+    <div class="absolute flex inset-0 opacity-75 bg-surface">
       <Spinner class="self-center" />
     </div>
   </div>
@@ -92,7 +92,7 @@
       <div class="form-field lg:col-span-3 md:col-span-2">
         <p
           v-if="!availableUpdates.length"
-          class="text-sm leading-5 text-gray-200"
+          class="text-sm leading-5 text-foreground"
         >
           Your firmware is up to date.
         </p>
@@ -100,7 +100,7 @@
           <div
             v-for="update in availableUpdates"
             :key="update.name"
-            class="release-description text-gray-200"
+            class="release-description text-foreground"
           >
             <a
               :href="`https://github.com/paradajz/OpenDeck/releases/tag/${update.tag_name}`"
@@ -108,7 +108,7 @@
             >
             <a
               v-if="update.firmwareFileLink"
-              class="my-3 ml-4 py-1 px-2 bg-gray-600 text-gray-300 rounded-full text-xs focus:outline-none focus:shadow-outline"
+              class="my-3 ml-4 py-1 px-2 bg-gray-600 text-foreground rounded-full text-xs focus:outline-none focus:shadow-outline"
               target="_blank"
               :href="update.firmwareFileLink.browser_download_url"
             >
@@ -251,8 +251,8 @@ export default defineComponent({
 }
 .inline-progress-bar {
   min-height: 1.5rem;
-  background: #f59e0b;
-  color: #111827;
+  background: theme("colors.accent");
+  color: theme("colors.on-accent");
   text-align: center;
   font-size: 0.75rem;
   line-height: 1.5rem;

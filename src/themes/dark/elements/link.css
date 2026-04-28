@@ -1,7 +1,17 @@
 a {
-  color: theme("colors.yellow.500");
+  color: theme("colors.accent");
 }
 
 a:hover {
-  color: theme("colors.yellow.400");
+  color: theme("colors.accent");
+}
+
+.siblink {
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.siblink small {
+  font-size: inherit;
 }

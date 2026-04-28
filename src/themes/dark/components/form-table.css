@@ -10,7 +10,7 @@
 .form-table-row .btn-highlight,
 .form-table-row .btn-highlight:hover,
 .form-table-row .btn-highlight:focus {
-  @apply bg-green-400 border-green-600 shadow-outline;
+  @apply bg-accent border-accent text-on-accent shadow-outline;
 }
 
 .form-table-row:last-child {
@@ -27,7 +27,13 @@
   @apply hidden;
 }
 .form-table-row .label {
-  @apply text-xs leading-tight text-gray-500 mb-0;
+  @apply text-foreground mb-0;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+.form-table-row .instructions {
+  font-size: 0.88rem;
+  line-height: 1.25;
 }
 .form-table-row .error-message {
   @apply text-xs mt-1;
@@ -56,7 +62,8 @@
     @apply surface-elevated border-none h-full align-bottom pb-4;
   }
   .form-table-row .label {
-    @apply h-6 mb-1;
+    @apply mb-2;
+    min-height: 2rem;
   }
   .form-table-row .instructions {
     @apply block m-0;

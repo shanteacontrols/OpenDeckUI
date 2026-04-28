@@ -14,7 +14,11 @@
   @apply max-w-6xl px-8 pt-6 mx-auto;
 }
 
+.section.wide .section-heading-inner,
+.section.wide .section-heading-inner-sm,
+.section.wide .section-content,
 .section-wide .section-heading-inner,
+.section-wide .section-heading-inner-sm,
 .section-wide .section-content {
   @apply max-w-none;
 }

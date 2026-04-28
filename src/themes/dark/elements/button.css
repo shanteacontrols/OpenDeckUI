@@ -1,7 +1,8 @@
 .btn {
-  @apply px-4 py-2 rounded-full;
-  @apply bg-gray-800 text-gray-300 border-gray-700 border-2;
-  @apply text-sm font-bold leading-tight cursor-pointer;
+  @apply px-5 py-2 rounded-full;
+  @apply bg-gray-700 text-foreground border-0;
+  @apply font-bold leading-tight cursor-pointer;
+  font-size: 1.05rem;
 }
 
 a.btn {
@@ -9,35 +10,35 @@ a.btn {
 }
 
 .btn-sm {
-  @apply text-sm;
+  font-size: 1rem;
 }
 
 .btn-xs {
   @apply py-1;
   @apply px-2;
-  @apply text-xs;
+  font-size: 0.95rem;
 }
 
 .btn-primary {
-  @apply bg-yellow-400;
+  @apply bg-accent;
 }
 
 .btn-primary:hover {
-  @apply bg-yellow-600;
+  @apply bg-accent;
 }
 
 .btn-active,
 .btn-active:hover {
-  @apply bg-yellow-400 text-gray-800;
+  @apply bg-accent text-on-accent;
 }
 
 .btn:hover,
 .btn:focus {
-  @apply bg-yellow-400 text-gray-800 shadow-outline outline-none;
+  @apply bg-accent text-on-accent outline-none;
 }
 
 .btn.disabled,
 .btn.disabled:hover,
 input.btn:disabled {
-  @apply bg-gray-900 text-gray-500 border-gray-800;
+  @apply bg-gray-900 text-gray-500 border-0;
 }

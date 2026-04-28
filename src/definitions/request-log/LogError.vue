@@ -1,5 +1,5 @@
 <template>
-  <div class="py-2 border-b border-gray-800 last:border-b-0">
+  <div class="py-2 border-b border-accent last:border-b-0">
     <strong v-if="logEntry.requestId" class="text-red-500 mr-4"
       >Request {{ logEntry.requestId }}</strong
     >

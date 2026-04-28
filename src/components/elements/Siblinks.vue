@@ -1,10 +1,10 @@
 <template>
   <router-link
     v-if="total && current > 0"
-    class="ml-6"
+    class="siblink ml-6"
     :class="{
       'cursor-pointer': current > 0,
-      'yellow-700': current === 0,
+      'text-accent': current === 0,
     }"
     :to="{ params: { ...params, [paramKey]: current - 1 } }"
   >
@@ -14,10 +14,10 @@
 
   <router-link
     v-if="total && current < total - 1"
-    class="ml-6"
+    class="siblink ml-6"
     :class="{
       'cursor-pointer': current < total,
-      'yellow-700': current === total - 1,
+      'text-accent': current === total - 1,
     }"
     :to="{ params: { ...params, [paramKey]: current + 1 } }"
   >

@@ -1,6 +1,6 @@
 <template>
   <div class="">
-    <strong class="mr-2 text-gray-400">Component info</strong>
+    <strong class="mr-2 text-foreground">Component info</strong>
     <strong v-if="logEntry.block">{{ BlockMap[logEntry.block].title }} </strong>
     <strong v-if="Number.isInteger(logEntry.index)">
       #{{ logEntry.index }}

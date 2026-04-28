@@ -5,22 +5,76 @@
 /* segments */
 
 .grid-segment {
-  @apply border-gray-800 border-b;
+  @apply border-accent border-b;
 }
 
 .grid-segment:last-child {
   @apply border-none;
 }
 
+/* view controls */
+
+.device-grid-view-controls {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 1.05rem;
+  gap: 0.8rem 1.75rem;
+  justify-content: center;
+  min-height: 3.5rem;
+  padding-bottom: 0.65rem;
+  padding-top: 0.65rem;
+}
+
+.device-grid-view-controls .btn-xs {
+  align-items: center;
+  background-color: theme("colors.gray.700");
+  border-color: theme("colors.gray.700");
+  border-width: 0;
+  color: theme("colors.foreground");
+  display: inline-flex;
+  font-size: 1.05rem;
+  justify-content: center;
+  min-width: 2.15rem;
+  padding-bottom: 0.36rem;
+  padding-top: 0.36rem;
+  text-align: center;
+}
+
+.device-grid-view-controls .btn-xs.btn-active,
+.device-grid-view-controls .btn-xs:hover,
+.device-grid-view-controls .btn-xs:focus {
+  background-color: theme("colors.accent");
+  border-color: theme("colors.accent");
+  color: theme("colors.on-accent");
+}
+
+.device-grid-view-controls .view-control-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.device-grid-view-controls .view-mode-controls {
+  order: 1;
+}
+
+.device-grid-view-controls .view-page-controls {
+  order: 3;
+}
+
+.device-grid-view-controls .view-page-size-controls {
+  order: 2;
+}
+
 /* buttons */
 
 .device-grid .btn {
-  @apply bg-gray-600 text-gray-900 border-black rounded-md;
+  @apply bg-gray-700 text-foreground border-0 rounded-md;
 }
 
 .device-grid .btn:hover,
 .device-grid .btn:focus {
-  @apply bg-yellow-400 text-gray-800 shadow-outline outline-none;
+  @apply bg-accent text-on-accent outline-none;
 }
 
 /* highlighted buttons */
@@ -28,7 +82,7 @@
 .device-grid .btn-highlight,
 .device-grid .btn-highlight:hover,
 .device-grid .btn-highlight:focus {
-  @apply bg-green-400 border-green-600 shadow-outline;
+  @apply bg-accent border-0 text-on-accent;
 }
 
 /* responsive */

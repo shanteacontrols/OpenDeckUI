@@ -13,6 +13,10 @@ module.exports = {
     extend: {
       colors: {
         ...colors,
+        accent: "#f39c12",
+        foreground: "#ffffff",
+        "on-accent": "#ffffff",
+        surface: "#202020",
         gray: {
           100: "#f5f5f5",
           200: "#eeeeee",
@@ -28,15 +32,32 @@ module.exports = {
     },
     customForms: (theme) => ({
       default: {
-        "select, input": {
-          backgroundColor: theme("colors.gray.400"),
+        input: {
+          backgroundColor: theme("colors.surface"),
           borderColor: theme("colors.gray.500"),
           borderWidth: theme("borderWidth.2"),
-          color: theme("colors.gray.800"),
-          iconColor: theme("colors.gray.800"),
+          color: theme("colors.foreground"),
+          iconColor: theme("colors.foreground"),
+          "&:hover": {
+            borderColor: theme("colors.accent"),
+          },
           "&:focus": {
-            backgroundColor: theme("colors.gray.200"),
-            borderColor: theme("colors.blue.400"),
+            backgroundColor: theme("colors.surface"),
+            borderColor: theme("colors.accent"),
+          },
+        },
+        select: {
+          backgroundColor: theme("colors.surface"),
+          borderColor: theme("colors.gray.500"),
+          borderWidth: theme("borderWidth.2"),
+          color: theme("colors.foreground"),
+          iconColor: theme("colors.foreground"),
+          "&:hover": {
+            borderColor: theme("colors.accent"),
+          },
+          "&:focus": {
+            backgroundColor: theme("colors.surface"),
+            borderColor: theme("colors.accent"),
           },
         },
         checkbox: {

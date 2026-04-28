@@ -7,14 +7,16 @@
 /* main */
 
 .request-log-main {
-  @apply overflow-y-scroll text-sm;
+  @apply overflow-y-scroll;
+  font-size: 1.08rem;
+  line-height: 1.45;
   max-height: 500px;
 }
 
 /* table */
 
 .request-table {
-  @apply mt-2 mb-0 border-gray-800 border-b;
+  @apply mt-2 mb-0 border-accent border-b;
 }
 .request-table .table-head {
   @apply font-bold;
@@ -25,7 +27,8 @@
   @apply px-4 py-1;
 }
 .request-table .table-row td {
-  @apply px-4 py-1 border-gray-900 border-b;
+  @apply px-4 py-2 border-b;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 .request-table .table-row:last-child td {
   @apply border-none;

@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute flex inset-0 opacity-75 bg-gray-900">
+  <div class="absolute flex inset-0 opacity-75 bg-surface">
     <Spinner class="self-center" />
   </div>
 </template>

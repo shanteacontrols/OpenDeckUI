@@ -34,7 +34,7 @@ export default defineComponent({
 .spinner > div {
   width: 18px;
   height: 18px;
-  background-color: rgb(236, 201, 75);
+  background-color: theme("colors.accent");
 
   border-radius: 100%;
   display: inline-block;

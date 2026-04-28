@@ -6,29 +6,29 @@
 /* surface neutral */
 
 .surface-neutral-border {
-  @apply border-gray-800;
+  @apply border-accent;
 }
 .surface-neutral {
-  @apply bg-gray-900 text-gray-400 surface-neutral-border;
+  @apply bg-surface text-foreground surface-neutral-border;
 }
 .surface-neutral .faded {
   @apply text-gray-500;
 }
 .surface-neutral .text-promoted {
-  @apply text-gray-300;
+  @apply text-foreground;
 }
 
 /* surface elevated */
 
 .surface-elevated-border {
-  @apply border-gray-800;
+  @apply border-accent;
 }
 .surface-elevated {
-  @apply bg-black text-gray-400 surface-elevated-border;
+  @apply bg-surface text-foreground surface-elevated-border;
 }
 .surface-elevated .faded {
   @apply text-gray-500;
 }
 .surface-elevated .text-promoted {
-  @apply text-gray-300;
+  @apply text-foreground;
 }
