@@ -27,7 +27,8 @@ jobs:
           git checkout gh-pages
           rm -rf _assets images index.html
           mv dist/* .
-          git add index.html _assets images
+          git add index.html _assets
+          git add -f images
           git commit --allow-empty -m "update webui"
           git push https://github.com/shanteacontrols/OpenDeckUI gh-pages
   release:
