@@ -1,0 +1,1 @@
+FROM ghcr.io/paradajz/wenv:4002d1e291abd271c181e0721580b8a58214368c
