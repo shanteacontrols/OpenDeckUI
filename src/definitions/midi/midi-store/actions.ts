@@ -61,14 +61,11 @@ const stopMidiConnectionWatcher = (): Promise<void> => {
 export const assignInputs = async (): Promise<void> => {
   midiState.inputs = WebMidi.inputs.filter(
     (input: Input) =>
-      input.name.includes("OpenDeck") &&
-      !input.name.includes("BLE") &&
-      !input.name.includes("OpenDeck DFU"),
+      input.name.includes("OpenDeck") && !input.name.includes("OpenDeck DFU"),
   );
   midiState.outputs = WebMidi.outputs.filter(
     (output: Output) =>
       output.name.includes("OpenDeck") &&
-      !output.name.includes("BLE") &&
       !output.name.includes("OpenDeck DFU"),
   );
 };
@@ -79,7 +76,7 @@ export const findOutputById = (outputId: string): Output => {
   return WebMidi.outputs.find((output: Output) => output.id === outputId);
 };
 
-const pingOutput = async (output: Output, inputs: Inputs[]) => {
+const pingOutput = async (output: Output, inputs: Input[]) => {
   return new Promise((resolve, reject) => {
     let input;
     let resolved = false;
@@ -142,7 +139,8 @@ export const matchInputOutput = async (
   const inputs = WebMidi.inputs.filter(
     (input: Input) => input.name === output.name,
   );
-  if (!inputs.length) {
+
+  if (inputs.length == 0) {
     return delay(250).then(() => matchInputOutput(outputId));
   }
 
