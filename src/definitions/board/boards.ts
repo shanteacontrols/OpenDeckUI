@@ -189,7 +189,7 @@ export const Boards: IBoardDefinition[] = [
   },
   {
     name: "Arduino Nano 33 BLE",
-    id: [33, 108, 99, 106],
+    id: [115, 63, 71, 119],
     oldId: [],
     firmwareFileName: "nano33ble.dfu.bin",
   },
