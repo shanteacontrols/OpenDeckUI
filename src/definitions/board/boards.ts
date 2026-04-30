@@ -152,6 +152,12 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "nrf52840dk.dfu.bin",
   },
   {
+    name: "nRF5340DK",
+    id: [96, 79, 62, 55],
+    oldId: [],
+    firmwareFileName: "nrf5340dk.dfu.bin",
+  },
+  {
     name: "Raspberry Pi Pico",
     id: [59, 72, 34, 30],
     oldId: [],
