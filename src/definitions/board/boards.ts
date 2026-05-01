@@ -235,6 +235,12 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "nucleo_f767zi.dfu.bin",
   },
+  {
+    name: "ST Nucleo F446ZE",
+    id: [20, 37, 49, 82],
+    oldId: [],
+    firmwareFileName: "nucleo_f446ze.dfu.bin",
+  },
 ];
 
 export default Boards;
