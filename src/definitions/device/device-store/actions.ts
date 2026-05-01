@@ -797,10 +797,6 @@ const sendRebootRequest = async (
 
   resetDfuState();
 
-  if (hardReloadToRoute(reconnectTarget)) {
-    return;
-  }
-
   await router.replace({
     ...reconnectTarget,
   });
