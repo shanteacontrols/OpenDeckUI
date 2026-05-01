@@ -200,6 +200,12 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "nano33ble.dfu.bin",
   },
   {
+    name: "Adafruit Grand Central M4",
+    id: [69, 70, 75, 12],
+    oldId: [],
+    firmwareFileName: "grand_central_m4.dfu.bin",
+  },
+  {
     name: "Adafruit ItsyBitsy nRF52840 Express",
     id: [59, 48, 3, 95],
     oldId: [],
