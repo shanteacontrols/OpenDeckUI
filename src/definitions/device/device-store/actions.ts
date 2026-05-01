@@ -990,6 +990,7 @@ const startRestore = async (file: File): Promise<void> => {
     await sendMessagesFromFileWithDelay(file, Request.RestoreBackup);
   } finally {
     deviceState.isSystemOperationRunning = false;
+    deviceState.systemOperationMessage = (null as unknown) as string;
     scheduleDeviceHeartbeat();
   }
 
@@ -1038,6 +1039,7 @@ const startBackup = async (): Promise<void> => {
   };
 
   deviceState.isSystemOperationRunning = true;
+  deviceState.systemOperationMessage = "Creating backup";
 
   try {
     await sendMessage({
@@ -1048,6 +1050,7 @@ const startBackup = async (): Promise<void> => {
     logger.error("Failed to read component config", error);
   } finally {
     deviceState.isSystemOperationRunning = false;
+    deviceState.systemOperationMessage = (null as unknown) as string;
     scheduleDeviceHeartbeat();
   }
 };
@@ -1169,12 +1172,28 @@ export const getComponentSettings = async (
 export const setComponentSectionValue = async (
   config: IRequestConfig,
   handler: (val: any) => void,
-): Promise<void> =>
-  sendMessage({
-    command: Request.SetValue,
-    handler,
-    config,
-  });
+): Promise<void> => {
+  const isActivePresetChange =
+    config.block === Block.Global && config.section === 2 && config.index === 0;
+
+  if (isActivePresetChange) {
+    deviceState.isSystemOperationRunning = true;
+    deviceState.systemOperationMessage = "Changing active preset";
+  }
+
+  try {
+    return await sendMessage({
+      command: Request.SetValue,
+      handler,
+      config,
+    });
+  } finally {
+    if (isActivePresetChange) {
+      deviceState.isSystemOperationRunning = false;
+      deviceState.systemOperationMessage = (null as unknown) as string;
+    }
+  }
+};
 
 export const getSectionValues = async (
   block: Block,

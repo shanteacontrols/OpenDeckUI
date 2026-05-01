@@ -1,8 +1,6 @@
 <template>
   <form class="relative flex flex-wrap flex-grow" novalidate @submit.prevent="">
-    <div v-if="loading" class="absolute flex inset-0 opacity-75 bg-surface">
-      <Spinner class="self-center" />
-    </div>
+    <SpinnerOverlay v-if="loading" />
 
     <slot
       :form="formData"

@@ -82,9 +82,7 @@
   </Section>
 
   <div v-if="loading" class="lg:text-center relative" style="min-height: 50vh;">
-    <div class="absolute flex inset-0 opacity-75 bg-surface">
-      <Spinner class="self-center" />
-    </div>
+    <SpinnerOverlay />
   </div>
 
   <Section v-else-if="updatesChecked" title="Updates" class="w-full">

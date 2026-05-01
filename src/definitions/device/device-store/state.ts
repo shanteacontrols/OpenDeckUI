@@ -42,6 +42,7 @@ export const defaultState: IDeviceState = {
   numberOfComponents: [] as Array<number>,
   unsupportedComponents,
   isSystemOperationRunning: false,
+  systemOperationMessage: (null as unknown) as string,
   systemOperationPercentage: (null as unknown) as number,
   lastApplicationOutputName: (null as unknown) as string,
   dfuState: DfuState.Idle,

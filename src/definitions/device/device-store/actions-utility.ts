@@ -27,6 +27,7 @@ export const sendMessagesFromFileWithDelay = async (
 ): Promise<void> => {
   let sentMessageCount = 0;
   deviceState.isSystemOperationRunning = true;
+  deviceState.systemOperationMessage = "Restoring backup";
   deviceState.systemOperationPercentage = 1;
 
   const messages = await convertFileToMessageArray(file);
@@ -61,6 +62,7 @@ export const sendMessagesFromFileWithDelay = async (
     await promiseChain;
   } finally {
     deviceState.isSystemOperationRunning = false;
+    deviceState.systemOperationMessage = (null as unknown) as string;
     deviceState.systemOperationPercentage = null;
   }
 

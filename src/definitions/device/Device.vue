@@ -7,12 +7,11 @@
     <DeviceNav v-if="isConnected && !isBootloaderMode" />
     <router-view></router-view>
 
-    <div v-if="showTransitionOverlay" class="device-transition-overlay">
-      <Spinner class="self-center" />
-      <p class="mt-4 text-sm text-foreground">
-        {{ transitionMessage }}
-      </p>
-    </div>
+    <SpinnerOverlay
+      v-if="showTransitionOverlay"
+      fixed
+      :message="transitionMessage"
+    />
 
     <ProgressBar
       v-if="
@@ -20,7 +19,11 @@
       "
       :percentage="systemOperationPercentage"
     />
-    <SpinnerOverlay v-else-if="isSystemOperationRunning" />
+    <SpinnerOverlay
+      v-else-if="isSystemOperationRunning"
+      fixed
+      :message="systemOperationMessage || 'Processing device operation'"
+    />
   </div>
 
   <Hero
@@ -58,6 +61,7 @@ export default defineComponent({
       hasVisibleSession,
       isConnecting,
       isSystemOperationRunning,
+      systemOperationMessage,
       systemOperationPercentage,
       isBootloaderMode,
       dfuState,
@@ -120,21 +124,9 @@ export default defineComponent({
       showTransitionOverlay,
       transitionMessage,
       isSystemOperationRunning,
+      systemOperationMessage,
       systemOperationPercentage,
     };
   },
 });
 </script>
-
-<style>
-.device-transition-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(17, 24, 39, 0.8);
-  z-index: 20;
-}
-</style>
