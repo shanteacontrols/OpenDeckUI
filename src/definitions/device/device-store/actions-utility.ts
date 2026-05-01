@@ -26,6 +26,7 @@ export const sendMessagesFromFileWithDelay = async (
   interPacketDelayMs: number = defaultInterPacketDelayMs,
 ): Promise<void> => {
   let sentMessageCount = 0;
+  deviceState.isSystemOperationRunning = true;
   deviceState.systemOperationPercentage = 1;
 
   const messages = await convertFileToMessageArray(file);
@@ -56,9 +57,12 @@ export const sendMessagesFromFileWithDelay = async (
       });
   }, Promise.resolve());
 
-  await promiseChain;
-
-  deviceState.systemOperationPercentage = null;
+  try {
+    await promiseChain;
+  } finally {
+    deviceState.isSystemOperationRunning = false;
+    deviceState.systemOperationPercentage = null;
+  }
 
   return !hadErrors;
 };

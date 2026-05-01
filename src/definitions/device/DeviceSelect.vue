@@ -46,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from "vue";
+import { defineComponent, onMounted, onUnmounted } from "vue";
 import { midiStoreMapped, deviceStoreMapped } from "../../store";
 import { webUsbDfuVirtualOutputId } from "./device-store";
 
@@ -54,11 +54,15 @@ export default defineComponent({
   name: "DeviceSelect",
   setup() {
     onMounted(async () => {
-      midiStoreMapped.assignInputs();
+      await midiStoreMapped.assignInputs();
       midiStoreMapped.startMidiConnectionWatcher();
 
       // Note: this should be in Device.vue onUnmounted, but it is unreliable for some reason
       await deviceStoreMapped.closeConnection();
+    });
+
+    onUnmounted(() => {
+      midiStoreMapped.stopMidiConnectionWatcher();
     });
 
     return {

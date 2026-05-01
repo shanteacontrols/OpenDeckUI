@@ -29,6 +29,6 @@ export const addError = (params: ErrorParams): void => {
     const definition = getErrorDefinition(params.errorCode);
     logger.error(definition.description, params.error);
   } else {
-    logger.error(definition.message, params.error);
+    logger.error(params.message || "Unknown error", params.error);
   }
 };

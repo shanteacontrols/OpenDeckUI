@@ -12,6 +12,7 @@ import { isConnected, isConnecting } from "./computed";
 let loadMidiPromise = (null as unknown) as Promise<void>;
 
 let connectionWatcherTimer = null;
+const initialHandshakeTimeoutMs = 1000;
 
 // Helpers
 
@@ -23,18 +24,22 @@ const connectionWatcher = async (): Promise<void> => {
   stopMidiConnectionWatcher();
 
   try {
-    if (!isConnected() && !isConnecting()) {
-      await loadMidi();
-    }
-
-    assignInputs();
-
     const isDevicePageOpen = router.currentRoute.value.matched.some(
       (r) => r.name === "device",
     );
 
+    if (isDevicePageOpen) {
+      return;
+    }
+
+    if (!isConnected() && !isConnecting()) {
+      await loadMidi();
+    }
+
+    await assignInputs();
+
     // If only one input is available, open it right away
-    if (midiState.outputs.length === 1 && !isDevicePageOpen) {
+    if (midiState.outputs.length === 1) {
       router.push({
         name: "device",
         params: {
@@ -58,21 +63,47 @@ const stopMidiConnectionWatcher = (): Promise<void> => {
   }
 };
 
-export const assignInputs = async (): Promise<void> => {
-  midiState.inputs = WebMidi.inputs.filter(
+const getOpenDeckInputs = (): Array<Input> =>
+  WebMidi.inputs.filter(
     (input: Input) =>
       input.name.includes("OpenDeck") && !input.name.includes("OpenDeck DFU"),
   );
-  midiState.outputs = WebMidi.outputs.filter(
+
+const getOpenDeckOutputs = (): Array<Output> =>
+  WebMidi.outputs.filter(
     (output: Output) =>
-      output.name.includes("OpenDeck") &&
-      !output.name.includes("OpenDeck DFU"),
+      output.name.includes("OpenDeck") && !output.name.includes("OpenDeck DFU"),
   );
+
+export const assignInputs = async (): Promise<void> => {
+  const inputs = getOpenDeckInputs();
+  const outputs = getOpenDeckOutputs();
+  const availableOutputs = [];
+
+  for (const output of outputs) {
+    const matchingInputs = inputs.filter(
+      (input: Input) => input.name === output.name,
+    );
+
+    if (!matchingInputs.length) {
+      continue;
+    }
+
+    try {
+      await pingOutput(output, matchingInputs);
+      availableOutputs.push(output);
+    } catch (error) {
+      // Ignore stale WebMIDI outputs which no longer answer OpenDeck handshake.
+    }
+  }
+
+  midiState.inputs = inputs;
+  midiState.outputs = availableOutputs;
 };
 
 // Actions
 
-export const findOutputById = (outputId: string): Output => {
+export const findOutputById = (outputId: string): Output | undefined => {
   return WebMidi.outputs.find((output: Output) => output.id === outputId);
 };
 
@@ -115,13 +146,15 @@ const pingOutput = async (output: Output, inputs: Input[]) => {
     // Send HandShake to find which input will reply
     output.sendSysex(openDeckManufacturerId, [0, 0, 1]);
 
-    return delay(1000).then(() => {
+    return delay(initialHandshakeTimeoutMs).then(() => {
       if (!resolved) {
-        logger.error("INITIAL HANDSHAKE TIMED OUT, RETRYING");
+        inputs.forEach((input: Input) => {
+          input.removeListener("sysex", "all");
+        });
         reject("TIMED OUT");
       }
     });
-  }).catch(() => matchInputOutput(output.id));
+  });
 };
 
 export const matchInputOutput = async (
@@ -133,7 +166,7 @@ export const matchInputOutput = async (
     return output.id === outputId;
   });
   if (!output) {
-    return delay(250).then(() => matchInputOutput(outputId));
+    throw new Error(`Output not found: ${outputId}`);
   }
 
   const inputs = WebMidi.inputs.filter(
@@ -141,10 +174,15 @@ export const matchInputOutput = async (
   );
 
   if (inputs.length == 0) {
-    return delay(250).then(() => matchInputOutput(outputId));
+    throw new Error(`Input not found for output: ${outputId}`);
   }
 
-  return pingOutput(output, inputs);
+  try {
+    return (await pingOutput(output, inputs)) as InputOutputMatch;
+  } catch (error) {
+    await assignInputs();
+    throw error;
+  }
 };
 
 export const loadMidi = async (): Promise<void> => {
@@ -175,12 +213,12 @@ const newMidiLoadPromise = async (): Promise<void> =>
     }
 
     setConnectionState(MidiConnectionState.Pending);
-    WebMidi.enable(function (error) {
+    WebMidi.enable(async function (error) {
       if (error) {
         logger.error("Failed to load WebMidi", error);
         reject(error);
       } else {
-        assignInputs();
+        await assignInputs();
         setConnectionState(MidiConnectionState.Open);
         loadMidiPromise = (null as unknown) as Promise<void>;
         return resolve();
@@ -200,6 +238,7 @@ interface InputOutputMatch {
 export interface IMidiActions {
   loadMidi: () => Promise<void>;
   assignInputs: () => Promise<void>;
+  findOutputById: (outputId: string) => Output | undefined;
   matchInputOutput: (outputId: string) => Promise<InputOutputMatch>;
   startMidiConnectionWatcher: () => void;
   stopMidiConnectionWatcher: () => void;

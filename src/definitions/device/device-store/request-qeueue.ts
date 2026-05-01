@@ -35,6 +35,7 @@ interface IRequestParams {
   config?: IRequestConfig;
   payload?: number[];
   handler: (data: any) => void;
+  timeoutMs?: number;
 }
 
 export interface IProcessedEventData {
@@ -59,6 +60,7 @@ export interface IQueuedRequest {
   messagePart?: number;
   parsed?: number[] | number | string;
   errorMessage?: string;
+  timeoutMs?: number;
   time: {
     created: Date;
     started: Date;
@@ -192,9 +194,13 @@ const startRequest = async (id: number) => {
       requestQueue.activeRequestId.value = null;
       request.state = RequestState.Done;
       request.promiseResolve();
-    } else if (request.command === Request.RestoreBackup) {
-      // Fail requests after 2 seconds of no response
-      delay(2000).then(() => {
+    }
+
+    const timeoutMs =
+      request.timeoutMs || (request.command === Request.RestoreBackup ? 2000 : 0);
+
+    if (timeoutMs) {
+      delay(timeoutMs).then(() => {
         if (request.state === RequestState.Sent) {
           onRequestFail(request, ErrorCode.UI_QUEUE_REQ_TIMED_OUT);
         }
@@ -515,7 +521,7 @@ const prepareRequestPayload = (
 };
 
 export const sendMessage = async (params: IRequestParams): Promise<any> => {
-  const { command, handler, config, payload } = params;
+  const { command, handler, config, payload, timeoutMs } = params;
   const definition = getDefinition(command);
 
   return new Promise((resolve, reject) => {
@@ -524,6 +530,7 @@ export const sendMessage = async (params: IRequestParams): Promise<any> => {
       payload: payload || prepareRequestPayload(definition, config),
       handler,
       config,
+      timeoutMs,
       promiseResolve: resolve,
       promiseReject: reject,
     });

@@ -37,6 +37,8 @@ import {
 } from "./midi-event-handlers";
 
 let connectionWatcherTimer = null;
+let heartbeatTimer = null;
+let heartbeatInFlight = false;
 let dfuWatcherTimer = null;
 let activeDfuDevice = null;
 let activeDfuOutEndpoint = null;
@@ -47,6 +49,8 @@ const rebootDisconnectTimeoutMs = 2000;
 const appReconnectTimeoutMs = 45000;
 const dfuPollTimeoutMs = 15000;
 const devicePollIntervalMs = 250;
+const heartbeatIntervalMs = 3000;
+const heartbeatTimeoutMs = 2500;
 const dfuChunkSize = 64;
 const webUsbFinalizeTimeoutMs = 5000;
 const opendeckUsbVendorId = 0x1209;
@@ -116,6 +120,88 @@ const connectionWatcher = async (): Promise<void> => {
   connectionWatcherTimer = setTimeout(() => connectionWatcher(), 1000);
 };
 
+const stopDeviceHeartbeat = (): void => {
+  if (heartbeatTimer) {
+    clearTimeout(heartbeatTimer);
+    heartbeatTimer = null;
+  }
+
+  heartbeatInFlight = false;
+};
+
+const shouldRunDeviceHeartbeat = (): boolean =>
+  deviceState.connectionState === DeviceConnectionState.Open &&
+  deviceState.dfuState === DfuState.Idle &&
+  !deviceState.isBootloaderMode &&
+  !deviceState.isSystemOperationRunning &&
+  !!deviceState.output;
+
+const navigateHome = async (): Promise<void> => {
+  try {
+    await router.replace({ name: "home" });
+  } catch (error) {
+    logger.warn("Failed to navigate home through router", error);
+  }
+};
+
+const handleHeartbeatFailure = async (error: unknown): Promise<void> => {
+  logger.warn("Device heartbeat failed", error);
+  disconnectCurrentMidiSession();
+  await midiStore.actions.assignInputs();
+  await navigateHome();
+};
+
+const scheduleDeviceHeartbeat = (): void => {
+  if (heartbeatTimer) {
+    clearTimeout(heartbeatTimer);
+  }
+
+  if (!shouldRunDeviceHeartbeat()) {
+    heartbeatTimer = null;
+    return;
+  }
+
+  heartbeatTimer = setTimeout(() => {
+    runDeviceHeartbeat();
+  }, heartbeatIntervalMs);
+};
+
+const runDeviceHeartbeat = async (): Promise<void> => {
+  heartbeatTimer = null;
+
+  if (!shouldRunDeviceHeartbeat()) {
+    return;
+  }
+
+  if (heartbeatInFlight) {
+    scheduleDeviceHeartbeat();
+    return;
+  }
+
+  heartbeatInFlight = true;
+
+  try {
+    await sendMessage({
+      command: Request.Handshake,
+      handler: () => null,
+      timeoutMs: heartbeatTimeoutMs,
+    });
+    heartbeatInFlight = false;
+    scheduleDeviceHeartbeat();
+  } catch (error) {
+    heartbeatInFlight = false;
+
+    if (shouldRunDeviceHeartbeat()) {
+      await handleHeartbeatFailure(error);
+    }
+  }
+};
+
+const startDeviceHeartbeat = (): void => {
+  heartbeatInFlight = false;
+  scheduleDeviceHeartbeat();
+};
+
 const startDeviceConnectionWatcher = (): Promise<void> =>
   // Prevent connection watcher from causing duplicate redirects on reconnect
   delay(5000).then(connectionWatcher);
@@ -135,6 +221,10 @@ const stopDfuWatcher = (): void => {
 };
 
 const setDfuState = (state: DfuState, data: Partial<IDeviceState> = {}): void => {
+  if (state !== DfuState.Idle) {
+    stopDeviceHeartbeat();
+  }
+
   Object.assign(deviceState, {
     dfuState: state,
     ...data,
@@ -204,6 +294,7 @@ const isMatchingWebUsbDfuDevice = (device: any): boolean =>
 const disconnectCurrentMidiSession = (): void => {
   resetQueue();
   stopDeviceConnectionWatcher();
+  stopDeviceHeartbeat();
   stopDfuWatcher();
 
   if (deviceState.input) {
@@ -524,6 +615,7 @@ export const connectDeviceStoreToInput = async (
   deviceState.connectionState = DeviceConnectionState.Open;
   deviceState.connectionPromise = (null as unknown) as Promise<any>;
   startDeviceConnectionWatcher();
+  startDeviceHeartbeat();
 
   // These requests won't run until connection promise is finished
   await loadDeviceInfo();
@@ -542,11 +634,20 @@ const connectDevice = async (outputId: string): Promise<void> => {
   // All subsequent connect attempts should receive the same promise as response
   deviceState.connectionPromise = connectDeviceStoreToInput(outputId);
 
-  return deviceState.connectionPromise;
+  try {
+    return await deviceState.connectionPromise;
+  } catch (error) {
+    logger.warn("Failed to connect to OpenDeck MIDI device", error);
+    disconnectCurrentMidiSession();
+    await midiStore.actions.assignInputs();
+    await navigateHome();
+    throw error;
+  }
 };
 
 export const closeConnection = (): Promise<void> => {
   stopDeviceConnectionWatcher();
+  stopDeviceHeartbeat();
   stopDfuWatcher();
   closeDfuDevice();
   resetDeviceStore();
@@ -581,6 +682,7 @@ const sendRebootRequest = async (
   };
 
   stopDeviceConnectionWatcher();
+  stopDeviceHeartbeat();
   setDfuState(targetState, {
     dfuTransport: (null as unknown) as DfuTransport,
     dfuProgress: (null as unknown) as number,
@@ -882,9 +984,14 @@ export const startUpdatesCheck = async (
 // Backup
 
 const startRestore = async (file: File): Promise<void> => {
-  await sendMessagesFromFileWithDelay(file, Request.RestoreBackup);
+  stopDeviceHeartbeat();
 
-  deviceState.isSystemOperationRunning = false;
+  try {
+    await sendMessagesFromFileWithDelay(file, Request.RestoreBackup);
+  } finally {
+    deviceState.isSystemOperationRunning = false;
+    scheduleDeviceHeartbeat();
+  }
 
   alert(
     "Restoring from backup finished. The board will now reboot and apply the parameters. This can take up to 30 seconds.",
@@ -892,6 +999,8 @@ const startRestore = async (file: File): Promise<void> => {
 };
 
 const startBackup = async (): Promise<void> => {
+  stopDeviceHeartbeat();
+
   let receivedCount = 0;
   let firstResponse = null;
   const backupData = [];
@@ -928,10 +1037,19 @@ const startBackup = async (): Promise<void> => {
     return isLastMessage;
   };
 
-  sendMessage({
-    command: Request.Backup,
-    handler,
-  }).catch((error) => logger.error("Failed to read component config", error));
+  deviceState.isSystemOperationRunning = true;
+
+  try {
+    await sendMessage({
+      command: Request.Backup,
+      handler,
+    });
+  } catch (error) {
+    logger.error("Failed to read component config", error);
+  } finally {
+    deviceState.isSystemOperationRunning = false;
+    scheduleDeviceHeartbeat();
+  }
 };
 
 // Other hardware
