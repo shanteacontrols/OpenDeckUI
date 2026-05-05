@@ -64,6 +64,7 @@ export default defineComponent({
       systemOperationMessage,
       systemOperationPercentage,
       isBootloaderMode,
+      isFirmwareUpdateSupported,
       dfuState,
     } = deviceStoreMapped;
 
@@ -107,6 +108,17 @@ export default defineComponent({
         await connectDevice(
           outputId,
         );
+        if (
+          router.currentRoute.value.name === "device-firmware-update" &&
+          !isBootloaderMode.value &&
+          !isFirmwareUpdateSupported.value
+        ) {
+          return router.replace({
+            name: "device-global",
+            params: { outputId },
+          });
+        }
+
         if (isBootloaderMode.value) {
           return router.push({ name: "device-firmware-update" });
         }

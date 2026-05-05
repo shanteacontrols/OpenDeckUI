@@ -29,7 +29,6 @@ export enum Request {
   GetNumberOfSupportedPresets = "GetNumberOfSupportedPresets",
   Reboot = "Reboot",
   Backup = "Backup",
-  GetBootLoaderSupport = "GetBootLoaderSupport",
   BootloaderMode = "BootloaderMode",
   FactoryReset = "FactoryReset",
   GetValue = "GetValue",
@@ -136,13 +135,6 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     isConnectionInfoRequest: true,
     expectsNoResponse: true,
     specialRequestId: 127, // Hex: 7F
-  },
-  [Request.GetBootLoaderSupport]: {
-    key: Request.GetBootLoaderSupport,
-    type: RequestType.Custom,
-    specialRequestId: 81, // Hex: 51
-    decodeDoubleByte: true,
-    parser: (response: number[]): number => response[0],
   },
   [Request.BootloaderMode]: {
     key: Request.BootloaderMode,

@@ -1,19 +1,5 @@
 <template>
-  <Section
-    v-if="!bootLoaderSupport && dfuState === DfuState.Idle && !isBootloaderMode"
-    title="No bootloader support"
-    class="w-full"
-  >
-    <p class="mb-6 text-sm leading-5 text-gray-500">
-      Your device does not have bootloader support. <br />
-      To perform a manual firmware update please consult the
-      <a href="https://github.com/paradajz/OpenDeck/wiki/Firmware-update"
-        >wiki firmware update page</a
-      >.
-    </p>
-  </Section>
-
-  <Section v-else title="Firmware update" class="w-full">
+  <Section title="Firmware update" class="w-full">
     <div class="form-grid firmware-form-grid">
       <div v-if="showNormalControls" class="form-field">
         <Button :disabled="loading" @click.prevent="checkForUpdates">
@@ -24,7 +10,10 @@
         </p>
       </div>
 
-      <div v-if="showNormalControls && bootLoaderSupport" class="form-field">
+      <div
+        v-if="showNormalControls && isFirmwareUpdateSupported"
+        class="form-field"
+      >
         <Button :disabled="loading" @click.prevent="onBootLoaderModeClicked">
           Bootloader mode
         </Button>
@@ -133,7 +122,7 @@ export default defineComponent({
       firmwareFileName,
       isBootloaderMode,
       startUpdatesCheck,
-      bootLoaderSupport,
+      isFirmwareUpdateSupported,
       startBootLoaderMode,
       startFirmwareUpdate,
       connectDfuDevice,
@@ -202,7 +191,7 @@ export default defineComponent({
       firmwareFileName,
       loading,
       isBootloaderMode,
-      bootLoaderSupport,
+      isFirmwareUpdateSupported,
       updatesChecked,
       availableUpdates,
       dfuState,

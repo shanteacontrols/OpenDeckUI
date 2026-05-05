@@ -19,10 +19,19 @@
         </p>
       </div>
 
-      <div v-if="bootLoaderSupport" class="form-field">
-        <ButtonLink :to="{ name: 'device-firmware-update' }">
+      <div class="form-field">
+        <ButtonLink
+          v-if="isFirmwareUpdateSupported"
+          :to="{ name: 'device-firmware-update' }"
+        >
           Firmware section
         </ButtonLink>
+        <Button v-else disabled>
+          Firmware section
+        </Button>
+        <p v-if="!isFirmwareUpdateSupported" class="error-message text-red-500">
+          Not supported on this firmware.
+        </p>
         <p class="help-text">
           Section used to reboot the device into bootloader mode and update the
           firmware.
@@ -64,7 +73,7 @@ export default defineComponent({
   setup() {
     const {
       valueSize,
-      bootLoaderSupport,
+      isFirmwareUpdateSupported,
       startFactoryReset,
       startReboot,
       startBackup,
@@ -96,7 +105,7 @@ export default defineComponent({
       availableUpdates,
       onFactoryResetClicked,
       valueSize,
-      bootLoaderSupport,
+      isFirmwareUpdateSupported,
       startReboot,
       onBackupClicked,
       onBackupFileSelected,

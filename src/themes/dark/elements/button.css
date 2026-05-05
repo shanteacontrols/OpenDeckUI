@@ -39,6 +39,6 @@ a.btn {
 
 .btn.disabled,
 .btn.disabled:hover,
-input.btn:disabled {
+.btn:disabled {
   @apply bg-gray-900 text-gray-500 border-0;
 }

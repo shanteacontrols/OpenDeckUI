@@ -1076,20 +1076,6 @@ const loadDeviceInfo = async (): Promise<void> => {
     command: Request.GetNumberOfSupportedComponents,
     handler: (numberOfComponents: array[]) => setInfo({ numberOfComponents }),
   });
-  try {
-    if (deviceState.valueSize === 2) {
-      await sendMessage({
-        command: Request.GetBootLoaderSupport,
-        handler: (bootLoaderSupport: string) => setInfo({ bootLoaderSupport }),
-      });
-    }
-  } catch (err) {
-    logger.error(
-      "Error while checking for bootloader support, setting to false",
-      err,
-    );
-    setInfo({ bootLoaderSupport: false });
-  }
 
   await sendMessage({
     command: Request.GetNumberOfSupportedPresets,

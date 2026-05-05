@@ -5,6 +5,7 @@ const config: UserConfig = {
   optimizeDeps: {
     include: [
       "semver/functions/gt",
+      "semver/functions/gte",
       "semver/functions/lt",
       "semver/functions/clean",
     ],
