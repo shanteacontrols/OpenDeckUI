@@ -1,12 +1,13 @@
 import { Ref, ref } from "vue";
-import { InputEventBase } from "webmidi";
 import { deviceState } from "./state";
 import { ControlDisableType, IRequestConfig } from "./interface";
 import { disableControl } from "./actions";
+import { ISysExEvent } from "./sysex-transport";
 import {
   arrayEqual,
   convertDataValuesToSingleByte,
   delay,
+  logger,
 } from "../../../util";
 import {
   requestDefinitions,
@@ -96,7 +97,7 @@ const getNextRequestId = () => {
 const getDefinition = (command: Command): IRequestDefinition =>
   requestDefinitions[command];
 
-const isEventMidiMMC = (event: InputEventBase<"sysex">) =>
+const isEventMidiMMC = (event: ISysExEvent) =>
   event.data.length === 6 &&
   Object.keys(MidiEventTypeMMC).includes(String(event.data[4]));
 
@@ -182,7 +183,7 @@ const startRequest = async (id: number) => {
       deviceState.isSystemOperationRunning = true;
     }
 
-    deviceState.output.sendSysex(
+    deviceState.transport.sendSysex(
       openDeckManufacturerId,
       Array.from(request.payload),
     );
@@ -197,7 +198,8 @@ const startRequest = async (id: number) => {
     }
 
     const timeoutMs =
-      request.timeoutMs || (request.command === Request.RestoreBackup ? 2000 : 0);
+      request.timeoutMs ||
+      (request.command === Request.RestoreBackup ? 2000 : 0);
 
     if (timeoutMs) {
       delay(timeoutMs).then(() => {
@@ -339,7 +341,7 @@ const processEventData = (
   };
 };
 
-export const handleSysExEvent = (event: InputEventBase<"sysex">): void => {
+export const handleSysExEvent = (event: ISysExEvent): void => {
   if (procesInfoMessage(event.data)) {
     return;
   }

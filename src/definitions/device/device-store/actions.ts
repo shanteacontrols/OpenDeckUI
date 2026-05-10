@@ -29,6 +29,13 @@ import {
   DfuTransport,
   webUsbDfuVirtualOutputId,
 } from "./interface";
+import {
+  getWebConfigAddressFromOutputId,
+  isWebConfigOutputId,
+  MidiSysExTransport,
+  SysExTransportType,
+  WebConfigSysExTransport,
+} from "./sysex-transport";
 import { deviceState, defaultState, IViewSettingState } from "./state";
 import { sendMessage, handleSysExEvent, resetQueue } from "./request-qeueue";
 import {
@@ -45,8 +52,9 @@ let activeDfuOutEndpoint = null;
 let activeDfuInEndpoint = null;
 let dfuStatusReaderPromise = null;
 
-const rebootDisconnectTimeoutMs = 2000;
 const appReconnectTimeoutMs = 45000;
+const appDisconnectTimeoutMs = 8000;
+const rebootHandshakeTimeoutMs = 2000;
 const dfuPollTimeoutMs = 15000;
 const devicePollIntervalMs = 250;
 const heartbeatIntervalMs = 3000;
@@ -73,6 +81,10 @@ const resetDeviceStore = async (): void => {
   if (deviceState.input) {
     deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
     detachMidiEventHandlers(deviceState.input);
+  }
+
+  if (deviceState.transport) {
+    deviceState.transport.close();
   }
 
   Object.assign(deviceState, defaultState);
@@ -108,9 +120,13 @@ const connectionWatcher = async (): Promise<void> => {
       return router.push({ name: "home" });
     }
 
-    const output = await midiStore.actions.findOutputById(deviceState.outputId);
-    if (!output) {
-      return router.push({ name: "home" });
+    if (!isWebConfigOutputId(deviceState.outputId)) {
+      const output = await midiStore.actions.findOutputById(
+        deviceState.outputId,
+      );
+      if (!output) {
+        return router.push({ name: "home" });
+      }
     }
   } catch (err) {
     logger.error("Device connection watcher error", err);
@@ -134,7 +150,7 @@ const shouldRunDeviceHeartbeat = (): boolean =>
   deviceState.dfuState === DfuState.Idle &&
   !deviceState.isBootloaderMode &&
   !deviceState.isSystemOperationRunning &&
-  !!deviceState.output;
+  !!deviceState.transport;
 
 const navigateHome = async (): Promise<void> => {
   try {
@@ -220,7 +236,10 @@ const stopDfuWatcher = (): void => {
   }
 };
 
-const setDfuState = (state: DfuState, data: Partial<IDeviceState> = {}): void => {
+const setDfuState = (
+  state: DfuState,
+  data: Partial<IDeviceState> = {},
+): void => {
   if (state !== DfuState.Idle) {
     stopDeviceHeartbeat();
   }
@@ -302,15 +321,24 @@ const disconnectCurrentMidiSession = (): void => {
     detachMidiEventHandlers(deviceState.input);
   }
 
+  if (deviceState.transport) {
+    deviceState.transport.close();
+  }
+
   deviceState.input = (null as unknown) as Input;
   deviceState.output = (null as unknown) as Output;
+  deviceState.transport = defaultState.transport;
+  deviceState.transportType = defaultState.transportType;
   deviceState.outputId = (null as unknown) as string;
   deviceState.connectionPromise = (null as unknown) as Promise<any>;
   deviceState.connectionState = DeviceConnectionState.Closed;
   deviceState.isBootloaderMode = false;
 };
 
-const hardReloadToRoute = (target: { name: string; params?: Record<string, any> }): boolean => {
+const hardReloadToRoute = (target: {
+  name: string;
+  params?: Record<string, any>;
+}): boolean => {
   if (typeof window === "undefined") {
     return false;
   }
@@ -348,16 +376,6 @@ const waitForCondition = async (
   return false;
 };
 
-const waitForMidiDisconnect = async (outputId: string): Promise<boolean> =>
-  waitForCondition(async () => {
-    await midiStore.actions.assignInputs();
-    if (!midiStore.actions.findOutputById(outputId)) {
-      return true;
-    }
-
-    return false;
-  }, rebootDisconnectTimeoutMs);
-
 const waitForMidiReconnect = async (): Promise<Output | null> => {
   const reconnected = await waitForCondition(async () => {
     await midiStore.actions.assignInputs();
@@ -380,6 +398,37 @@ const waitForMidiReconnect = async (): Promise<Output | null> => {
     ) || null
   );
 };
+
+const waitForApplicationReconnect = async (
+  outputId: string,
+): Promise<boolean> => {
+  return waitForCondition(async () => {
+    try {
+      deviceState.connectionState = DeviceConnectionState.Pending;
+      await connectDeviceStoreToInput(outputId);
+      return true;
+    } catch (error) {
+      disconnectCurrentMidiSession();
+      return false;
+    }
+  }, appReconnectTimeoutMs);
+};
+
+const waitForApplicationDisconnect = async (): Promise<boolean> =>
+  waitForCondition(async () => {
+    try {
+      // Firmware accepts the reboot command before the transport actually drops.
+      // Wait for handshake failure so reconnect does not attach to the old session.
+      await sendMessage({
+        command: Request.Handshake,
+        handler: () => null,
+        timeoutMs: rebootHandshakeTimeoutMs,
+      });
+      return false;
+    } catch (error) {
+      return true;
+    }
+  }, appDisconnectTimeoutMs);
 
 const waitForDfuDisconnect = async (): Promise<boolean> =>
   waitForCondition(async () => {
@@ -433,7 +482,10 @@ const startDfuStatusReader = async (): Promise<void> => {
   dfuStatusReaderPromise = (async () => {
     while (activeDfuDevice && activeDfuInEndpoint) {
       try {
-        const result = await activeDfuDevice.transferIn(activeDfuInEndpoint, 128);
+        const result = await activeDfuDevice.transferIn(
+          activeDfuInEndpoint,
+          128,
+        );
         decodeDfuStatusChunk(result.data);
       } catch (error) {
         if (
@@ -569,6 +621,48 @@ const waitForDfuTarget = async (): Promise<void> => {
 export const connectDeviceStoreToInput = async (
   outputId: string,
 ): Promise<any> => {
+  if (isWebConfigOutputId(outputId)) {
+    const address = getWebConfigAddressFromOutputId(outputId);
+    const transport = await WebConfigSysExTransport.connect(address);
+
+    deviceState.isBootloaderMode = false;
+    deviceState.outputId = outputId;
+    deviceState.input = (null as unknown) as Input;
+    deviceState.output = (null as unknown) as Output;
+    deviceState.transport = transport;
+    deviceState.transportType = SysExTransportType.WebConfig;
+    deviceState.valueSize = 2;
+    deviceState.valuesPerMessageRequest = (null as unknown) as number;
+    deviceState.firmwareVersion = (null as unknown) as string;
+    deviceState.dfuError = (null as unknown) as string;
+
+    transport.onSysEx(handleSysExEvent);
+    transport.onOsc(requestLog.actions.addOsc);
+    resetDfuState();
+    deviceState.lastApplicationOutputName = transport.name;
+
+    await sendMessage({
+      command: Request.Handshake,
+      handler: () => null,
+      timeoutMs: 2500,
+    });
+    await sendMessage({
+      command: Request.GetValuesPerMessage,
+      handler: (valuesPerMessageRequest: number) =>
+        setInfo({ valuesPerMessageRequest }),
+    });
+    await sendMessage({
+      command: Request.GetFirmwareVersion,
+      handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
+    });
+    deviceState.connectionState = DeviceConnectionState.Open;
+    deviceState.connectionPromise = (null as unknown) as Promise<any>;
+    startDeviceHeartbeat();
+
+    await loadDeviceInfo();
+    return;
+  }
+
   const matched = await midiStore.actions.matchInputOutput(outputId);
   const { input, output, isBootloaderMode, valueSize } = matched;
 
@@ -576,14 +670,18 @@ export const connectDeviceStoreToInput = async (
   deviceState.outputId = outputId;
   deviceState.input = input as Input;
   deviceState.output = output as Output;
+  deviceState.transport = new MidiSysExTransport(
+    deviceState.input,
+    deviceState.output,
+  );
+  deviceState.transportType = SysExTransportType.Midi;
   deviceState.valueSize = valueSize;
   deviceState.valuesPerMessageRequest = null;
   deviceState.firmwareVersion = null;
   deviceState.dfuError = (null as unknown) as string;
 
   // make sure we don't duplicate listeners
-  deviceState.input.removeListener("sysex", "all");
-  deviceState.input.addListener("sysex", "all", handleSysExEvent);
+  deviceState.transport.onSysEx(handleSysExEvent);
   detachMidiEventHandlers(deviceState.input);
   attachMidiEventHandlers(deviceState.input);
 
@@ -708,18 +806,14 @@ const sendRebootRequest = async (
   });
   console.info("[OpenDeck UI] Reboot command sent");
 
-  const disconnected = await waitForMidiDisconnect(currentOutputId);
-  console.info("[OpenDeck UI] MIDI disconnect wait finished", {
+  const disconnected = await waitForApplicationDisconnect();
+  console.info("[OpenDeck UI] Application disconnect wait finished", {
     disconnected,
     currentOutputId,
   });
   disconnectCurrentMidiSession();
 
   if (targetState === DfuState.RebootingToBootloader) {
-    if (!disconnected) {
-      appendDfuStatus("Reboot timeout reached, checking for DFU device anyway");
-    }
-
     router.replace({
       name: "device-firmware-update",
       params: {
@@ -729,9 +823,11 @@ const sendRebootRequest = async (
     await waitForDfuTarget();
 
     if (
-      ![DfuState.DfuReady, DfuState.Uploading, DfuState.WaitingForApplication].includes(
-        deviceState.dfuState,
-      )
+      ![
+        DfuState.DfuReady,
+        DfuState.Uploading,
+        DfuState.WaitingForApplication,
+      ].includes(deviceState.dfuState)
     ) {
       setDfuState(DfuState.Error, {
         dfuError: "No DFU device was detected after the reboot request.",
@@ -741,38 +837,18 @@ const sendRebootRequest = async (
     return;
   }
 
-  if (!disconnected) {
-    appendDfuStatus("Reboot timeout reached, checking for application anyway");
-    console.info("[OpenDeck UI] Reboot disconnect timeout, continuing to reconnect wait");
-    resetDfuState();
-
-    if (
-      hardReloadToRoute({
-        name: reconnectRouteName && reconnectRouteName !== "device-firmware-update"
-          ? reconnectRouteName
-          : "device",
-        params: {
-          ...reconnectRouteParams,
-          outputId: currentOutputId,
-        },
-      })
-    ) {
-      return;
-    }
-  }
-
   setDfuState(DfuState.WaitingForApplication, {
     dfuTransport: (null as unknown) as DfuTransport,
   });
   appendDfuStatus("Waiting for the application to reconnect");
 
-  const output = await waitForMidiReconnect();
-  console.info("[OpenDeck UI] MIDI reconnect wait finished", {
-    outputId: output && output.id,
-    outputName: output && output.name,
+  const reconnected = await waitForApplicationReconnect(currentOutputId);
+  console.info("[OpenDeck UI] Application reconnect wait finished", {
+    reconnected,
+    currentOutputId,
   });
 
-  if (!output) {
+  if (!reconnected) {
     setDfuState(DfuState.Error, {
       dfuError: "The device did not reconnect in time.",
     });
@@ -785,13 +861,13 @@ const sendRebootRequest = async (
           name: reconnectRouteName,
           params: {
             ...reconnectRouteParams,
-            outputId: output.id,
+            outputId: currentOutputId,
           },
         }
       : {
           name: "device",
           params: {
-            outputId: output.id,
+            outputId: currentOutputId,
           },
         };
 
@@ -811,6 +887,10 @@ const startFirmwareUpdate = async (
 ): Promise<void> => {
   if (!file.name.endsWith(".bin")) {
     appendDfuStatus("Selected file does not look like a firmware binary");
+  }
+
+  if (deviceState.transportType === SysExTransportType.WebConfig) {
+    return startNetworkFirmwareUpdate(file);
   }
 
   if (!activeDfuDevice || !activeDfuOutEndpoint) {
@@ -902,7 +982,9 @@ const startFirmwareUpdate = async (
   } catch (error) {
     logger.error("WebUSB firmware upload failed", error);
     appendDfuStatus(
-      `Upload failed: ${error && error.message ? error.message : String(error)}`,
+      `Upload failed: ${
+        error && error.message ? error.message : String(error)
+      }`,
     );
 
     const errorMessage =
@@ -932,6 +1014,80 @@ const startFirmwareUpdate = async (
     setDfuState(DfuState.Error, {
       dfuTransport: DfuTransport.WebUsb,
       dfuError: "Firmware upload failed.",
+    });
+  }
+};
+
+const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
+  if (!deviceState.transport || !deviceState.transport.uploadFirmware) {
+    setDfuState(DfuState.Error, {
+      dfuTransport: DfuTransport.Network,
+      dfuError: "Network firmware upload is not available for this connection.",
+    });
+    return;
+  }
+
+  const currentOutputId = deviceState.outputId;
+  const payload = new Uint8Array(await file.arrayBuffer());
+
+  stopDeviceConnectionWatcher();
+  stopDeviceHeartbeat();
+
+  setDfuState(DfuState.Uploading, {
+    dfuTransport: DfuTransport.Network,
+    dfuProgress: 1,
+    dfuError: (null as unknown) as string,
+  });
+  appendDfuStatus(`Uploading ${file.name} over network`);
+  appendDfuStatus(`File size: ${payload.length} bytes`);
+
+  try {
+    await deviceState.transport.uploadFirmware(payload, (bytesWritten) => {
+      deviceState.dfuProgress = Math.max(
+        1,
+        Math.min(100, Math.floor((bytesWritten / payload.length) * 100)),
+      );
+    });
+
+    appendDfuStatus("Network upload staged");
+    appendDfuStatus("Waiting for device to reboot and apply update");
+
+    setDfuState(DfuState.WaitingForApplication, {
+      dfuTransport: DfuTransport.Network,
+      dfuProgress: 100,
+    });
+
+    await waitForApplicationDisconnect();
+    disconnectCurrentMidiSession();
+
+    const reconnected = await waitForApplicationReconnect(currentOutputId);
+
+    if (!reconnected) {
+      setDfuState(DfuState.Error, {
+        dfuTransport: DfuTransport.Network,
+        dfuError: "Firmware uploaded, but the application did not reconnect.",
+      });
+      return;
+    }
+
+    resetDfuState();
+
+    await router.replace({
+      name: "device",
+      params: {
+        outputId: currentOutputId,
+      },
+    });
+  } catch (error) {
+    logger.error("Network firmware upload failed", error);
+    appendDfuStatus(
+      `Upload failed: ${
+        error && error.message ? error.message : String(error)
+      }`,
+    );
+    setDfuState(DfuState.Error, {
+      dfuTransport: DfuTransport.Network,
+      dfuError: "Network firmware upload failed.",
     });
   }
 };
@@ -1054,7 +1210,10 @@ const startBackup = async (): Promise<void> => {
 // Other hardware
 
 export const startFactoryReset = async (): Promise<void> => {
-  await sendRebootRequest(Request.FactoryReset, DfuState.RebootingToApplication);
+  await sendRebootRequest(
+    Request.FactoryReset,
+    DfuState.RebootingToApplication,
+  );
 };
 
 export const startReboot = async (): Promise<void> => {
@@ -1151,6 +1310,58 @@ export const getComponentSettings = async (
   return settings;
 };
 
+export const getConfigByteString = async (
+  block: Block,
+  section: number,
+  size: number,
+): Promise<string> => {
+  await ensureConnection();
+
+  const bytes = [];
+  await sendMessage({
+    command: Request.GetSectionValues,
+    handler: (response: number[]) => {
+      bytes.push(...response);
+      return false;
+    },
+    config: { block, section, index: 0 },
+  });
+
+  const terminator = bytes.indexOf(0);
+  const stringBytes = terminator === -1 ? bytes : bytes.slice(0, terminator);
+
+  return String.fromCharCode(...stringBytes.slice(0, size));
+};
+
+export const setConfigByteString = async (
+  block: Block,
+  section: number,
+  size: number,
+  value: string,
+): Promise<void> => {
+  await ensureConnection();
+
+  const bytes = Array.from(value, (character) => character.charCodeAt(0));
+  if (bytes.length >= size || bytes.some((byte) => byte > 255)) {
+    throw new Error("Config string does not fit in byte storage");
+  }
+
+  const writes = [...bytes, 0];
+
+  for (let index = 0; index < writes.length; index++) {
+    await sendMessage({
+      command: Request.SetValue,
+      handler: () => {},
+      config: {
+        block,
+        section,
+        index,
+        value: writes[index],
+      },
+    });
+  }
+};
+
 export const setComponentSectionValue = async (
   config: IRequestConfig,
   handler: (val: any) => void,
@@ -1233,6 +1444,8 @@ export const deviceStoreActions = {
   startBackup,
   startRestore,
   getComponentSettings,
+  getConfigByteString,
+  setConfigByteString,
   setComponentSectionValue,
   getSectionValues,
   getFilteredSectionsForBlock,

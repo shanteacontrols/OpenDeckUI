@@ -1,7 +1,6 @@
 import { computed, Ref } from "vue";
 import { Block } from "../definitions";
 import { deviceState } from "../definitions/device/device-store/state";
-import { logger } from "../util";
 import semverLt from "semver/functions/lt";
 import semverGt from "semver/functions/gt";
 import semverClean from "semver/functions/clean";
@@ -22,6 +21,26 @@ const addGridSegmentIndexArray = (seg: GridSegment): GridSegment => {
     ...seg,
     indexArray,
   };
+};
+
+const addSegment = (
+  segments: GridSegment[],
+  title: string,
+  startIndex: number,
+  endIndex: number,
+): void => {
+  const start = Math.max(0, startIndex);
+  const end = Math.max(start - 1, endIndex);
+
+  if (end < start) {
+    return;
+  }
+
+  segments.push({
+    title,
+    startIndex: start,
+    endIndex: end,
+  });
 };
 
 export const useGridSegments = (
@@ -53,74 +72,54 @@ export const useGridSegments = (
             semverLt(semverClean(deviceState.firmwareVersion), "5.4.0") ||
             semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
           ) {
-            segments.push({
-              title: "Digital inputs",
-              startIndex: 0,
-              endIndex:
-                buttonCount.value -
+            addSegment(
+              segments,
+              "Digital inputs",
+              0,
+              buttonCount.value -
                 analogCount.value -
                 touchScreenCount.value -
                 1,
-            });
+            );
 
             if (analogCount.value > 0) {
-              segments.push({
-                title: "Analog inputs",
-                startIndex:
-                  buttonCount.value -
-                  analogCount.value -
-                  touchScreenCount.value,
-                endIndex:
-                  buttonCount.value -
-                  analogCount.value -
-                  touchScreenCount.value +
-                  analogCount.value -
-                  1,
-              });
+              addSegment(
+                segments,
+                "Analog inputs",
+                buttonCount.value - analogCount.value - touchScreenCount.value,
+                buttonCount.value - touchScreenCount.value - 1,
+              );
             }
 
             if (touchScreenCount.value > 0) {
-              segments.push({
-                title: "Touchscreen",
-                startIndex:
-                  buttonCount.value -
-                  analogCount.value +
-                  analogCount.value -
-                  touchScreenCount.value,
-                endIndex:
-                  buttonCount.value - analogCount.value + analogCount.value - 1,
-              });
+              addSegment(
+                segments,
+                "Touchscreen",
+                buttonCount.value - touchScreenCount.value,
+                buttonCount.value - 1,
+              );
             }
           } else {
-            segments.push(
-              {
-                title: "Digital inputs",
-                startIndex: 0,
-                endIndex: buttonCount.value - analogCount.value - 1,
-              },
-              {
-                title: "Analog inputs",
-                startIndex: buttonCount.value - analogCount.value,
-                endIndex:
-                  buttonCount.value -
-                  analogCount.value +
-                  analogCount.value -
-                  touchScreenCount.value -
-                  1,
-              },
+            addSegment(
+              segments,
+              "Digital inputs",
+              0,
+              buttonCount.value - analogCount.value - 1,
+            );
+            addSegment(
+              segments,
+              "Analog inputs",
+              buttonCount.value - analogCount.value,
+              buttonCount.value - touchScreenCount.value - 1,
             );
 
             if (touchScreenCount.value > 0) {
-              segments.push({
-                title: "Touchscreen",
-                startIndex:
-                  buttonCount.value -
-                  analogCount.value +
-                  analogCount.value -
-                  touchScreenCount.value,
-                endIndex:
-                  buttonCount.value - analogCount.value + analogCount.value - 1,
-              });
+              addSegment(
+                segments,
+                "Touchscreen",
+                buttonCount.value - touchScreenCount.value,
+                buttonCount.value - 1,
+              );
             }
           }
         }
@@ -129,17 +128,17 @@ export const useGridSegments = (
       case Block.Led:
         {
           //segmentation to leds and touchscreen
-          segments.push(
-            {
-              title: "Digital outputs",
-              startIndex: 0,
-              endIndex: ledCount.value - touchScreenCount.value - 1,
-            },
-            {
-              title: "Touchscreen components",
-              startIndex: ledCount.value - touchScreenCount.value,
-              endIndex: ledCount.value - 1,
-            },
+          addSegment(
+            segments,
+            "Digital outputs",
+            0,
+            ledCount.value - touchScreenCount.value - 1,
+          );
+          addSegment(
+            segments,
+            "Touchscreen components",
+            ledCount.value - touchScreenCount.value,
+            ledCount.value - 1,
           );
         }
         break;

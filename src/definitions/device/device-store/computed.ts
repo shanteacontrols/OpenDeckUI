@@ -19,9 +19,15 @@ export interface IDeviceComputed {
 
 // Composable
 
-const name = computed(() => deviceState.input && deviceState.input.name);
+const name = computed(
+  () =>
+    (deviceState.input && deviceState.input.name) ||
+    (deviceState.transport && deviceState.transport.name),
+);
 const manufacturer = computed(
-  () => deviceState.input && deviceState.input.manufacturer,
+  () =>
+    (deviceState.input && deviceState.input.manufacturer) ||
+    (deviceState.transport && deviceState.transport.type),
 );
 const isConnecting = computed(
   () => deviceState.connectionState === DeviceConnectionState.Pending,

@@ -21,5 +21,6 @@ export * from "./actions";
 export * from "./log-type-error";
 export * from "./log-type-info";
 export * from "./log-type-midi";
+export * from "./log-type-osc";
 export * from "./log-type-request";
 export * from "./log-type-system";

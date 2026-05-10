@@ -1,6 +1,12 @@
 import { reactive } from "vue";
 import { Input, Output } from "webmidi";
-import { DeviceConnectionState, DfuState, DfuTransport, IDeviceState } from "./interface";
+import {
+  DeviceConnectionState,
+  DfuState,
+  DfuTransport,
+  IDeviceState,
+} from "./interface";
+import { ISysExTransport, SysExTransportType } from "./sysex-transport";
 import { Block } from "../../interface";
 
 // State
@@ -28,6 +34,8 @@ export const defaultState: IDeviceState = {
   outputId: (null as unknown) as string,
   input: (null as unknown) as Input,
   output: (null as unknown) as Output,
+  transport: (null as unknown) as ISysExTransport,
+  transportType: (null as unknown) as SysExTransportType,
   isBootloaderMode: (null as unknown) as boolean,
   connectionState: (null as unknown) as DeviceConnectionState,
   connectionPromise: (null as unknown) as Promise<any>,

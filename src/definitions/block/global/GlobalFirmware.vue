@@ -1,5 +1,24 @@
 <template>
-  <Section title="Firmware update" class="w-full">
+  <Section
+    v-if="
+      !bootLoaderSupport &&
+        dfuState === DfuState.Idle &&
+        !isBootloaderMode &&
+        transportType !== SysExTransportType.WebConfig
+    "
+    title="No bootloader support"
+    class="w-full"
+  >
+    <p class="mb-6 text-sm leading-5 text-gray-500">
+      Your device does not have bootloader support. <br />
+      To perform a manual firmware update please consult the
+      <a href="https://github.com/paradajz/OpenDeck/wiki/Firmware-update"
+        >wiki firmware update page</a
+      >.
+    </p>
+  </Section>
+
+  <Section v-else title="Firmware update" class="w-full">
     <div class="form-grid firmware-form-grid">
       <div v-if="showNormalControls" class="form-field">
         <Button :disabled="loading" @click.prevent="checkForUpdates">
@@ -10,10 +29,7 @@
         </p>
       </div>
 
-      <div
-        v-if="showNormalControls && isFirmwareUpdateSupported"
-        class="form-field"
-      >
+      <div v-if="showBootloaderModeButton" class="form-field">
         <Button :disabled="loading" @click.prevent="onBootLoaderModeClicked">
           Bootloader mode
         </Button>
@@ -49,6 +65,19 @@
             WebUSB DFU device connected.
           </template>
           Select a `dfu.bin` firmware file to start the update.
+        </p>
+      </div>
+
+      <div v-if="showNetworkInterface" class="form-field">
+        <FormFileInput
+          name="network-firmware-file"
+          label="Update Firmware"
+          :disabled="isNetworkBusy"
+          @change="onFirmwareFileSelected"
+        />
+        <p class="help-text">
+          Select a `dfu.bin` firmware file to stage it over the active network
+          connection. The board will reboot and apply the staged image.
         </p>
       </div>
 
@@ -113,7 +142,7 @@
 import { computed, defineComponent, ref } from "vue";
 import { deviceStoreMapped } from "../../../store";
 import { IOpenDeckRelease } from "../../interface";
-import { DfuState, DfuTransport } from "../../device";
+import { DfuState, DfuTransport, SysExTransportType } from "../../device";
 
 export default defineComponent({
   name: "GlobalFirmware",
@@ -131,6 +160,7 @@ export default defineComponent({
       dfuProgress,
       dfuError,
       dfuDeviceLabel,
+      transportType,
     } = deviceStoreMapped;
 
     const loading = ref(false);
@@ -153,12 +183,29 @@ export default defineComponent({
           DfuState.WaitingForApplication,
         ].includes(dfuState.value),
     );
+    const showNetworkInterface = computed(
+      () =>
+        transportType.value === SysExTransportType.WebConfig &&
+        dfuState.value === DfuState.Idle &&
+        !isBootloaderMode.value,
+    );
+    const showBootloaderModeButton = computed(
+      () =>
+        showNormalControls.value &&
+        bootLoaderSupport.value &&
+        transportType.value !== SysExTransportType.WebConfig,
+    );
     const isWebUsbBusy = computed(() =>
       [
         DfuState.RebootingToBootloader,
         DfuState.Uploading,
         DfuState.WaitingForApplication,
       ].includes(dfuState.value),
+    );
+    const isNetworkBusy = computed(() =>
+      [DfuState.Uploading, DfuState.WaitingForApplication].includes(
+        dfuState.value,
+      ),
     );
     const checkForUpdates = async () => {
       loading.value = true;
@@ -188,10 +235,12 @@ export default defineComponent({
 
     return {
       DfuState,
+      SysExTransportType,
       firmwareFileName,
       loading,
       isBootloaderMode,
-      isFirmwareUpdateSupported,
+      bootLoaderSupport,
+      transportType,
       updatesChecked,
       availableUpdates,
       dfuState,
@@ -201,7 +250,10 @@ export default defineComponent({
       showNormalControls,
       showWebUsbConnectButton,
       showWebUsbInterface,
+      showNetworkInterface,
+      showBootloaderModeButton,
       isWebUsbBusy,
+      isNetworkBusy,
       checkForUpdates,
       onBootLoaderModeClicked,
       onConnectDfuDevice,
