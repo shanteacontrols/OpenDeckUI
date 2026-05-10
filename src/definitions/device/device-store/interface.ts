@@ -1,3 +1,9 @@
+import type { Input, Output } from "webmidi";
+import type { Block } from "../../interface";
+import type { IViewSettingState } from "./state";
+import type { ISysExTransport } from "./sysex-transport";
+import { SysExTransportType } from "./sysex-transport";
+
 export enum DeviceConnectionState {
   Closed = "closed",
   Pending = "pending",
@@ -18,6 +24,7 @@ export enum DfuState {
 export enum DfuTransport {
   Midi = "midi",
   WebUsb = "webusb",
+  Network = "network",
 }
 
 export const webUsbDfuVirtualOutputId = "__webusb_dfu__";
@@ -39,6 +46,8 @@ export type IDeviceState = {
   outputId: string;
   input: Input;
   output: Output;
+  transport: ISysExTransport;
+  transportType: SysExTransportType;
   isBootloaderMode: boolean;
   connectionState: DeviceConnectionState;
   connectionPromise?: Promise<any>;

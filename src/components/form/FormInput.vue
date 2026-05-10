@@ -4,6 +4,8 @@
     class="form-input mt-1 py-1 text-sm block w-24"
     :type="type"
     :name="name"
+    :min="min"
+    :max="max"
     :placeholder="placeholder"
     @change="emit('changed', $event.target.value)"
   />
@@ -26,6 +28,14 @@ export default defineComponent({
     placeholder: {
       default: "",
       type: String,
+    },
+    min: {
+      default: undefined,
+      type: Number,
+    },
+    max: {
+      default: undefined,
+      type: Number,
     },
     type: {
       default: "number",

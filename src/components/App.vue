@@ -10,7 +10,7 @@
       </router-link>
 
       <span v-if="!isHomePage && boardName" class="app-board-info">
-        <template v-if="isBootloaderMode || isDfuActive">OpenDeck DFU mode</template>
+        <template v-if="headerStatusLabel">{{ headerStatusLabel }}</template>
         <template v-else>
           <span class="app-board-info-item">
             <small>Board</small>
@@ -26,17 +26,22 @@
             <small>Preset</small>
             <strong>{{ activePreset + 1 }}</strong>
           </span>
+
+          <span v-if="transportDisplay" class="app-board-info-item">
+            <small>Transport</small>
+            <strong>{{ transportDisplay }}</strong>
+          </span>
         </template>
       </span>
     </nav>
 
     <div class="app-main">
       <div class="content">
-        <Section v-if="!isWebMidiSupported" class="h-screen">
+        <Section v-if="showWebMidiUnsupported" class="h-screen">
           <div class="max-w-screen-sm mx-auto px-4 pt-24 sm:px-6 lg:px-8">
-            <p class="">
-              This browser does not support WebMIDI.<br />Please use a Chrome
-              based browser:
+            <p>
+              This browser does not support WebMIDI.<br />Use the home page to
+              connect over network, or use a Chrome based browser for USB MIDI:
             </p>
             <p class="mt-4">
               <a href="https://www.google.com/chrome/index.html"
@@ -51,14 +56,14 @@
         </Section>
 
         <Section
-          v-else-if="isConnecting"
+          v-else-if="showMidiConnecting"
           class="h-screen"
           title="Establishing connection"
         >
           <div
             class="lg:text-center max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8"
           >
-            <p>WebMidi connecting</p>
+            <p>Device connecting</p>
           </div>
           <div class="absolute flex inset-0 opacity-75 bg-surface">
             <Spinner class="self-center" />
@@ -66,7 +71,7 @@
         </Section>
 
         <Section
-          v-else-if="!isConnected && !isDfuActive"
+          v-else-if="showConnectionProblem"
           class="h-screen"
           :title="isDeviceRoute ? 'Reloading' : 'Problem connecting'"
         >
@@ -74,7 +79,7 @@
             class="lg:text-center max-w-screen-xl mx-auto px-4 pt-24 sm:px-6 lg:px-8"
           >
             <p>
-              {{ isDeviceRoute ? "Re-establishing device connection" : "WebMidi failed to conect" }}
+              {{ isDeviceRoute ? "Re-establishing device connection" : "Device connection failed" }}
             </p>
           </div>
         </Section>
@@ -135,6 +140,12 @@
 import { defineComponent, computed, onMounted, onUnmounted } from "vue";
 import { midiStoreMapped, deviceStoreMapped } from "../store";
 import router from "../router";
+import {
+  DfuState,
+  SysExTransportType,
+  getWebConfigAddressFromOutputId,
+  isWebConfigOutputId,
+} from "../definitions/device/device-store";
 
 export default defineComponent({
   name: "App",
@@ -145,19 +156,80 @@ export default defineComponent({
       firmwareVersion,
       activePreset,
     } = deviceStoreMapped;
+    const {
+      isConnected: midiIsConnected,
+      isConnecting: midiIsConnecting,
+      isWebMidiSupported,
+    } = midiStoreMapped;
+    const {
+      supportedPresetsCount,
+      isBootloaderMode,
+      isDfuActive,
+      dfuState,
+      transportType,
+    } = deviceStoreMapped;
+
     const isHomePage = computed(
       () => router.currentRoute.value.name === "home",
     );
     const isDeviceRoute = computed(
       () => router.currentRoute.value.name !== "home",
     );
+    const isWebConfigRoute = computed(() => {
+      const routeOutputId = router.currentRoute.value.params.outputId;
+      return (
+        typeof routeOutputId === "string" && isWebConfigOutputId(routeOutputId)
+      );
+    });
+    const showWebMidiUnsupported = computed(
+      () =>
+        !isWebMidiSupported.value &&
+        !isHomePage.value &&
+        !isWebConfigRoute.value,
+    );
+    const showMidiConnecting = computed(
+      () => !isWebConfigRoute.value && midiIsConnecting.value,
+    );
+    const showConnectionProblem = computed(
+      () =>
+        !isHomePage.value &&
+        !isWebConfigRoute.value &&
+        !midiIsConnected.value &&
+        !isDfuActive.value,
+    );
     const firmwareVersionDisplay = computed(() =>
       firmwareVersion.value ? firmwareVersion.value.replace(/^v/i, "") : "",
     );
+    const headerStatusLabel = computed(() => {
+      if (
+        isBootloaderMode.value ||
+        [
+          DfuState.RebootingToBootloader,
+          DfuState.WaitingForDfuDevice,
+          DfuState.DfuReady,
+          DfuState.Uploading,
+        ].includes(dfuState.value)
+      ) {
+        return "OpenDeck DFU mode";
+      }
 
-    const { isConnected, isConnecting, isWebMidiSupported } = midiStoreMapped;
-    const { supportedPresetsCount, isBootloaderMode, isDfuActive } =
-      deviceStoreMapped;
+      return "";
+    });
+    const transportDisplay = computed(() => {
+      if (transportType.value === SysExTransportType.WebConfig) {
+        const address = isWebConfigOutputId(outputId.value)
+          ? getWebConfigAddressFromOutputId(outputId.value)
+          : "";
+
+        return address ? `Network · ${address}` : "Network";
+      }
+
+      if (transportType.value === SysExTransportType.Midi) {
+        return "USB";
+      }
+
+      return "";
+    });
 
     onMounted(() => {
       midiStoreMapped.loadMidi();
@@ -172,11 +244,14 @@ export default defineComponent({
       isDeviceRoute,
       outputId,
       isWebMidiSupported,
-      isConnected,
-      isConnecting,
+      showWebMidiUnsupported,
+      showMidiConnecting,
+      showConnectionProblem,
       boardName,
       firmwareVersion,
       firmwareVersionDisplay,
+      headerStatusLabel,
+      transportDisplay,
       activePreset,
       supportedPresetsCount,
       isBootloaderMode,
