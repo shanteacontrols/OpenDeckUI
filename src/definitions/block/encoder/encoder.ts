@@ -258,6 +258,7 @@ const sections: Dictionary<ISectionDefinition> = {
 export const EncoderBlock: IBlockDefinition = {
   block: Block.Encoder,
   title: "Encoder",
+  pluralTitle: "Encoders",
   routeName: "device-encoders",
   iconComponent: markRaw(EncoderIcon),
   componentCountResponseIndex: 1,
