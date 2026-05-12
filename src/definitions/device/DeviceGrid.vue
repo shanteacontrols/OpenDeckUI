@@ -81,7 +81,7 @@
     <div v-else-if="!segments && componentCount > 0" class="device-grid">
       <DeviceGridButton
         v-for="index in componentCount"
-        :key="`button-${index}`"
+        :key="`component-${index}`"
         :output-id="outputId"
         :route-name="routeName"
         :index="index - 1"
@@ -105,7 +105,7 @@
         <div class="device-grid">
           <DeviceGridButton
             v-for="index in segment.indexArray"
-            :key="`button-${index}`"
+            :key="`component-${index}`"
             :output-id="outputId"
             :route-name="routeName"
             :index="index"

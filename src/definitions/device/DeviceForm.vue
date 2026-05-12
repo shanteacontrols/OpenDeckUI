@@ -3,7 +3,7 @@
     <h1 class="w-full section-heading">
       <div class="section-heading-inner flex">
         <router-link class="mr-6" :to="{ name: blockDefinition.routeName }">
-          <h2>{{ blockDefinition.title }}s</h2>
+          <h2>{{ blockDefinition.pluralTitle || `${blockDefinition.title}s` }}</h2>
         </router-link>
         <span class="mr-6">&rsaquo;</span>
         <div class="mr-6 text-foreground">

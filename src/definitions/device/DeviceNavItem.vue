@@ -52,7 +52,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const { title, iconComponent, routeName } = BlockMap[props.block];
+    const { title, pluralTitle, iconComponent, routeName } = BlockMap[props.block];
     const { numberOfComponents } = deviceStoreMapped;
     const { highlights } = requestLogMapped;
 
@@ -69,7 +69,7 @@ export default defineComponent({
       ...useHighlightAnimation(highlight),
       numberOfComponents,
       active,
-      title,
+      title: pluralTitle || title,
       iconComponent,
       routeName,
     };

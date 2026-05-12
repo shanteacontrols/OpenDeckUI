@@ -174,8 +174,8 @@ const sections: Dictionary<ISectionDefinition> = {
     type: SectionType.Value,
     section: 7,
     component: FormInputComponent.Toggle,
-    label: "Button changes screen",
-    helpText: `Specifies whether this button is used to switch to another screen.`,
+    label: "Switch changes screen",
+    helpText: `Specifies whether this switch is used to switch to another screen.`,
   },
   ScreenToSwitchTo: {
     showIf: (formState: FormState): boolean => !!formState.buttonChangesScreen,
@@ -187,7 +187,7 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 15,
     component: FormInputComponent.Input,
     label: "Screen to switch to",
-    helpText: `Screen to which this button switches to.`,
+    helpText: `Screen to which this switch switches to.`,
   },
 };
 

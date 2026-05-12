@@ -7,9 +7,9 @@ import {
 import {
   GlobalBlock,
   AnalogBlock,
-  ButtonBlock,
+  SwitchBlock,
   EncoderBlock,
-  LedBlock,
+  OutputBlock,
   DisplayBlock,
   TouchscreenBlock,
 } from "./index";
@@ -17,9 +17,9 @@ import {
 export const BlockMap: Dictionary<IBlockDefinition> = {
   [Block.Global]: GlobalBlock,
   [Block.Analog]: AnalogBlock,
-  [Block.Button]: ButtonBlock,
+  [Block.Switch]: SwitchBlock,
   [Block.Encoder]: EncoderBlock,
-  [Block.Led]: LedBlock,
+  [Block.Output]: OutputBlock,
   [Block.Display]: DisplayBlock,
   [Block.Touchscreen]: TouchscreenBlock,
 };

@@ -41,7 +41,7 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Toggle,
     label: "Enable",
     helpText: `Encoder needs to be enabled in order to use it.
-    Note that enabling the encoder disables two digital inputs (buttons).`,
+    Note that enabling the encoder disables two digital switches.`,
   },
   InvertState: {
     showIf: (formState: FormState): boolean => formState.enabled,
@@ -99,7 +99,7 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: EncodingMode.PresetChange, text: "Change preset" },
       { value: EncodingMode.Bpm, text: "BPM" },
     ],
-    label: "Message type",
+    label: "MIDI message type",
     helpText: `Specifies the MIDI message which will be sent by the encoder. If Change Preset type is used,
     encoder will be used only to switch between the presets on the device and no MIDI message will be sent. Moving the encoder
     backward will decrement the preset by 1 and moving it forward will increment it, unless Invert option is used. In that case
@@ -216,7 +216,7 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 16383,
-    label: "Repeated value",
+    label: "MIDI repeated value",
     helpText: `Specifies the constant note value to be sent when encoder is moved.`,
   },
   LowerLimit: {
@@ -231,8 +231,8 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 16383,
-    label: "Lower limit",
-    helpText: `Specifies the minimum value which is sent by the encoder input. Limit is
+    label: "MIDI lower limit",
+    helpText: `Specifies the minimum value which is sent by the encoder switch. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
     14-bit CC, total range is 0-16383.`,
   },
@@ -248,8 +248,8 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 16383,
-    label: "Upper limit",
-    helpText: `Specifies the maximum value which is sent by the encoder input. Limit is
+    label: "MIDI upper limit",
+    helpText: `Specifies the maximum value which is sent by the encoder switch. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
     14-bit CC, total range is 0-16383.`,
   },

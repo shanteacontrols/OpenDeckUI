@@ -42,7 +42,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   Invert: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      formState.type !== AnalogType.Switch && !!formState.enabled,
     key: "invert",
     sectionGroup: commonSectionGroup,
     type: SectionType.Value,
@@ -51,6 +51,40 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Invert direction",
     helpText: `Reverses the analog input direction before it is mapped to OSC or MIDI output. Use this when
     the lower physical position should behave as the higher position, or the other way around.`,
+    block: Block.Analog,
+  },
+  LowerAdcOffset: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Switch && !!formState.enabled,
+    key: "lowerAdcOffset",
+    sectionGroup: commonSectionGroup,
+    type: SectionType.Value,
+    section: 10,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 100,
+    label: "Lower ADC offset",
+    helpText: `Specifies lower offset percentage which is used to calculate minimum ADC value upon which output
+    values will be based. Useful for inputs which cannot reach minimum ADC value. If for example, the board has
+    nominal ADC range 0-4095, setting this value to 10 will calculate values based on 409-4095 range (assuming
+    the upper offset is 0), that is, lower 10% of ADC range will be cut off.`,
+    block: Block.Analog,
+  },
+  UpperAdcOffset: {
+    showIf: (formState: FormState): boolean =>
+      formState.type !== AnalogType.Switch && !!formState.enabled,
+    key: "upperAdcOffset",
+    sectionGroup: commonSectionGroup,
+    type: SectionType.Value,
+    section: 11,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 100,
+    label: "Upper ADC offset",
+    helpText: `Specifies upper offset percentage which is used to calculate maximum ADC value upon which output
+    values will be based. Useful for inputs which cannot reach maximum ADC value. If for example, the board has
+    nominal ADC range 0-4095, setting this value to 10 will calculate values based on 0-3685 range (assuming
+    the lower offset is 0), that is, upper 10% of ADC range will be cut off.`,
     block: Block.Analog,
   },
   Type: {
@@ -64,13 +98,13 @@ const sections: Dictionary<ISectionDefinition> = {
       { value: AnalogType.ControlChange7Bit, text: "Control change 7-bit" },
       { value: AnalogType.Note, text: "Note" },
       { value: AnalogType.FSR, text: "FSR" },
-      { value: AnalogType.Button, text: "Button" },
+      { value: AnalogType.Switch, text: "Switch" },
       { value: AnalogType.NRPN7bit, text: "NRPN 7-bit" },
       { value: AnalogType.NRPN14bit, text: "NRPN 14-bit" },
       { value: AnalogType.PitchBend, text: "Pitch bend" },
       { value: AnalogType.ControlChange14Bit, text: "Control change 14-bit" },
     ],
-    label: "Message type",
+    label: "MIDI message type",
     helpText: ``,
     block: Block.Analog,
   },
@@ -107,7 +141,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   LowerLimitLSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      formState.type !== AnalogType.Switch && !!formState.enabled,
     isLsb: true,
     key: "lowerLimitLSB",
     sectionGroup: midiSectionGroup,
@@ -117,7 +151,7 @@ const sections: Dictionary<ISectionDefinition> = {
     min: 0,
     max: 127,
     max2Byte: 16383,
-    label: "Lower limit (LSB)",
+    label: "MIDI lower limit (LSB)",
     helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its lowest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
@@ -126,7 +160,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   LowerLimitMSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      formState.type !== AnalogType.Switch && !!formState.enabled,
     isMsb: true,
     key: "lowerLimitMSB",
     sectionGroup: midiSectionGroup,
@@ -135,7 +169,7 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "Lower limit (MSB)",
+    label: "MIDI lower limit (MSB)",
     helpText: `Specifies the minimum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its lowest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
@@ -144,7 +178,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   UpperLimitLSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      formState.type !== AnalogType.Switch && !!formState.enabled,
     isLsb: true,
     key: "upperLimitLSB",
     sectionGroup: midiSectionGroup,
@@ -154,7 +188,7 @@ const sections: Dictionary<ISectionDefinition> = {
     min: 0,
     max: 127,
     max2Byte: 16383,
-    label: "Upper limit (LSB)",
+    label: "MIDI upper limit (LSB)",
     helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its highest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
@@ -163,7 +197,7 @@ const sections: Dictionary<ISectionDefinition> = {
   },
   UpperLimitMSB: {
     showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
+      formState.type !== AnalogType.Switch && !!formState.enabled,
     isMsb: true,
     key: "upperLimitMSB",
     sectionGroup: midiSectionGroup,
@@ -172,7 +206,7 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "Upper limit (MSB)",
+    label: "MIDI upper limit (MSB)",
     helpText: `Specifies the maximum value which is sent by the analog input. Scaling is used
     here, so this value will be sent when the analog input is at its highest position. Limit is
     type-dependent. For most types, total range is 0-127. For pitch bend, 14-bit NRPN and
@@ -194,40 +228,6 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "MIDI channel",
     helpText:
       "Setting the channel to value 17 will cause sending of data on each MIDI channel.",
-  },
-  LowerAdcOffset: {
-    showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
-    key: "lowerAdcOffset",
-    sectionGroup: commonSectionGroup,
-    type: SectionType.Value,
-    section: 10,
-    component: FormInputComponent.Input,
-    min: 0,
-    max: 100,
-    label: "Lower ADC offset",
-    helpText: `Specifies lower offset percentage which is used to calculate minimum ADC value upon which output
-    values will be based. Useful for inputs which cannot reach minimum ADC value. If for example, the board has
-    nominal ADC range 0-4095, setting this value to 10 will calculate values based on 409-4095 range (assuming
-    the upper offset is 0), that is, lower 10% of ADC range will be cut off.`,
-    block: Block.Analog,
-  },
-  UpperAdcOffset: {
-    showIf: (formState: FormState): boolean =>
-      formState.type !== AnalogType.Button && !!formState.enabled,
-    key: "upperAdcOffset",
-    sectionGroup: commonSectionGroup,
-    type: SectionType.Value,
-    section: 11,
-    component: FormInputComponent.Input,
-    min: 0,
-    max: 100,
-    label: "Upper ADC offset",
-    helpText: `Specifies upper offset percentage which is used to calculate maximum ADC value upon which output
-    values will be based. Useful for inputs which cannot reach maximum ADC value. If for example, the board has
-    nominal ADC range 0-4095, setting this value to 10 will calculate values based on 0-3685 range (assuming
-    the lower offset is 0), that is, upper 10% of ADC range will be cut off.`,
-    block: Block.Analog,
   },
 };
 

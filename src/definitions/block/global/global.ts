@@ -191,7 +191,7 @@ const sections: Dictionary<ISectionDefinition> = {
     max: 17,
     component: FormInputComponent.Input,
     label: "Global channel",
-    helpText: `Setting the channel to value 17 will cause sending of data on each MIDI channel, and incoming channel for LEDs and other components will be ignored.`,
+    helpText: `Setting the channel to value 17 will cause sending of data on each MIDI channel, and incoming channel for outputs and other components will be ignored.`,
   },
   StandardNoteOff: {
     block: Block.Global,
@@ -225,7 +225,7 @@ const sections: Dictionary<ISectionDefinition> = {
     component: FormInputComponent.Toggle,
     label: "Send MIDI clock on DIN",
     helpText: `This setting applies only to DIN MIDI out.
-    When enabled, MIDI clock will be sent out at default BPM of 120. The tempo can be changed with buttons or encoders.`,
+    When enabled, MIDI clock will be sent out at default BPM of 120. The tempo can be changed with switches or encoders.`,
   },
   DinMidiState: {
     block: Block.Global,
@@ -235,7 +235,7 @@ const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 3,
     component: FormInputComponent.Toggle,
     label: "DIN MIDI",
-    helpText: `Enable or disable DIN MIDI input and output.`,
+    helpText: `Enable or disable DIN MIDI switch and output.`,
   },
   BleMidiState: {
     block: Block.Global,
@@ -245,7 +245,7 @@ const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 9,
     component: FormInputComponent.Toggle,
     label: "BLE MIDI",
-    helpText: `Enable or disable BLE (Bluetooth Low Energy) MIDI input and output.`,
+    helpText: `Enable or disable BLE (Bluetooth Low Energy) MIDI switch and output.`,
   },
   UsbToDinThru: {
     showIf: (formState: FormState): boolean => !!formState.dinMidiState,

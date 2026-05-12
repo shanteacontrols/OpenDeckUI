@@ -4,29 +4,41 @@ import {
   FormInputComponent,
   SectionType,
   Block,
-  LedControlMode,
-  HideLedActivationValueOnControlTypes,
-  HideLedActivationIdOnControlTypes,
-  HideLedMidiChannelOnControlTypes,
-  HideLedRgbEnableOnControlTypes,
+  OutputControlMode,
+  HideOutputActivationValueOnControlTypes,
+  HideOutputActivationIdOnControlTypes,
+  HideOutputMidiChannelOnControlTypes,
+  HideOutputRgbEnableOnControlTypes,
 } from "../../interface";
 
 import DeviceForm from "../../device/DeviceForm.vue";
 import DeviceGridWithSettings from "../../device/DeviceGridWithSettings.vue";
 import RouteWrapper from "../../../components/RouteWrapper.vue";
-import LedIcon from "./LedIcon.vue";
+import OutputIcon from "./OutputIcon.vue";
 
-export const sections: Dictionary<ISectionDefinition> = {
+const commonSectionGroup = {
+  key: "common",
+  title: "Common",
+  helpText: "Applies to both OSC and MIDI.",
+};
+
+const midiSectionGroup = {
+  key: "midi",
+  title: "MIDI",
+  helpText: "Applies only to MIDI messages.",
+};
+
+const sections: Dictionary<ISectionDefinition> = {
   // Settings definitions
   BlinkWithMidiClock: {
-    block: Block.Led,
+    block: Block.Output,
     key: "blinkWithMidiClock",
     type: SectionType.Setting,
     section: 2,
     settingIndex: 0,
     component: FormInputComponent.Toggle,
     label: "Blink with MIDI clock",
-    helpText: `Enables or disables LED blinking via MIDI clock. When enabled, MIDI clock is used to toggle LED state. Otherwise, internal timer is used.`,
+    helpText: `Enables or disables output blinking via MIDI clock. When enabled, MIDI clock is used to toggle output state. Otherwise, internal timer is used.`,
   },
   StartupAnimation: {
     key: "startupAnimation",
@@ -35,8 +47,8 @@ export const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 2,
     component: FormInputComponent.Toggle,
     label: "Start-up animation",
-    helpText: `Enables or disables LED animation when the device is powered on.`,
-    block: Block.Led,
+    helpText: `Enables or disables output animation when the device is powered on.`,
+    block: Block.Output,
   },
   UseMidiProgramChangeOffset: {
     key: "useMidiProgramChangeOffset",
@@ -45,17 +57,18 @@ export const sections: Dictionary<ISectionDefinition> = {
     settingIndex: 3,
     component: FormInputComponent.Toggle,
     label: "Use MIDI Program Change Offset",
-    helpText: `When enabled, current internal Program Change Offset will be appended to configured activation ID, if the LED is configured to react to Program Change.`,
-    block: Block.Led,
+    helpText: `When enabled, current internal Program Change Offset will be appended to configured activation ID, if the output is configured to react to Program Change.`,
+    block: Block.Output,
   },
   // Component definitions
-  LedColorTesting: {
-    key: "ledColorTesting",
+  OutputTesting: {
+    key: "outputTesting",
+    sectionGroup: commonSectionGroup,
     type: SectionType.Value,
     section: 0,
     component: FormInputComponent.Select,
     options: [
-      { value: 0, text: "Off (no color)" },
+      { value: 0, text: "Off" },
       { value: 1, text: "Red" },
       { value: 2, text: "Green" },
       { value: 3, text: "Yellow" },
@@ -64,108 +77,113 @@ export const sections: Dictionary<ISectionDefinition> = {
       { value: 6, text: "Cyan" },
       { value: 7, text: "White" },
     ],
-    label: "LED color testing",
+    label: "Output test",
     helpText: ``,
-    block: Block.Led,
+    block: Block.Output,
   },
   ActivationId: {
     showIf: (formState: FormState): boolean =>
-      !HideLedActivationIdOnControlTypes.includes(formState.controlType),
+      !HideOutputActivationIdOnControlTypes.includes(formState.controlType),
     key: "activationId",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 3,
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "Activation ID",
+    label: "MIDI activation ID",
     helpText: ``,
-    block: Block.Led,
+    block: Block.Output,
   },
   RGBEnable: {
     showIf: (formState: FormState): boolean =>
-      !HideLedRgbEnableOnControlTypes.includes(formState.controlType),
+      !HideOutputRgbEnableOnControlTypes.includes(formState.controlType),
     key: "rgbEnable",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 4,
     component: FormInputComponent.Toggle,
-    label: "RGB Enable",
+    label: "MIDI RGB enable",
     helpText: ``,
-    block: Block.Led,
+    block: Block.Output,
   },
   ControlType: {
     key: "controlType",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 5,
     component: FormInputComponent.Select,
     options: [
       {
-        value: LedControlMode.MidiInNoteMultiValue,
+        value: OutputControlMode.MidiInNoteMultiValue,
         text: "MIDI in / Note (Multi value)",
       },
       {
-        value: LedControlMode.MidiInCcMultiValue,
+        value: OutputControlMode.MidiInCcMultiValue,
         text: "MIDI in / CC (Multi value)",
       },
       {
-        value: LedControlMode.MidiInNoteSingleValue,
+        value: OutputControlMode.MidiInNoteSingleValue,
         text: "MIDI in / Note (Single value)",
       },
       {
-        value: LedControlMode.MidiInCcSingleValue,
+        value: OutputControlMode.MidiInCcSingleValue,
         text: "MIDI in / CC (Single value)",
       },
       {
-        value: LedControlMode.LocalNoteMultiValue,
+        value: OutputControlMode.LocalNoteMultiValue,
         text: "Local / Note (Multi value)",
       },
       {
-        value: LedControlMode.LocalCcMultiValue,
+        value: OutputControlMode.LocalCcMultiValue,
         text: "Local / CC (Multi value)",
       },
       {
-        value: LedControlMode.LocalNoteSingleValue,
+        value: OutputControlMode.LocalNoteSingleValue,
         text: "Local / Note (Single value)",
       },
       {
-        value: LedControlMode.LocalCcSingleValue,
+        value: OutputControlMode.LocalCcSingleValue,
         text: "Local / CC (Single value)",
       },
       {
-        value: LedControlMode.ProgramChange,
+        value: OutputControlMode.ProgramChange,
         text: "Program change",
       },
       {
-        value: LedControlMode.PresetChange,
+        value: OutputControlMode.PresetChange,
         text: "Preset",
       },
       {
-        value: LedControlMode.Static,
+        value: OutputControlMode.Static,
         text: "Static / constantly on",
       },
     ],
-    label: "Control type",
+    label: "MIDI control type",
     helpText: ``,
-    block: Block.Led,
+    block: Block.Output,
   },
   ActivationValue: {
     showIf: (formState: FormState): boolean =>
-      !HideLedActivationValueOnControlTypes.includes(formState.controlType),
+      !HideOutputActivationValueOnControlTypes.includes(formState.controlType),
     key: "activationValue",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 6,
     component: FormInputComponent.Input,
     min: 0,
     max: 127,
-    label: "Activation Value",
+    label: "MIDI activation value",
     helpText: "",
-    block: Block.Led,
+    block: Block.Output,
   },
   MidiChannel: {
     showIf: (formState: FormState): boolean =>
-      !HideLedMidiChannelOnControlTypes.includes(formState.controlType),
+      !HideOutputMidiChannelOnControlTypes.includes(formState.controlType),
     key: "midiChannel",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
-    block: Block.Led,
+    block: Block.Output,
     section: 7,
     component: FormInputComponent.Input,
     min: 1,
@@ -176,36 +194,37 @@ export const sections: Dictionary<ISectionDefinition> = {
   },
 };
 
-export const LedBlock: IBlockDefinition = {
-  block: Block.Led,
-  title: "LED",
-  routeName: "device-leds",
-  iconComponent: markRaw(LedIcon),
+export const OutputBlock: IBlockDefinition = {
+  block: Block.Output,
+  title: "Output",
+  pluralTitle: "Outputs",
+  routeName: "device-outputs",
+  iconComponent: markRaw(OutputIcon),
   componentCountResponseIndex: 3,
   sections,
   routes: [
     {
-      path: "leds",
-      name: "device-leds",
+      path: "outputs",
+      name: "device-outputs",
       component: RouteWrapper,
-      redirect: { name: "device-leds-list" },
+      redirect: { name: "device-outputs-list" },
       children: [
         {
           path: "list",
-          name: "device-leds-list",
+          name: "device-outputs-list",
           component: DeviceGridWithSettings,
           props: {
-            block: Block.Led,
-            routeName: "device-leds-form",
+            block: Block.Output,
+            routeName: "device-outputs-form",
             segmentGrid: true,
           },
         },
         {
-          path: "leds/:index",
-          name: "device-leds-form",
+          path: "outputs/:index",
+          name: "device-outputs-form",
           component: DeviceForm,
           props: {
-            block: Block.Led,
+            block: Block.Output,
           },
         },
       ],

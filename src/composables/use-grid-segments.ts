@@ -47,15 +47,15 @@ export const useGridSegments = (
   numberOfComponents: Ref<Array<number>>,
   block: Ref<number>,
 ): Computed<GridSegment[]> => {
-  const buttonCount = computed(
-    () => numberOfComponents.value[Block.Button] || 0,
+  const switchCount = computed(
+    () => numberOfComponents.value[Block.Switch] || 0,
   );
 
   const analogCount = computed(
     () => numberOfComponents.value[Block.Analog] || 0,
   );
 
-  const ledCount = computed(() => numberOfComponents.value[Block.Led] || 0);
+  const outputCount = computed(() => numberOfComponents.value[Block.Output] || 0);
 
   const touchScreenCount = computed(
     () => numberOfComponents.value[Block.Touchscreen] || 0,
@@ -65,18 +65,18 @@ export const useGridSegments = (
     const segments: GridSegment[] = [];
 
     switch (block.value) {
-      case Block.Button:
+      case Block.Switch:
         {
-          //segmentation to buttons, analog and touchscreen
+          // Segmentation to digital switches, analog inputs and touchscreen.
           if (
             semverLt(semverClean(deviceState.firmwareVersion), "5.4.0") ||
             semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
           ) {
             addSegment(
               segments,
-              "Digital inputs",
+              "Digital switches",
               0,
-              buttonCount.value -
+              switchCount.value -
                 analogCount.value -
                 touchScreenCount.value -
                 1,
@@ -86,8 +86,8 @@ export const useGridSegments = (
               addSegment(
                 segments,
                 "Analog inputs",
-                buttonCount.value - analogCount.value - touchScreenCount.value,
-                buttonCount.value - touchScreenCount.value - 1,
+                switchCount.value - analogCount.value - touchScreenCount.value,
+                switchCount.value - touchScreenCount.value - 1,
               );
             }
 
@@ -95,50 +95,50 @@ export const useGridSegments = (
               addSegment(
                 segments,
                 "Touchscreen",
-                buttonCount.value - touchScreenCount.value,
-                buttonCount.value - 1,
+                switchCount.value - touchScreenCount.value,
+                switchCount.value - 1,
               );
             }
           } else {
             addSegment(
               segments,
-              "Digital inputs",
+              "Digital switches",
               0,
-              buttonCount.value - analogCount.value - 1,
+              switchCount.value - analogCount.value - 1,
             );
             addSegment(
               segments,
               "Analog inputs",
-              buttonCount.value - analogCount.value,
-              buttonCount.value - touchScreenCount.value - 1,
+              switchCount.value - analogCount.value,
+              switchCount.value - touchScreenCount.value - 1,
             );
 
             if (touchScreenCount.value > 0) {
               addSegment(
                 segments,
                 "Touchscreen",
-                buttonCount.value - touchScreenCount.value,
-                buttonCount.value - 1,
+                switchCount.value - touchScreenCount.value,
+                switchCount.value - 1,
               );
             }
           }
         }
         break;
 
-      case Block.Led:
+      case Block.Output:
         {
-          //segmentation to leds and touchscreen
+          // Segmentation to physical outputs and touchscreen.
           addSegment(
             segments,
             "Digital outputs",
             0,
-            ledCount.value - touchScreenCount.value - 1,
+            outputCount.value - touchScreenCount.value - 1,
           );
           addSegment(
             segments,
             "Touchscreen components",
-            ledCount.value - touchScreenCount.value,
-            ledCount.value - 1,
+            outputCount.value - touchScreenCount.value,
+            outputCount.value - 1,
           );
         }
         break;

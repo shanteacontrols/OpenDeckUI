@@ -42,10 +42,10 @@ export enum Amount {
 
 export enum Block {
   Global = 0,
-  Button = 1,
+  Switch = 1,
   Encoder = 2,
   Analog = 3,
-  Led = 4,
+  Output = 4,
   Display = 5,
   Touchscreen = 6, // New
 }
@@ -54,14 +54,14 @@ export enum AnalogType {
   ControlChange7Bit = 0,
   Note = 1,
   FSR = 2,
-  Button = 3,
+  Switch = 3,
   NRPN7bit = 4,
   NRPN14bit = 5,
   PitchBend = 6,
   ControlChange14Bit = 7,
 }
 
-export enum ButtonMessageType {
+export enum SwitchMessageType {
   Note = 0,
   ProgramChange = 1,
   ProgramChangeInc = 14,
@@ -111,7 +111,7 @@ export enum EncodingMode {
   TwoNoteWithFixedValueBothDirections = 14,
 }
 
-export enum LedControlMode {
+export enum OutputControlMode {
   MidiInNoteSingleValue = 0,
   LocalNoteSingleValue = 1,
   MidiInCcSingleValue = 2,
@@ -125,64 +125,64 @@ export enum LedControlMode {
   Static = 10,
 }
 
-export const HideButtonVelocityOnTypes = [
-  ButtonMessageType.None,
-  ButtonMessageType.ProgramChange,
-  ButtonMessageType.ProgramChangeDec,
-  ButtonMessageType.ProgramChangeInc,
-  ButtonMessageType.RealTimeClock,
-  ButtonMessageType.RealTimeStart,
-  ButtonMessageType.RealTimeContinue,
-  ButtonMessageType.RealTimeStop,
-  ButtonMessageType.RealTimeActiveSensing,
-  ButtonMessageType.RealTimeSystemReset,
-  ButtonMessageType.MmcStop,
-  ButtonMessageType.MmcPlay,
-  ButtonMessageType.MmcRecord,
-  ButtonMessageType.MmcPause,
-  ButtonMessageType.PresetChange,
-  ButtonMessageType.NoteOffOnly,
-  ButtonMessageType.ControlChange0Only,
-  ButtonMessageType.BpmInc,
-  ButtonMessageType.BpmDec,
+export const HideSwitchVelocityOnTypes = [
+  SwitchMessageType.None,
+  SwitchMessageType.ProgramChange,
+  SwitchMessageType.ProgramChangeDec,
+  SwitchMessageType.ProgramChangeInc,
+  SwitchMessageType.RealTimeClock,
+  SwitchMessageType.RealTimeStart,
+  SwitchMessageType.RealTimeContinue,
+  SwitchMessageType.RealTimeStop,
+  SwitchMessageType.RealTimeActiveSensing,
+  SwitchMessageType.RealTimeSystemReset,
+  SwitchMessageType.MmcStop,
+  SwitchMessageType.MmcPlay,
+  SwitchMessageType.MmcRecord,
+  SwitchMessageType.MmcPause,
+  SwitchMessageType.PresetChange,
+  SwitchMessageType.NoteOffOnly,
+  SwitchMessageType.ControlChange0Only,
+  SwitchMessageType.BpmInc,
+  SwitchMessageType.BpmDec,
 ];
 
-export const HideButtonMidiIdOnTypes = [
-  ButtonMessageType.None,
-  ButtonMessageType.RealTimeClock,
-  ButtonMessageType.RealTimeStart,
-  ButtonMessageType.RealTimeContinue,
-  ButtonMessageType.RealTimeStop,
-  ButtonMessageType.RealTimeActiveSensing,
-  ButtonMessageType.RealTimeSystemReset,
-  ButtonMessageType.ProgramChangeOffsetInc,
-  ButtonMessageType.ProgramChangeOffsetDec,
-  ButtonMessageType.BpmInc,
-  ButtonMessageType.BpmDec,
-  ButtonMessageType.PresetChange,
+export const HideSwitchMidiIdOnTypes = [
+  SwitchMessageType.None,
+  SwitchMessageType.RealTimeClock,
+  SwitchMessageType.RealTimeStart,
+  SwitchMessageType.RealTimeContinue,
+  SwitchMessageType.RealTimeStop,
+  SwitchMessageType.RealTimeActiveSensing,
+  SwitchMessageType.RealTimeSystemReset,
+  SwitchMessageType.ProgramChangeOffsetInc,
+  SwitchMessageType.ProgramChangeOffsetDec,
+  SwitchMessageType.BpmInc,
+  SwitchMessageType.BpmDec,
+  SwitchMessageType.PresetChange,
 ];
 
-export const HideButtonMidiChannelOnTypes = [
-  ButtonMessageType.None,
-  ButtonMessageType.MmcStop,
-  ButtonMessageType.MmcPlay,
-  ButtonMessageType.MmcRecord,
-  ButtonMessageType.MmcPause,
-  ButtonMessageType.RealTimeClock,
-  ButtonMessageType.RealTimeStart,
-  ButtonMessageType.RealTimeContinue,
-  ButtonMessageType.RealTimeStop,
-  ButtonMessageType.RealTimeActiveSensing,
-  ButtonMessageType.RealTimeSystemReset,
-  ButtonMessageType.PresetChange,
-  ButtonMessageType.ProgramChangeOffsetInc,
-  ButtonMessageType.ProgramChangeOffsetDec,
-  ButtonMessageType.BpmInc,
-  ButtonMessageType.BpmDec,
+export const HideSwitchMidiChannelOnTypes = [
+  SwitchMessageType.None,
+  SwitchMessageType.MmcStop,
+  SwitchMessageType.MmcPlay,
+  SwitchMessageType.MmcRecord,
+  SwitchMessageType.MmcPause,
+  SwitchMessageType.RealTimeClock,
+  SwitchMessageType.RealTimeStart,
+  SwitchMessageType.RealTimeContinue,
+  SwitchMessageType.RealTimeStop,
+  SwitchMessageType.RealTimeActiveSensing,
+  SwitchMessageType.RealTimeSystemReset,
+  SwitchMessageType.PresetChange,
+  SwitchMessageType.ProgramChangeOffsetInc,
+  SwitchMessageType.ProgramChangeOffsetDec,
+  SwitchMessageType.BpmInc,
+  SwitchMessageType.BpmDec,
 ];
 
-export const HideAnalogMidiIdOnTypes = [AnalogType.Button];
-export const HideAnalogMidiChannelOnTypes = [AnalogType.Button];
+export const HideAnalogMidiIdOnTypes = [AnalogType.Switch];
+export const HideAnalogMidiChannelOnTypes = [AnalogType.Switch];
 
 export const HideEncoderMidiIdOnTypes = [];
 
@@ -224,20 +224,20 @@ export const ShowEncoder2ndIdOnTypes = [
   EncodingMode.TwoNoteWithFixedValueBothDirections,
 ];
 
-export const HideLedActivationValueOnControlTypes = [
-  LedControlMode.PresetChange,
-  LedControlMode.ProgramChange,
-  LedControlMode.Static,
+export const HideOutputActivationValueOnControlTypes = [
+  OutputControlMode.PresetChange,
+  OutputControlMode.ProgramChange,
+  OutputControlMode.Static,
 ];
 
-export const HideLedActivationIdOnControlTypes = [LedControlMode.Static];
+export const HideOutputActivationIdOnControlTypes = [OutputControlMode.Static];
 
-export const HideLedMidiChannelOnControlTypes = [
-  LedControlMode.PresetChange,
-  LedControlMode.Static,
+export const HideOutputMidiChannelOnControlTypes = [
+  OutputControlMode.PresetChange,
+  OutputControlMode.Static,
 ];
 
-export const HideLedRgbEnableOnControlTypes = [LedControlMode.PresetChange];
+export const HideOutputRgbEnableOnControlTypes = [OutputControlMode.PresetChange];
 
 export enum SectionType {
   Setting = "setting",
@@ -282,6 +282,7 @@ export enum RequestState {
 export interface IBlockDefinition {
   block: Block;
   title: string;
+  pluralTitle?: string;
   routeName: string;
   iconComponent: Component;
   sections: Dictionary<ISectionDefinition>;

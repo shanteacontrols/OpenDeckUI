@@ -6,7 +6,7 @@
     role="img"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 640 640"
-    rel="LED by Kiran Shastry from the Noun Project"
+    rel="Output icon based on lightbulb by Kiran Shastry from the Noun Project"
   >
     <path
       fill="currentColor"
@@ -20,6 +20,6 @@
 import { defineComponent } from "vue";
 
 export default defineComponent({
-  name: "IconLed",
+  name: "IconOutput",
 });
 </script>
