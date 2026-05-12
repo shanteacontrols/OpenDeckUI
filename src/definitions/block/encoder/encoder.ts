@@ -198,21 +198,6 @@ const sections: Dictionary<ISectionDefinition> = {
     label: "Repeated value",
     helpText: `Specifies the constant note value to be sent when encoder is moved.`,
   },
-  PulsesPerStep: {
-    showIf: (formState: FormState): boolean => formState.enabled,
-    block: Block.Encoder,
-    key: "pulsesPerStep",
-    type: SectionType.Value,
-    section: 5,
-    component: FormInputComponent.Select,
-    options: [
-      { value: 2, text: "2" },
-      { value: 3, text: "3" },
-      { value: 4, text: "4" },
-    ],
-    label: "Pulses per step",
-    helpText: `Amount of pulses encoder must generate in order for firmware to register it as single step. Usually 4.`,
-  },
   LowerLimit: {
     showIf: (formState: FormState): boolean =>
       ShowEncoderLimitsOnTypes.includes(formState.encodingMode) &&
