@@ -16,10 +16,23 @@ import DeviceForm from "../../device/DeviceForm.vue";
 import DeviceGrid from "../../device/DeviceGrid.vue";
 import ButtonIcon from "./ButtonIcon.vue";
 
+const commonSectionGroup = {
+  key: "common",
+  title: "Common",
+  helpText: "Applies to both OSC and MIDI.",
+};
+
+const midiSectionGroup = {
+  key: "midi",
+  title: "MIDI",
+  helpText: "Applies only to MIDI messages.",
+};
+
 const sections: Dictionary<ISectionDefinition> = {
   Type: {
     block: Block.Button,
     key: "type",
+    sectionGroup: commonSectionGroup,
     type: SectionType.Value,
     section: 0,
     component: FormInputComponent.Select,
@@ -30,13 +43,14 @@ const sections: Dictionary<ISectionDefinition> = {
     ],
     label: "Type",
     helpText: `
-      Button type can be momentary, which means that configured MIDI message is sent as soon as
-      button is released, or latching, which means that MIDI message is sent on
+      Button type can be momentary, which means that configured action is sent as soon as
+      button is released, or latching, which means that configured action is sent on
       second button press. All buttons are configured as momentary by
-      default. Depending on message type this setting can be ignored.`,
+      default. This setting is always respected by OSC messages. Some MIDI message types may override it.`,
   },
   MidiMessage: {
     key: "messageType",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 1,
     component: FormInputComponent.Select,
@@ -103,6 +117,7 @@ const sections: Dictionary<ISectionDefinition> = {
     showIf: (formState: FormState): boolean =>
       !HideButtonMidiChannelOnTypes.includes(formState.messageType),
     key: "midiChannel",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     block: Block.Button,
     section: 4,
@@ -117,6 +132,7 @@ const sections: Dictionary<ISectionDefinition> = {
     showIf: (formState: FormState): boolean =>
       !HideButtonMidiIdOnTypes.includes(formState.messageType),
     key: "midiId",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 2,
     component: FormInputComponent.Input,
@@ -130,6 +146,7 @@ const sections: Dictionary<ISectionDefinition> = {
     showIf: (formState: FormState): boolean =>
       formState.messageType == ButtonMessageType.PresetChange,
     key: "preset",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 2,
     component: FormInputComponent.Input,
@@ -144,6 +161,7 @@ const sections: Dictionary<ISectionDefinition> = {
     showIf: (formState: FormState): boolean =>
       !HideButtonVelocityOnTypes.includes(formState.messageType),
     key: "value",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 3,
     component: FormInputComponent.Input,

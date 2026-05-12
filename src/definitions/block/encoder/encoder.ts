@@ -19,10 +19,23 @@ import DeviceGrid from "../../device/DeviceGrid.vue";
 import DeviceForm from "../../device/DeviceForm.vue";
 import EncoderIcon from "./EncoderIcon.vue";
 
+const commonSectionGroup = {
+  key: "common",
+  title: "Common",
+  helpText: "Applies to both OSC and MIDI.",
+};
+
+const midiSectionGroup = {
+  key: "midi",
+  title: "MIDI",
+  helpText: "Applies only to MIDI messages.",
+};
+
 const sections: Dictionary<ISectionDefinition> = {
   Enabled: {
     block: Block.Encoder,
     key: "enabled",
+    sectionGroup: commonSectionGroup,
     type: SectionType.Value,
     section: 0,
     component: FormInputComponent.Toggle,
@@ -34,18 +47,19 @@ const sections: Dictionary<ISectionDefinition> = {
     showIf: (formState: FormState): boolean => formState.enabled,
     block: Block.Encoder,
     key: "invertState",
+    sectionGroup: commonSectionGroup,
     type: SectionType.Value,
     section: 1,
     component: FormInputComponent.Toggle,
     label: "Invert",
-    helpText: `Inverts the direction of the encoder. For example, if 7Fh01h encoding mode is used, MIDI value 127 will
-    be sent in backward direction, and 1 in forward direction. If inversion is enabled, value 1 will be sent when going backwards,
-    and 127 when going forward. Same logic applies to any other specified encoding mode.`,
+    helpText: `Reverses the encoder direction before it is mapped to OSC or MIDI output. Use this when
+    turning the encoder clockwise should behave as counter-clockwise, or the other way around.`,
   },
   EncodingMode: {
     showIf: (formState: FormState): boolean => formState.enabled,
     block: Block.Encoder,
     key: "encodingMode",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 2,
     colspan: 2,
@@ -96,6 +110,7 @@ const sections: Dictionary<ISectionDefinition> = {
       !HideEncoderMidiChannelOnTypes.includes(formState.encodingMode) &&
       !!formState.enabled,
     key: "midiChannel",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     block: Block.Encoder,
     section: 4,
@@ -113,6 +128,7 @@ const sections: Dictionary<ISectionDefinition> = {
     isLsb: true,
     block: Block.Encoder,
     key: "midiIdLSB",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 3,
     component: FormInputComponent.Input,
@@ -128,6 +144,7 @@ const sections: Dictionary<ISectionDefinition> = {
       !!formState.enabled,
     block: Block.Encoder,
     key: "midiId2",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 12,
     component: FormInputComponent.Input,
@@ -143,6 +160,7 @@ const sections: Dictionary<ISectionDefinition> = {
     isMsb: true,
     block: Block.Encoder,
     key: "midiIdMSB",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 7,
     component: FormInputComponent.Input,
@@ -157,6 +175,7 @@ const sections: Dictionary<ISectionDefinition> = {
       formState.enabled,
     block: Block.Encoder,
     key: "acceleration",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 6,
     component: FormInputComponent.Select,
@@ -175,6 +194,7 @@ const sections: Dictionary<ISectionDefinition> = {
       formState.enabled,
     block: Block.Encoder,
     key: "remoteSync",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 8,
     colspan: 2,
@@ -190,6 +210,7 @@ const sections: Dictionary<ISectionDefinition> = {
       formState.enabled,
     block: Block.Encoder,
     key: "repeatedValue",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 11,
     component: FormInputComponent.Input,
@@ -204,6 +225,7 @@ const sections: Dictionary<ISectionDefinition> = {
       formState.enabled,
     block: Block.Encoder,
     key: "lowerLimit",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 9,
     component: FormInputComponent.Input,
@@ -220,6 +242,7 @@ const sections: Dictionary<ISectionDefinition> = {
       formState.enabled,
     block: Block.Encoder,
     key: "upperLimit",
+    sectionGroup: midiSectionGroup,
     type: SectionType.Value,
     section: 10,
     component: FormInputComponent.Input,

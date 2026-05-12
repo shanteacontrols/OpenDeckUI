@@ -2,6 +2,30 @@
   @apply pb-8 grid grid-cols-1 gap-x-6 gap-y-4;
 }
 
+.device-form-content {
+  @apply pt-0;
+}
+
+.device-form-group {
+  @apply pt-6 border-b;
+}
+
+.device-form-group:last-child {
+  @apply border-b-0;
+}
+
+.device-form-group-heading {
+  @apply mb-6;
+}
+
+.device-form-group-heading h3 {
+  @apply mb-2 font-bold;
+}
+
+.device-form-group-heading .help-text {
+  @apply mb-0;
+}
+
 @screen md {
   .form-grid {
     @apply grid-cols-2;

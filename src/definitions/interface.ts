@@ -293,6 +293,11 @@ interface ISectionBase {
   block: Block;
   component: FormInputComponent;
   key: string;
+  sectionGroup?: {
+    key: string;
+    title: string;
+    helpText?: string;
+  };
   section: number;
   label: string;
   helpText: string;

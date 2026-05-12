@@ -25,18 +25,31 @@
 
     <SpinnerOverlay v-if="loading" />
 
-    <div class="section-content">
-      <div class="form-grid" :class="`lg:grid-cols-${gridCols}`">
-        <template v-for="section in sections">
-          <FormField
-            v-if="showField(section)"
-            :key="section.key"
-            :class="`col-span-${section.colspan || 1}`"
-            :value="formData[section.key]"
-            :field-definition="section"
-            @modified="onValueChange"
-          />
-        </template>
+    <div class="section-content device-form-content">
+      <div
+        v-for="group in sectionGroups"
+        :key="group.key"
+        class="device-form-group"
+      >
+        <div v-if="group.title" class="device-form-group-heading">
+          <h3>{{ group.title }}</h3>
+          <p v-if="group.helpText" class="help-text">
+            {{ group.helpText }}
+          </p>
+        </div>
+
+        <div class="form-grid" :class="`lg:grid-cols-${gridCols}`">
+          <template v-for="section in group.sections">
+            <FormField
+              v-if="showField(section)"
+              :key="section.key"
+              :class="`col-span-${section.colspan || 1}`"
+              :value="formData[section.key]"
+              :field-definition="section"
+              @modified="onValueChange"
+            />
+          </template>
+        </div>
       </div>
     </div>
   </form>
@@ -44,10 +57,17 @@
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import { SectionType, Block } from "../../definitions";
+import { SectionType, Block, ISectionDefinition } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
 import router from "../../router";
 import { useDeviceForm } from "../../composables";
+
+interface ISectionGroup {
+  key: string;
+  title: string;
+  helpText?: string;
+  sections: ISectionDefinition[];
+}
 
 export default defineComponent({
   name: "DeviceForm",
@@ -66,12 +86,34 @@ export default defineComponent({
     const index = computed(() =>
       Number(router.currentRoute.value.params.index),
     );
+    const form = useDeviceForm(props.block, SectionType.Value, index);
+
+    const sectionGroups = computed(() =>
+      form.sections.reduce((groups: ISectionGroup[], section) => {
+        const groupKey = section.sectionGroup?.key || "default";
+        let group = groups.find((item) => item.key === groupKey);
+
+        if (!group) {
+          group = {
+            key: groupKey,
+            title: section.sectionGroup?.title || "",
+            helpText: section.sectionGroup?.helpText,
+            sections: [],
+          };
+          groups.push(group);
+        }
+
+        group.sections.push(section);
+        return groups;
+      }, []),
+    );
 
     return {
       outputId,
       numberOfComponents,
       index,
-      ...useDeviceForm(props.block, SectionType.Value, index),
+      ...form,
+      sectionGroups,
     };
   },
 });
