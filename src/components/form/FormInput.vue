@@ -7,6 +7,7 @@
     :min="min"
     :max="max"
     :placeholder="placeholder"
+    :disabled="disabled"
     @change="emit('changed', $event.target.value)"
   />
 </template>
@@ -40,6 +41,10 @@ export default defineComponent({
     type: {
       default: "number",
       type: String as () => "number" | "text",
+    },
+    disabled: {
+      default: false,
+      type: Boolean,
     },
   },
   setup(_, { emit }) {

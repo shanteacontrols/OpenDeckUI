@@ -3,6 +3,7 @@
     class="toggle"
     :class="{
       active: isChecked,
+      disabled,
     }"
   >
     <label>
@@ -10,6 +11,7 @@
         type="checkbox"
         :checked="isChecked"
         class="toggle-checkbox"
+        :disabled="disabled"
         @change="toggle"
       />
       <span class="toggle-track"></span>
@@ -30,13 +32,23 @@ export default defineComponent({
       default: 0,
       type: [Boolean, Number],
     },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
   },
   emits: ["changed"],
   setup(props, { emit }) {
     const isChecked = computed(() => !!props.value);
 
     // Note: we are working with 0 and 1 not Bool
-    const toggle = () => emit("changed", isChecked.value ? 0 : 1);
+    const toggle = () => {
+      if (props.disabled) {
+        return;
+      }
+
+      emit("changed", isChecked.value ? 0 : 1);
+    };
 
     return {
       toggle,

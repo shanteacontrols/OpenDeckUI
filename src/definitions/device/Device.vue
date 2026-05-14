@@ -5,6 +5,8 @@
 
   <div v-else-if="hasVisibleSession" class="relative">
     <DeviceNav v-if="isConnected && !isBootloaderMode" />
+    <DeviceBlessingStatus v-if="isConnected && !isBootloaderMode" />
+    <DeviceBlessingModal v-if="isConnected && !isBootloaderMode" />
     <router-view></router-view>
 
     <SpinnerOverlay
@@ -46,12 +48,16 @@ import { DfuState, webUsbDfuVirtualOutputId } from "./device-store";
 
 import RequestLog from "../request-log/RequestLog.vue";
 import DeviceNav from "./DeviceNav.vue";
+import DeviceBlessingStatus from "./DeviceBlessingStatus.vue";
+import DeviceBlessingModal from "./DeviceBlessingModal.vue";
 
 export default defineComponent({
   name: "Device",
   components: {
     RequestLog,
     DeviceNav,
+    DeviceBlessingStatus,
+    DeviceBlessingModal,
   },
   setup() {
     const {

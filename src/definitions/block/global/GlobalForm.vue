@@ -145,7 +145,7 @@
               type="text"
               :maxlength="MDNS_HOSTNAME_MAX_LENGTH"
               placeholder="auto generated"
-              :disabled="mdnsHostnameLoading"
+              :disabled="mdnsHostnameLoading || !isConfigBlessed"
               @change="onMdnsHostnameChange"
             />
             <p class="help-text">
@@ -180,6 +180,7 @@
                 :min="0"
                 :max="255"
                 name="oscDestIpv4Octet0"
+                :disabled="!isConfigBlessed"
                 @changed="
                   onOscSettingChange(
                     $event,
@@ -194,6 +195,7 @@
                 :min="0"
                 :max="255"
                 name="oscDestIpv4Octet1"
+                :disabled="!isConfigBlessed"
                 @changed="
                   onOscSettingChange(
                     $event,
@@ -208,6 +210,7 @@
                 :min="0"
                 :max="255"
                 name="oscDestIpv4Octet2"
+                :disabled="!isConfigBlessed"
                 @changed="
                   onOscSettingChange(
                     $event,
@@ -222,6 +225,7 @@
                 :min="0"
                 :max="255"
                 name="oscDestIpv4Octet3"
+                :disabled="!isConfigBlessed"
                 @changed="
                   onOscSettingChange(
                     $event,
@@ -306,6 +310,7 @@ export default defineComponent({
   setup() {
     const { sections } = GlobalBlock;
     const { supportedPresetsCount } = deviceStoreMapped;
+    const { isConfigBlessed } = deviceStoreMapped;
     const mdnsHostnameDraft = ref("");
     const mdnsHostnameSaved = ref("");
     const mdnsHostnameError = ref("");
@@ -331,6 +336,10 @@ export default defineComponent({
     };
 
     const onMdnsHostnameChange = async (event: Event) => {
+      if (!isConfigBlessed.value) {
+        return;
+      }
+
       const input = event.target as HTMLInputElement;
       const hostname = normalizeMdnsHostname(input.value);
       const error = validateMdnsHostname(hostname);
@@ -378,6 +387,10 @@ export default defineComponent({
       section: ISectionSetting,
       onSettingChange: (params: any) => void,
     ) => {
+      if (!isConfigBlessed.value) {
+        return;
+      }
+
       onSettingChange({
         key: section.key,
         value: Number(value),
@@ -397,6 +410,7 @@ export default defineComponent({
       mdnsHostnameLoading,
       onMdnsHostnameChange,
       onOscSettingChange,
+      isConfigBlessed,
       supportedPresetsCount,
     };
   },

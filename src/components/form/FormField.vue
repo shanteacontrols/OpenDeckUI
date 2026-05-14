@@ -4,6 +4,7 @@
     class="form-field"
     :class="{
       error: errors.length,
+      'config-locked': isConfigLocked,
     }"
   >
     <label class="label">
@@ -21,6 +22,7 @@
       :is="fieldComponent"
       v-if="!isDisabled"
       :value="input"
+      :disabled="isConfigLocked"
       v-bind="componentProps"
       @changed="onValueChange"
     />
@@ -159,10 +161,15 @@ export default defineComponent({
     const isDisabled = computed(() =>
       deviceStoreMapped.isControlDisabled(props.fieldDefinition),
     );
+    const isConfigLocked = computed(() => !deviceStoreMapped.isConfigBlessed.value);
 
     const valueRef = toRefs(props).value;
     const validators = getValidatorForDefinition(props.fieldDefinition);
     const valueChangeHandler = (value: any) => {
+      if (isConfigLocked.value) {
+        return;
+      }
+
       if (Number(value) !== valueRef.value) {
         emit("modified", {
           key,
@@ -203,6 +210,7 @@ export default defineComponent({
       label,
       helpText,
       isDisabled,
+      isConfigLocked,
       isMsb,
       isLsb,
       min,

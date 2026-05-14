@@ -11,7 +11,7 @@
       </div>
 
       <div class="form-field">
-        <Button @click.prevent="onFactoryResetClicked">
+        <Button :disabled="!isConfigBlessed" @click.prevent="onFactoryResetClicked">
           Reset to factory settings
         </Button>
         <p class="help-text">
@@ -21,7 +21,7 @@
 
       <div class="form-field">
         <ButtonLink
-          v-if="isFirmwareUpdateSupported"
+          v-if="isFirmwareUpdateSupported && isConfigBlessed"
           :to="{ name: 'device-firmware-update' }"
         >
           Firmware section
@@ -42,7 +42,7 @@
   <Section v-if="valueSize === 2" title="Backup & Restore" class="w-full">
     <div class="form-grid">
       <div class="form-field">
-        <Button @click.prevent="onBackupClicked">
+        <Button :disabled="!isConfigBlessed" @click.prevent="onBackupClicked">
           Backup
         </Button>
         <p class="help-text">
@@ -53,6 +53,7 @@
         <FormFileInput
           label="Restore"
           name="backup-file"
+          :disabled="!isConfigBlessed"
           @change="onBackupFileSelected"
         />
         <p class="help-text">
@@ -77,6 +78,7 @@ export default defineComponent({
       startFactoryReset,
       startReboot,
       startBackup,
+      isConfigBlessed,
     } = deviceStoreMapped;
 
     const modalVisible = ref(false);
@@ -85,10 +87,11 @@ export default defineComponent({
 
     const onFactoryResetClicked = useConfirmPrompt(
       "This will reset all the parameters on the board to their factory settings. All analog inputs will be disabled as well. Depending on the board, this can take up to 30 seconds. Proceed?",
-      startFactoryReset,
+      () => isConfigBlessed.value && startFactoryReset(),
     );
 
     const onBackupFileSelected = (fileList) => {
+      if (!isConfigBlessed.value) return;
       if (!fileList.length) return;
 
       deviceStoreMapped.startRestore(fileList[0]);
@@ -96,7 +99,7 @@ export default defineComponent({
 
     const onBackupClicked = useConfirmPrompt(
       "This will initiate a full backup of all parameters stored on the board. Proceed?",
-      startBackup,
+      () => isConfigBlessed.value && startBackup(),
     );
 
     return {
@@ -106,6 +109,7 @@ export default defineComponent({
       onFactoryResetClicked,
       valueSize,
       isFirmwareUpdateSupported,
+      isConfigBlessed,
       startReboot,
       onBackupClicked,
       onBackupFileSelected,

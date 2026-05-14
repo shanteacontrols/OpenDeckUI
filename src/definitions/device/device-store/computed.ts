@@ -14,6 +14,7 @@ export interface IDeviceComputed {
   hasVisibleSession: ComputedRef<boolean>;
   isDfuActive: ComputedRef<boolean>;
   isFirmwareUpdateSupported: ComputedRef<boolean>;
+  isConfigBlessed: ComputedRef<boolean>;
   showMsbControls: ComputedRef<boolean>;
 }
 
@@ -47,6 +48,9 @@ const isFirmwareUpdateSupported = computed(() => {
 
   return !!firmwareVersion && semverGte(firmwareVersion, "8.0.0");
 });
+const isConfigBlessed = computed(
+  () => !deviceState.isBlessingRequired || deviceState.isConfigBlessed,
+);
 const showMsbControls = computed(() => deviceState.valueSize === 1);
 
 export const deviceStoreComputed: IDeviceComputed = {
@@ -57,5 +61,6 @@ export const deviceStoreComputed: IDeviceComputed = {
   hasVisibleSession,
   isDfuActive,
   isFirmwareUpdateSupported,
+  isConfigBlessed,
   showMsbControls,
 };

@@ -97,6 +97,20 @@ const getNextRequestId = () => {
 const getDefinition = (command: Command): IRequestDefinition =>
   requestDefinitions[command];
 
+const configBlessingWriteRequests = [
+  Request.SetValue,
+  Request.Backup,
+  Request.BootloaderMode,
+  Request.RestoreBackup,
+  Request.FactoryReset,
+  Request.FirmwareUpdate,
+];
+
+const requiresConfigBlessing = (command: Request): boolean =>
+  configBlessingWriteRequests.includes(command) &&
+  deviceState.isBlessingRequired &&
+  !deviceState.isConfigBlessed;
+
 const isEventMidiMMC = (event: ISysExEvent) =>
   event.data.length === 6 &&
   Object.keys(MidiEventTypeMMC).includes(String(event.data[4]));
@@ -525,6 +539,14 @@ const prepareRequestPayload = (
 export const sendMessage = async (params: IRequestParams): Promise<any> => {
   const { command, handler, config, payload, timeoutMs } = params;
   const definition = getDefinition(command);
+
+  if (requiresConfigBlessing(command)) {
+    return Promise.reject(
+      new Error(
+        deviceState.blessingError || "Device is not blessed for configuration",
+      ),
+    );
+  }
 
   return new Promise((resolve, reject) => {
     return addToQueue({

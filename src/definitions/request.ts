@@ -24,6 +24,7 @@ export enum Request {
   // Custom
   GetFirmwareVersion = "GetFirmwareVersion",
   IdentifyBoard = "IdentifyBoard",
+  GetSerialNumber = "GetSerialNumber",
   GetFirmwareVersionAndHardwareUid = "GetFirmwareVersionAndHardwareUid",
   GetNumberOfSupportedComponents = "GetNumberOfSupportedComponents",
   GetNumberOfSupportedPresets = "GetNumberOfSupportedPresets",
@@ -96,6 +97,18 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     specialRequestId: 66, // Hex: 42
     decodeDoubleByte: true,
     parser: (response: number[]): number[] => response.slice(0, 4),
+  },
+  [Request.GetSerialNumber]: {
+    key: Request.GetSerialNumber,
+    type: RequestType.Custom,
+    specialRequestId: 83, // Hex: 53
+    isConnectionInfoRequest: true,
+    decodeDoubleByte: true,
+    parser: (response: number[]): string =>
+      response
+        .map((value) => value.toString(16).padStart(2, "0"))
+        .join("")
+        .toUpperCase(),
   },
   [Request.GetFirmwareVersionAndHardwareUid]: {
     key: Request.GetFirmwareVersionAndHardwareUid,

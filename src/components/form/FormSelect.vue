@@ -3,7 +3,7 @@
     ref="root"
     :key="keyHash"
     class="form-select-custom mt-1 block w-full max-w-sm"
-    :class="{ open: isOpen }"
+    :class="{ open: isOpen, disabled }"
     @focusout="closeOnFocusOut"
     @keydown="onKeydown"
   >
@@ -11,6 +11,7 @@
       type="button"
       class="form-select-button"
       :aria-expanded="isOpen"
+      :disabled="disabled"
       @click="toggleOpen"
     >
       <span>{{ selectedOption ? selectedOption.text : value }}</span>
@@ -51,6 +52,10 @@ export default defineComponent({
       required: true,
       type: [Array as () => Array<IFormSelectOption>, Function],
     },
+    disabled: {
+      default: false,
+      type: Boolean,
+    },
   },
   setup(props, { emit }) {
     const root = ref<HTMLElement | null>(null);
@@ -80,6 +85,10 @@ export default defineComponent({
     );
 
     const open = () => {
+      if (props.disabled) {
+        return;
+      }
+
       highlightedIndex.value = Math.max(selectedIndex.value, 0);
       isOpen.value = true;
     };
@@ -98,6 +107,10 @@ export default defineComponent({
     };
 
     const selectOption = (option: IFormSelectOption) => {
+      if (props.disabled) {
+        return;
+      }
+
       emit("changed", option.value);
       close();
     };
@@ -114,6 +127,10 @@ export default defineComponent({
 
     const onKeydown = (event: KeyboardEvent) => {
       if (!optionsArray.value.length) {
+        return;
+      }
+
+      if (props.disabled) {
         return;
       }
 

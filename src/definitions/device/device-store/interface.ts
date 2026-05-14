@@ -56,6 +56,11 @@ export type IDeviceState = {
   boardName: string;
   firmwareFileName: string;
   firmwareVersion: string;
+  serialNumber: string;
+  isBlessingRequired: boolean;
+  isConfigBlessed: boolean;
+  blessingFeatures: string[];
+  blessingError: string;
   activePreset: number;
   supportedPresetsCount: number;
   numberOfComponents: Array<number>;

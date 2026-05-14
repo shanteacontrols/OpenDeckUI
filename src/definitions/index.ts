@@ -5,3 +5,4 @@ export * from "./request";
 export * from "./block";
 export * from "./midi";
 export * from "./device";
+export * from "./blessing";

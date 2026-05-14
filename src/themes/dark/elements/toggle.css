@@ -3,6 +3,15 @@
   @apply transition ease-in duration-200 select-none cursor-pointer;
 }
 
+.toggle.disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.toggle.disabled * {
+  cursor: not-allowed;
+}
+
 .toggle label {
   @apply inline-block relative leading-none;
 }
@@ -69,6 +78,9 @@
 
 .toggle:hover .toggle-checkbox {
   @apply border-accent;
+}
+.toggle.disabled:hover .toggle-checkbox {
+  @apply border-gray-100;
 }
 .toggle.active:hover .toggle-checkbox {
   @apply bg-white border-white;

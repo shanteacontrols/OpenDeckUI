@@ -21,6 +21,21 @@
   font-size: 1.08rem;
   line-height: 1.45;
 }
+.form-field.config-locked {
+  opacity: 0.55;
+}
+.form-field.config-locked,
+.form-field.config-locked * {
+  cursor: not-allowed;
+}
+.form-field.config-locked .help-text {
+  opacity: 0.8;
+}
+
+.form-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
 
 .form-select-custom {
   @apply relative;
@@ -33,6 +48,12 @@
   border-color: theme("colors.gray.500");
   color: theme("colors.foreground");
   min-height: 2.1rem;
+}
+
+.form-select-button:disabled,
+.form-select-custom.disabled .form-select-button {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .form-select-button:hover,

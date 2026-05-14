@@ -10,6 +10,7 @@
 @import "./elements/scrollbar";
 @import "./components/app";
 @import "./components/device-nav";
+@import "./components/device-blessing-status";
 @import "./components/section";
 @import "./components/device-grid";
 @import "./components/form-grid";

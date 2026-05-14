@@ -1,4 +1,6 @@
 import semverGt from "semver/functions/gt";
+import semverClean from "semver/functions/clean";
+import semverGte from "semver/functions/gte";
 import marked from "marked";
 import WebMidi, { Input, Output } from "webmidi";
 import FileSaver from "file-saver";
@@ -42,6 +44,11 @@ import {
   attachMidiEventHandlers,
   detachMidiEventHandlers,
 } from "./midi-event-handlers";
+import {
+  BLESSING_ACCESS_CONTACT_MESSAGE,
+  BLESSING_CONFIG_FEATURE,
+  verifyBlessing,
+} from "../../blessing";
 
 let connectionWatcherTimer = null;
 let heartbeatTimer = null;
@@ -63,6 +70,7 @@ const dfuChunkSize = 64;
 const webUsbFinalizeTimeoutMs = 5000;
 const opendeckUsbVendorId = 0x1209;
 const opendeckWebUsbDfuProductId = 0x8474;
+const blessingMinimumFirmwareVersion = "8.0.0";
 
 // Actions
 
@@ -92,6 +100,54 @@ const resetDeviceStore = async (): void => {
 
 const setInfo = (data: Partial<IDeviceState>): void => {
   Object.assign(deviceState, data);
+};
+
+const isBlessingRequiredForFirmware = (firmwareVersion: string): boolean => {
+  const version =
+    typeof firmwareVersion === "string" ? semverClean(firmwareVersion) : null;
+
+  return !!version && semverGte(version, blessingMinimumFirmwareVersion);
+};
+
+const resetBlessingState = (): void => {
+  deviceState.isBlessingRequired = false;
+  deviceState.isConfigBlessed = true;
+  deviceState.blessingFeatures = [];
+  deviceState.blessingError = (null as unknown) as string;
+};
+
+const requestAndVerifyBlessing = async (): Promise<void> => {
+  const isRequired = isBlessingRequiredForFirmware(deviceState.firmwareVersion);
+
+  deviceState.isBlessingRequired = isRequired;
+  deviceState.isConfigBlessed = !isRequired;
+  deviceState.blessingFeatures = [];
+  deviceState.blessingError = (null as unknown) as string;
+
+  if (!isRequired) {
+    return;
+  }
+
+  try {
+    await sendMessage({
+      command: Request.GetSerialNumber,
+      handler: (serialNumber: string) => setInfo({ serialNumber }),
+    });
+  } catch (error) {
+    logger.warn("Device does not provide a serial number for blessing", error);
+    deviceState.serialNumber = (null as unknown) as string;
+    deviceState.blessingError =
+      "Device firmware does not provide a serial number for blessing";
+    return;
+  }
+
+  const blessing = await verifyBlessing(deviceState.serialNumber);
+  deviceState.blessingFeatures = blessing.features;
+  deviceState.isConfigBlessed =
+    blessing.valid && blessing.features.includes(BLESSING_CONFIG_FEATURE);
+  deviceState.blessingError = deviceState.isConfigBlessed
+    ? ((null as unknown) as string)
+    : blessing.error || BLESSING_ACCESS_CONTACT_MESSAGE;
 };
 
 export const setViewSetting = (
@@ -634,7 +690,9 @@ export const connectDeviceStoreToInput = async (
     deviceState.valueSize = 2;
     deviceState.valuesPerMessageRequest = (null as unknown) as number;
     deviceState.firmwareVersion = (null as unknown) as string;
+    deviceState.serialNumber = (null as unknown) as string;
     deviceState.dfuError = (null as unknown) as string;
+    resetBlessingState();
 
     transport.onSysEx(handleSysExEvent);
     transport.onOsc(requestLog.actions.addOsc);
@@ -655,6 +713,7 @@ export const connectDeviceStoreToInput = async (
       command: Request.GetFirmwareVersion,
       handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
     });
+    await requestAndVerifyBlessing();
     deviceState.connectionState = DeviceConnectionState.Open;
     deviceState.connectionPromise = (null as unknown) as Promise<any>;
     startDeviceHeartbeat();
@@ -678,7 +737,9 @@ export const connectDeviceStoreToInput = async (
   deviceState.valueSize = valueSize;
   deviceState.valuesPerMessageRequest = null;
   deviceState.firmwareVersion = null;
+  deviceState.serialNumber = null;
   deviceState.dfuError = (null as unknown) as string;
+  resetBlessingState();
 
   // make sure we don't duplicate listeners
   deviceState.transport.onSysEx(handleSysExEvent);
@@ -710,6 +771,7 @@ export const connectDeviceStoreToInput = async (
     command: Request.GetFirmwareVersion,
     handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
   });
+  await requestAndVerifyBlessing();
   deviceState.connectionState = DeviceConnectionState.Open;
   deviceState.connectionPromise = (null as unknown) as Promise<any>;
   startDeviceConnectionWatcher();
@@ -879,12 +941,18 @@ const sendRebootRequest = async (
 };
 
 export const startBootLoaderMode = async (): Promise<void> =>
-  sendRebootRequest(Request.BootloaderMode, DfuState.RebootingToBootloader);
+  deviceState.isConfigBlessed
+    ? sendRebootRequest(Request.BootloaderMode, DfuState.RebootingToBootloader)
+    : Promise.reject(new Error(deviceState.blessingError));
 
 const startFirmwareUpdate = async (
   file: File,
   allowReconnectRetry = true,
 ): Promise<void> => {
+  if (!deviceState.isConfigBlessed) {
+    return Promise.reject(new Error(deviceState.blessingError));
+  }
+
   if (!file.name.endsWith(".bin")) {
     appendDfuStatus("Selected file does not look like a firmware binary");
   }
@@ -1351,7 +1419,7 @@ export const setConfigByteString = async (
   for (let index = 0; index < writes.length; index++) {
     await sendMessage({
       command: Request.SetValue,
-      handler: () => {},
+      handler: () => null,
       config: {
         block,
         section,

@@ -21,7 +21,7 @@
   <Section v-else title="Firmware update" class="w-full">
     <div class="form-grid firmware-form-grid">
       <div v-if="showNormalControls" class="form-field">
-        <Button :disabled="loading" @click.prevent="checkForUpdates">
+        <Button :disabled="loading || !isConfigBlessed" @click.prevent="checkForUpdates">
           Check for updates
         </Button>
         <p class="help-text">
@@ -30,7 +30,7 @@
       </div>
 
       <div v-if="showBootloaderModeButton" class="form-field">
-        <Button :disabled="loading" @click.prevent="onBootLoaderModeClicked">
+        <Button :disabled="loading || !isConfigBlessed" @click.prevent="onBootLoaderModeClicked">
           Bootloader mode
         </Button>
         <p class="help-text">
@@ -54,7 +54,7 @@
         <FormFileInput
           name="webusb-firmware-file"
           label="Update Firmware"
-          :disabled="isWebUsbBusy"
+          :disabled="isWebUsbBusy || !isConfigBlessed"
           @change="onFirmwareFileSelected"
         />
         <p class="help-text">
@@ -72,7 +72,7 @@
         <FormFileInput
           name="network-firmware-file"
           label="Update Firmware"
-          :disabled="isNetworkBusy"
+          :disabled="isNetworkBusy || !isConfigBlessed"
           @change="onFirmwareFileSelected"
         />
         <p class="help-text">
@@ -161,6 +161,7 @@ export default defineComponent({
       dfuError,
       dfuDeviceLabel,
       transportType,
+      isConfigBlessed,
     } = deviceStoreMapped;
 
     const loading = ref(false);
@@ -208,6 +209,10 @@ export default defineComponent({
       ),
     );
     const checkForUpdates = async () => {
+      if (!isConfigBlessed.value) {
+        return;
+      }
+
       loading.value = true;
       availableUpdates.value = await startUpdatesCheck(firmwareFileName.value);
       loading.value = false;
@@ -215,6 +220,10 @@ export default defineComponent({
     };
 
     const onBootLoaderModeClicked = async () => {
+      if (!isConfigBlessed.value) {
+        return;
+      }
+
       loading.value = true;
       try {
         await startBootLoaderMode();
@@ -228,6 +237,7 @@ export default defineComponent({
     };
 
     const onFirmwareFileSelected = async (fileList) => {
+      if (!isConfigBlessed.value) return;
       if (!fileList.length) return;
 
       await startFirmwareUpdate(fileList[0]);
@@ -254,6 +264,7 @@ export default defineComponent({
       showBootloaderModeButton,
       isWebUsbBusy,
       isNetworkBusy,
+      isConfigBlessed,
       checkForUpdates,
       onBootLoaderModeClicked,
       onConnectDfuDevice,
