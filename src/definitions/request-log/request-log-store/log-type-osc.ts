@@ -57,6 +57,26 @@ const readInt32 = (
   return { value: view.getInt32(0, false), offset: offset + 4 };
 };
 
+const readFloat32 = (
+  data: Uint8Array,
+  offset: number,
+): { value: number; offset: number } | null => {
+  if (offset + 4 > data.length) {
+    return null;
+  }
+
+  const view = new DataView(data.buffer, data.byteOffset + offset, 4);
+  return { value: view.getFloat32(0, false), offset: offset + 4 };
+};
+
+const formatFloat = (value: number): string => {
+  if (!Number.isFinite(value)) {
+    return `${value}`;
+  }
+
+  return Number(value.toFixed(6)).toString();
+};
+
 const parseOscPacket = (
   data: Uint8Array,
 ): { address: string; typeTags: string; args: Array<number | string> } => {
@@ -87,6 +107,16 @@ const parseOscPacket = (
       }
 
       args.push(result.value);
+      offset = result.offset;
+    }
+
+    if (tag === "f") {
+      const result = readFloat32(data, offset);
+      if (!result) {
+        break;
+      }
+
+      args.push(formatFloat(result.value));
       offset = result.offset;
     }
 
