@@ -8,7 +8,7 @@ interface IUseHighlightAnimation {
 export const useHighlightAnimation = (
   highlightRef: Ref<number>,
 ): IUseHighlightAnimation => {
-  const nowRef = ref(null);
+  const nowRef = ref(new Date().getTime());
   const refreshDelay = 10;
   const retainMs = 250;
   const update = () => (nowRef.value = new Date().getTime());
