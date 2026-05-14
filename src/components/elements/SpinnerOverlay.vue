@@ -50,7 +50,7 @@ export default defineComponent({
 
 .spinner-overlay-fixed {
   position: fixed;
-  background: rgba(0, 0, 0, 0.62);
+  background: rgba(0, 0, 0, 0.75);
   z-index: 20;
 }
 
@@ -58,12 +58,13 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1.25rem 1.5rem;
-  border: 1px solid #d97706;
-  border-radius: 0.375rem;
+  gap: 1.5rem;
+  min-width: 12rem;
+  padding: 1.75rem 1.5rem;
+  border: 0;
+  border-radius: 0.5rem;
   background: #1f1f1f;
-  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.35);
 }
 
 .spinner-overlay-message {

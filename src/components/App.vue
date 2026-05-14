@@ -133,11 +133,14 @@
         </div>
       </div>
     </footer>
+
+    <ConfirmPrompt />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, onMounted, onUnmounted } from "vue";
+import ConfirmPrompt from "./elements/ConfirmPrompt.vue";
 import { midiStoreMapped, deviceStoreMapped } from "../store";
 import router from "../router";
 import {
@@ -149,6 +152,9 @@ import {
 
 export default defineComponent({
   name: "App",
+  components: {
+    ConfirmPrompt,
+  },
   setup() {
     const {
       outputId,

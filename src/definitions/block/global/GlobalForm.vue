@@ -347,7 +347,7 @@ export default defineComponent({
         return;
       }
 
-      if (!confirmPrompt(MDNS_HOSTNAME_REBOOT_PROMPT)) {
+      if (!(await confirmPrompt(MDNS_HOSTNAME_REBOOT_PROMPT))) {
         mdnsHostnameDraft.value = mdnsHostnameSaved.value;
         mdnsHostnameError.value = "";
         return;
