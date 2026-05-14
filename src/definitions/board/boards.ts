@@ -231,13 +231,13 @@ export const Boards: IBoardDefinition[] = [
   },
   {
     name: "ST Nucleo F767ZI",
-    id: [114, 67, 85, 97],
+    id: [97, 85, 67, 114],
     oldId: [],
     firmwareFileName: "nucleo_f767zi.dfu.bin",
   },
   {
     name: "ST Nucleo F446ZE",
-    id: [20, 37, 49, 82],
+    id: [82, 49, 37, 20],
     oldId: [],
     firmwareFileName: "nucleo_f446ze.dfu.bin",
   },
