@@ -47,6 +47,7 @@ import {
 import {
   BLESSING_ACCESS_CONTACT_MESSAGE,
   BLESSING_CONFIG_FEATURE,
+  buildConfigUnlockToken,
   verifyBlessing,
 } from "../../blessing";
 
@@ -116,6 +117,23 @@ const resetBlessingState = (): void => {
   deviceState.blessingError = (null as unknown) as string;
 };
 
+const unlockFirmwareConfiguration = async (): Promise<void> => {
+  const token = buildConfigUnlockToken(deviceState.serialNumber);
+
+  for (let index = 0; index < token.length; index++) {
+    await sendMessage({
+      command: Request.ConfigUnlock,
+      handler: () => null,
+      config: {
+        block: Block.Global,
+        section: 0,
+        index,
+        value: token[index],
+      },
+    });
+  }
+};
+
 const requestAndVerifyBlessing = async (): Promise<void> => {
   const isRequired = isBlessingRequiredForFirmware(deviceState.firmwareVersion);
 
@@ -148,6 +166,18 @@ const requestAndVerifyBlessing = async (): Promise<void> => {
   deviceState.blessingError = deviceState.isConfigBlessed
     ? ((null as unknown) as string)
     : blessing.error || BLESSING_ACCESS_CONTACT_MESSAGE;
+
+  if (!deviceState.isConfigBlessed) {
+    return;
+  }
+
+  try {
+    await unlockFirmwareConfiguration();
+  } catch (error) {
+    logger.warn("Device rejected configuration unlock", error);
+    deviceState.isConfigBlessed = false;
+    deviceState.blessingError = "Device rejected configuration unlock";
+  }
 };
 
 export const setViewSetting = (

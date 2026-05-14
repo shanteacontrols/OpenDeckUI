@@ -137,4 +137,5 @@ export const verifyBlessing = async (
 };
 
 export { blessedSerials };
+export { buildConfigUnlockToken } from "./unlock";
 export type { IBlessedSerialEntry };
