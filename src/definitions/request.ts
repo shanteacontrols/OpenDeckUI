@@ -2,6 +2,7 @@ import {
   MessageStatus,
   Wish,
   Amount,
+  Block,
   RequestType,
   IRequestDefinition,
   IBlockDefinition,
@@ -14,6 +15,7 @@ import {
   convertValueToDoubleByte,
   convertDataValuesToSingleByte,
 } from "../util";
+import { CONFIG_UNLOCK_SECTION } from "./blessing/unlock";
 
 export enum Request {
   // Predefined
@@ -32,6 +34,7 @@ export enum Request {
   Backup = "Backup",
   BootloaderMode = "BootloaderMode",
   FactoryReset = "FactoryReset",
+  ConfigUnlock = "ConfigUnlock",
   GetValue = "GetValue",
   SetValue = "SetValue",
   GetSectionValues = "GetSectionValues",
@@ -162,6 +165,23 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     isConnectionInfoRequest: true,
     expectsNoResponse: true,
     specialRequestId: 68, // Hex: 44
+  },
+  [Request.ConfigUnlock]: {
+    key: Request.ConfigUnlock,
+    type: RequestType.Configuration,
+    isConnectionInfoRequest: true,
+    decodeDoubleByte: true,
+    responseEmbedsRequest: true,
+    getPayload: (config: IRequestConfig): number[] => [
+      MessageStatus.Request,
+      0,
+      Wish.Set,
+      Amount.Single,
+      Block.Global,
+      CONFIG_UNLOCK_SECTION,
+      ...convertValueToDoubleByte(config.index),
+      ...convertValueToDoubleByte(Number(config.value)),
+    ],
   },
   [Request.Backup]: {
     key: Request.Backup,

@@ -10,12 +10,12 @@ import {
   Request,
   ISectionDefinition,
   SectionType,
-  Block,
   BlockMap,
   IOpenDeckRelease,
   GitHubReleasesUrl,
   getBoardDefinition,
 } from "../../../definitions";
+import { Block } from "../../interface";
 import {
   sendMessagesFromFileWithDelay,
   newLineCharacter,
@@ -47,6 +47,7 @@ import {
 import {
   BLESSING_ACCESS_CONTACT_MESSAGE,
   BLESSING_CONFIG_FEATURE,
+  buildConfigUnlockToken,
   verifyBlessing,
 } from "../../blessing";
 
@@ -116,8 +117,37 @@ const resetBlessingState = (): void => {
   deviceState.blessingError = (null as unknown) as string;
 };
 
+const unlockFirmwareConfiguration = async (): Promise<void> => {
+  const token = buildConfigUnlockToken(deviceState.serialNumber);
+
+  logger.log("Configuration unlock token", token);
+
+  for (let index = 0; index < token.length; index++) {
+    logger.log("Sending configuration unlock word", {
+      index,
+      value: token[index],
+    });
+
+    await sendMessage({
+      command: Request.ConfigUnlock,
+      handler: () => null,
+      config: {
+        block: Block.Global,
+        section: 0,
+        index,
+        value: token[index],
+      },
+    });
+  }
+};
+
 const requestAndVerifyBlessing = async (): Promise<void> => {
   const isRequired = isBlessingRequiredForFirmware(deviceState.firmwareVersion);
+
+  logger.log("Blessing check", {
+    firmwareVersion: deviceState.firmwareVersion,
+    isRequired,
+  });
 
   deviceState.isBlessingRequired = isRequired;
   deviceState.isConfigBlessed = !isRequired;
@@ -133,6 +163,7 @@ const requestAndVerifyBlessing = async (): Promise<void> => {
       command: Request.GetSerialNumber,
       handler: (serialNumber: string) => setInfo({ serialNumber }),
     });
+    logger.log("Blessing serial number received", deviceState.serialNumber);
   } catch (error) {
     logger.warn("Device does not provide a serial number for blessing", error);
     deviceState.serialNumber = (null as unknown) as string;
@@ -142,12 +173,25 @@ const requestAndVerifyBlessing = async (): Promise<void> => {
   }
 
   const blessing = await verifyBlessing(deviceState.serialNumber);
+  logger.log("Blessing verification result", blessing);
   deviceState.blessingFeatures = blessing.features;
   deviceState.isConfigBlessed =
     blessing.valid && blessing.features.includes(BLESSING_CONFIG_FEATURE);
   deviceState.blessingError = deviceState.isConfigBlessed
     ? ((null as unknown) as string)
     : blessing.error || BLESSING_ACCESS_CONTACT_MESSAGE;
+
+  if (!deviceState.isConfigBlessed) {
+    return;
+  }
+
+  try {
+    await unlockFirmwareConfiguration();
+  } catch (error) {
+    logger.warn("Device rejected configuration unlock", error);
+    deviceState.isConfigBlessed = false;
+    deviceState.blessingError = "Device rejected configuration unlock";
+  }
 };
 
 export const setViewSetting = (
