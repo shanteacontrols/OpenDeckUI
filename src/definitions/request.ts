@@ -98,6 +98,7 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     key: Request.IdentifyBoard,
     type: RequestType.Custom,
     specialRequestId: 66, // Hex: 42
+    isConnectionInfoRequest: true,
     decodeDoubleByte: true,
     parser: (response: number[]): number[] => response.slice(0, 4),
   },

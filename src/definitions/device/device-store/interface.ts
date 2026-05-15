@@ -54,6 +54,8 @@ export type IDeviceState = {
   valueSize: number;
   valuesPerMessageRequest: number;
   boardName: string;
+  boardId: number[];
+  isKnownBoard: boolean;
   firmwareFileName: string;
   firmwareVersion: string;
   serialNumber: string;

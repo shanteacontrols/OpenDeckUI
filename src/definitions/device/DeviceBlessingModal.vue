@@ -13,7 +13,11 @@
           Configuration locked
         </h2>
 
-        <p class="device-blessing-modal-message">
+        <p v-if="showUnknownBoardMessage" class="device-blessing-modal-message">
+          This board ID is not recognized by this configurator. The UI will
+          remain connected, but write actions are disabled for this board.
+        </p>
+        <p v-else class="device-blessing-modal-message">
           This device is running firmware that requires a blessed serial number
           before configuration changes are allowed. The UI will remain connected,
           but write actions are disabled for this board.
@@ -23,13 +27,17 @@
           <small>Serial number</small>
           <strong>{{ serialNumber }}</strong>
         </div>
+        <div v-else-if="boardIdDisplay" class="device-blessing-modal-serial">
+          <small>Board ID</small>
+          <strong>{{ boardIdDisplay }}</strong>
+        </div>
 
         <p v-if="showContactMessage" class="device-blessing-modal-detail">
           <span>
             Contact Shantea Controls for access:
             <a :href="contactMailto">{{ contactEmail }}</a>
           </span>
-          <span>Please include the serial number in your message.</span>
+          <span>{{ contactInstruction }}</span>
         </p>
         <p v-else-if="blessingError" class="device-blessing-modal-detail">
           {{ blessingError }}
@@ -64,6 +72,8 @@ export default defineComponent({
       isConfigBlessed,
       blessingError,
       serialNumber,
+      boardId,
+      isKnownBoard,
     } = deviceStoreMapped;
     const visible = ref(false);
     const dismissedForSerial = ref("");
@@ -73,6 +83,20 @@ export default defineComponent({
     );
     const showContactMessage = computed(
       () => blessingError.value === BLESSING_ACCESS_CONTACT_MESSAGE,
+    );
+    const boardIdDisplay = computed(() =>
+      Array.isArray(boardId.value) && boardId.value.length
+        ? `[${boardId.value.join(", ")}]`
+        : "",
+    );
+    const showUnknownBoardMessage = computed(
+      () =>
+        !isKnownBoard.value && !serialNumber.value && !!boardIdDisplay.value,
+    );
+    const contactInstruction = computed(() =>
+      showUnknownBoardMessage.value
+        ? "Please include the board ID in your message."
+        : "Please include the serial number in your message.",
     );
     const contactMailto = computed(() => `mailto:${contactEmail}`);
 
@@ -98,9 +122,12 @@ export default defineComponent({
     return {
       visible,
       serialNumber,
+      boardIdDisplay,
       blessingError,
       contactEmail,
       contactMailto,
+      contactInstruction,
+      showUnknownBoardMessage,
       showContactMessage,
       dismiss,
     };

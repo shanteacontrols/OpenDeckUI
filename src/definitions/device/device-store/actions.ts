@@ -110,6 +110,9 @@ const isBlessingRequiredForFirmware = (firmwareVersion: string): boolean => {
   return !!version && semverGte(version, blessingMinimumFirmwareVersion);
 };
 
+const isBlessingRequired = (isKnownBoard: boolean): boolean =>
+  isBlessingRequiredForFirmware(deviceState.firmwareVersion) || !isKnownBoard;
+
 const resetBlessingState = (): void => {
   deviceState.isBlessingRequired = false;
   deviceState.isConfigBlessed = true;
@@ -141,11 +144,14 @@ const unlockFirmwareConfiguration = async (): Promise<void> => {
   }
 };
 
-const requestAndVerifyBlessing = async (): Promise<void> => {
-  const isRequired = isBlessingRequiredForFirmware(deviceState.firmwareVersion);
+const requestAndVerifyBlessing = async (
+  isKnownBoard: boolean,
+): Promise<void> => {
+  const isRequired = isBlessingRequired(isKnownBoard);
 
   logger.log("Blessing check", {
     firmwareVersion: deviceState.firmwareVersion,
+    isKnownBoard,
     isRequired,
   });
 
@@ -155,6 +161,14 @@ const requestAndVerifyBlessing = async (): Promise<void> => {
   deviceState.blessingError = (null as unknown) as string;
 
   if (!isRequired) {
+    return;
+  }
+
+  if (
+    !isBlessingRequiredForFirmware(deviceState.firmwareVersion) &&
+    !isKnownBoard
+  ) {
+    deviceState.blessingError = BLESSING_ACCESS_CONTACT_MESSAGE;
     return;
   }
 
@@ -185,12 +199,14 @@ const requestAndVerifyBlessing = async (): Promise<void> => {
     return;
   }
 
-  try {
-    await unlockFirmwareConfiguration();
-  } catch (error) {
-    logger.warn("Device rejected configuration unlock", error);
-    deviceState.isConfigBlessed = false;
-    deviceState.blessingError = "Device rejected configuration unlock";
+  if (isBlessingRequiredForFirmware(deviceState.firmwareVersion)) {
+    try {
+      await unlockFirmwareConfiguration();
+    } catch (error) {
+      logger.warn("Device rejected configuration unlock", error);
+      deviceState.isConfigBlessed = false;
+      deviceState.blessingError = "Device rejected configuration unlock";
+    }
   }
 };
 
@@ -733,6 +749,8 @@ export const connectDeviceStoreToInput = async (
     deviceState.transportType = SysExTransportType.WebConfig;
     deviceState.valueSize = 2;
     deviceState.valuesPerMessageRequest = (null as unknown) as number;
+    deviceState.boardId = [];
+    deviceState.isKnownBoard = false;
     deviceState.firmwareVersion = (null as unknown) as string;
     deviceState.serialNumber = (null as unknown) as string;
     deviceState.dfuError = (null as unknown) as string;
@@ -757,12 +775,13 @@ export const connectDeviceStoreToInput = async (
       command: Request.GetFirmwareVersion,
       handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
     });
-    await requestAndVerifyBlessing();
+    const isKnownBoard = await requestBoardInfo();
+    await requestAndVerifyBlessing(isKnownBoard);
     deviceState.connectionState = DeviceConnectionState.Open;
     deviceState.connectionPromise = (null as unknown) as Promise<any>;
     startDeviceHeartbeat();
 
-    await loadDeviceInfo();
+    await loadDeviceInfoDetails();
     return;
   }
 
@@ -780,6 +799,8 @@ export const connectDeviceStoreToInput = async (
   deviceState.transportType = SysExTransportType.Midi;
   deviceState.valueSize = valueSize;
   deviceState.valuesPerMessageRequest = null;
+  deviceState.boardId = [];
+  deviceState.isKnownBoard = false;
   deviceState.firmwareVersion = null;
   deviceState.serialNumber = null;
   deviceState.dfuError = (null as unknown) as string;
@@ -815,14 +836,15 @@ export const connectDeviceStoreToInput = async (
     command: Request.GetFirmwareVersion,
     handler: (firmwareVersion: string) => setInfo({ firmwareVersion }),
   });
-  await requestAndVerifyBlessing();
+  const isKnownBoard = await requestBoardInfo();
+  await requestAndVerifyBlessing(isKnownBoard);
   deviceState.connectionState = DeviceConnectionState.Open;
   deviceState.connectionPromise = (null as unknown) as Promise<any>;
   startDeviceConnectionWatcher();
   startDeviceHeartbeat();
 
   // These requests won't run until connection promise is finished
-  await loadDeviceInfo();
+  await loadDeviceInfoDetails();
 };
 
 const connectDevice = async (outputId: string): Promise<void> => {
@@ -1332,17 +1354,25 @@ export const startReboot = async (): Promise<void> => {
   await sendRebootRequest(Request.Reboot, DfuState.RebootingToApplication);
 };
 
-const loadDeviceInfo = async (): Promise<void> => {
+const requestBoardInfo = async (): Promise<boolean> => {
+  let isKnownBoard = false;
+
   await sendMessage({
     command: Request.IdentifyBoard,
     handler: (value: number[]) => {
       const board = getBoardDefinition(value);
+      isKnownBoard = !!board;
       const boardName = (board && board.name) || "Custom OpenDeck board";
       const firmwareFileName = board && board.firmwareFileName;
 
-      setInfo({ boardName, firmwareFileName });
+      setInfo({ boardId: value, isKnownBoard, boardName, firmwareFileName });
     },
   });
+
+  return isKnownBoard;
+};
+
+const loadDeviceInfoDetails = async (): Promise<void> => {
   await sendMessage({
     command: Request.GetNumberOfSupportedComponents,
     handler: (numberOfComponents: array[]) => setInfo({ numberOfComponents }),
