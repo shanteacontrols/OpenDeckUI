@@ -237,7 +237,9 @@ export const HideOutputMidiChannelOnControlTypes = [
   OutputControlMode.Static,
 ];
 
-export const HideOutputRgbEnableOnControlTypes = [OutputControlMode.PresetChange];
+export const HideOutputRgbEnableOnControlTypes = [
+  OutputControlMode.PresetChange,
+];
 
 export enum SectionType {
   Setting = "setting",

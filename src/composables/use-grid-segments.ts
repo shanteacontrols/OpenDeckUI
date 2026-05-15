@@ -55,7 +55,9 @@ export const useGridSegments = (
     () => numberOfComponents.value[Block.Analog] || 0,
   );
 
-  const outputCount = computed(() => numberOfComponents.value[Block.Output] || 0);
+  const outputCount = computed(
+    () => numberOfComponents.value[Block.Output] || 0,
+  );
 
   const touchScreenCount = computed(
     () => numberOfComponents.value[Block.Touchscreen] || 0,

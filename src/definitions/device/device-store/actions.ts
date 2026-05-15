@@ -54,7 +54,6 @@ import {
 let connectionWatcherTimer = null;
 let heartbeatTimer = null;
 let heartbeatInFlight = false;
-let dfuWatcherTimer = null;
 let activeDfuDevice = null;
 let activeDfuOutEndpoint = null;
 let activeDfuInEndpoint = null;
@@ -63,7 +62,6 @@ let dfuStatusReaderPromise = null;
 const appReconnectTimeoutMs = 45000;
 const appDisconnectTimeoutMs = 8000;
 const rebootHandshakeTimeoutMs = 2000;
-const dfuPollTimeoutMs = 15000;
 const devicePollIntervalMs = 250;
 const heartbeatIntervalMs = 2000;
 const heartbeatTimeoutMs = 2500;
@@ -345,13 +343,6 @@ const stopDeviceConnectionWatcher = (): Promise<void> => {
   }
 };
 
-const stopDfuWatcher = (): void => {
-  if (dfuWatcherTimer) {
-    clearTimeout(dfuWatcherTimer);
-    dfuWatcherTimer = null;
-  }
-};
-
 const setDfuState = (
   state: DfuState,
   data: Partial<IDeviceState> = {},
@@ -367,7 +358,6 @@ const setDfuState = (
 };
 
 const resetDfuState = (): void => {
-  stopDfuWatcher();
   setDfuState(DfuState.Idle, {
     dfuTransport: (null as unknown) as DfuTransport,
     dfuProgress: (null as unknown) as number,
@@ -407,13 +397,6 @@ const appendDfuStatus = (
   }
 };
 
-const scheduleDfuWatcher = (callback: () => Promise<void>): void => {
-  stopDfuWatcher();
-  dfuWatcherTimer = setTimeout(() => {
-    callback();
-  }, 1000);
-};
-
 const getNavigatorUsb = (): any => {
   if (typeof navigator === "undefined") {
     return null;
@@ -422,15 +405,10 @@ const getNavigatorUsb = (): any => {
   return (navigator as any).usb || null;
 };
 
-const isMatchingWebUsbDfuDevice = (device: any): boolean =>
-  device.vendorId === opendeckUsbVendorId &&
-  device.productId === opendeckWebUsbDfuProductId;
-
 const disconnectCurrentMidiSession = (): void => {
   resetQueue();
   stopDeviceConnectionWatcher();
   stopDeviceHeartbeat();
-  stopDfuWatcher();
 
   if (deviceState.input) {
     deviceState.input.removeListener("sysex", "all");
@@ -467,10 +445,6 @@ const hardReloadToRoute = (target: {
 
   reloadUrl.search = `reconnect=${Date.now()}`;
   reloadUrl.hash = targetHash.startsWith("/") ? targetHash : `/${targetHash}`;
-  console.info("[OpenDeck UI] Performing hard navigation", {
-    resolvedTarget,
-    reloadUrl: reloadUrl.toString(),
-  });
   window.location.replace(reloadUrl.toString());
   return true;
 };
@@ -874,7 +848,6 @@ const connectDevice = async (outputId: string): Promise<void> => {
 export const closeConnection = (): Promise<void> => {
   stopDeviceConnectionWatcher();
   stopDeviceHeartbeat();
-  stopDfuWatcher();
   closeDfuDevice();
   resetDeviceStore();
 };
@@ -920,25 +893,13 @@ const sendRebootRequest = async (
       ? "Rebooting device to bootloader mode"
       : "Rebooting device",
   );
-  console.info("[OpenDeck UI] Reboot flow started", {
-    command,
-    targetState,
-    currentOutputId,
-    reconnectRouteName,
-    reconnectRouteParams,
-  });
 
   await sendMessage({
     command,
     handler: () => null,
   });
-  console.info("[OpenDeck UI] Reboot command sent");
 
-  const disconnected = await waitForApplicationDisconnect();
-  console.info("[OpenDeck UI] Application disconnect wait finished", {
-    disconnected,
-    currentOutputId,
-  });
+  await waitForApplicationDisconnect();
   disconnectCurrentMidiSession();
 
   if (targetState === DfuState.RebootingToBootloader) {
@@ -971,10 +932,6 @@ const sendRebootRequest = async (
   appendDfuStatus("Waiting for the application to reconnect");
 
   const reconnected = await waitForApplicationReconnect(currentOutputId);
-  console.info("[OpenDeck UI] Application reconnect wait finished", {
-    reconnected,
-    currentOutputId,
-  });
 
   if (!reconnected) {
     setDfuState(DfuState.Error, {
