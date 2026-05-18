@@ -8,6 +8,17 @@
     <span>
       <strong>Configuration locked</strong>
       <span v-if="statusDetail">{{ statusDetail }}</span>
+      <span class="device-blessing-status-more">
+        Click
+        <a
+          :href="moreInformationUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          here
+        </a>
+        for more information.
+      </span>
     </span>
   </div>
 </template>
@@ -15,6 +26,7 @@
 <script lang="ts">
 import { computed, defineComponent } from "vue";
 import { deviceStoreMapped } from "../../store";
+import { BLESSING_MORE_INFORMATION_URL } from "../blessing";
 
 export default defineComponent({
   name: "DeviceBlessingStatus",
@@ -35,6 +47,7 @@ export default defineComponent({
     return {
       isBlessingRequired,
       isConfigBlessed,
+      moreInformationUrl: BLESSING_MORE_INFORMATION_URL,
       statusDetail,
     };
   },

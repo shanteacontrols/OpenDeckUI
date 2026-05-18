@@ -31,3 +31,7 @@
   @apply text-foreground;
   margin-right: 0.35rem;
 }
+
+.device-blessing-status-more {
+  margin-left: 0.35rem;
+}
