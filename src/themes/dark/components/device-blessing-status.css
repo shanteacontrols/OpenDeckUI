@@ -2,7 +2,7 @@
   @apply flex items-center justify-center text-foreground;
   background: #24342c;
   border-bottom: 1px solid rgba(255, 164, 28, 0.32);
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   gap: 0.5rem;
   line-height: 1.35;
   min-height: 44px;
@@ -30,4 +30,8 @@
 .device-blessing-status strong {
   @apply text-foreground;
   margin-right: 0.35rem;
+}
+
+.device-blessing-status-more {
+  margin-left: 0.35rem;
 }

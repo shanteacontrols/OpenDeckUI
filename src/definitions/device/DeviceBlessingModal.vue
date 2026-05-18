@@ -42,6 +42,17 @@
         <p v-else-if="blessingError" class="device-blessing-modal-detail">
           {{ blessingError }}
         </p>
+        <p class="device-blessing-modal-detail">
+          Click
+          <a
+            :href="moreInformationUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            here
+          </a>
+          for more information.
+        </p>
 
         <div class="device-blessing-modal-actions">
           <Button class="btn-primary" @click="dismiss">
@@ -57,7 +68,10 @@
 import { computed, defineComponent, ref, watch } from "vue";
 import { deviceStoreMapped } from "../../store";
 import Button from "../../components/elements/Button.vue";
-import { BLESSING_ACCESS_CONTACT_MESSAGE } from "../blessing";
+import {
+  BLESSING_ACCESS_CONTACT_MESSAGE,
+  BLESSING_MORE_INFORMATION_URL,
+} from "../blessing";
 
 const contactEmail = "shanteacontrols@shanteacontrols.com";
 
@@ -127,6 +141,7 @@ export default defineComponent({
       contactEmail,
       contactMailto,
       contactInstruction,
+      moreInformationUrl: BLESSING_MORE_INFORMATION_URL,
       showUnknownBoardMessage,
       showContactMessage,
       dismiss,
