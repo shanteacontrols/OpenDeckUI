@@ -1,1 +1,1 @@
-FROM ghcr.io/paradajz/wenv:4ad223a0ff3387f11f15e893ca3aa072a37dc829
+FROM ghcr.io/paradajz/wenv:c06a51106bc0f1a9b4d61c75e8be07af8d3c59d6
