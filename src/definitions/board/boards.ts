@@ -236,10 +236,16 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "nucleo_f767zi.dfu.bin",
   },
   {
-    name: "ST Nucleo F446ZE",
-    id: [82, 49, 37, 20],
+    name: "Olimex ESP32 PoE",
+    id: [103, 22, 105, 107],
     oldId: [],
-    firmwareFileName: "nucleo_f446ze.dfu.bin",
+    firmwareFileName: "olimex_esp32_poe.dfu.bin",
+  },
+  {
+    name: "WESP32",
+    id: [9, 41, 108, 121],
+    oldId: [],
+    firmwareFileName: "wesp32.dfu.bin",
   },
 ];
 
