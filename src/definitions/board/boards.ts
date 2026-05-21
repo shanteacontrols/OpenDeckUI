@@ -247,6 +247,18 @@ export const Boards: IBoardDefinition[] = [
     oldId: [],
     firmwareFileName: "wesp32.dfu.bin",
   },
+  {
+    name: "Thomas 1",
+    id: [47, 98, 44, 37],
+    oldId: [],
+    firmwareFileName: null,
+  },
+  {
+    name: "Thomas 2",
+    id: [4, 41, 11, 106],
+    oldId: [],
+    firmwareFileName: null,
+  },
 ];
 
 export default Boards;
