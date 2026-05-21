@@ -56,6 +56,7 @@ export type IDeviceState = {
   boardName: string;
   boardId: number[];
   isKnownBoard: boolean;
+  bootLoaderSupport: boolean;
   firmwareFileName: string;
   firmwareVersion: string;
   serialNumber: string;

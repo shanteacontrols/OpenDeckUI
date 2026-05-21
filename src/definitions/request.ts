@@ -30,6 +30,7 @@ export enum Request {
   GetFirmwareVersionAndHardwareUid = "GetFirmwareVersionAndHardwareUid",
   GetNumberOfSupportedComponents = "GetNumberOfSupportedComponents",
   GetNumberOfSupportedPresets = "GetNumberOfSupportedPresets",
+  GetBootloaderSupport = "GetBootloaderSupport",
   Reboot = "Reboot",
   Backup = "Backup",
   BootloaderMode = "BootloaderMode",
@@ -145,6 +146,14 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     isConnectionInfoRequest: true,
     decodeDoubleByte: true,
     parser: (response: number[]): number => response[0],
+  },
+  [Request.GetBootloaderSupport]: {
+    key: Request.GetBootloaderSupport,
+    type: RequestType.Custom,
+    specialRequestId: 81, // Hex: 51
+    isConnectionInfoRequest: true,
+    decodeDoubleByte: true,
+    parser: (response: number[]): boolean => response[0] === 1,
   },
   [Request.Reboot]: {
     key: Request.Reboot,

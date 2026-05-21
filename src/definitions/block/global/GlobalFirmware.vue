@@ -150,6 +150,7 @@ export default defineComponent({
     const {
       firmwareFileName,
       isBootloaderMode,
+      bootLoaderSupport,
       startUpdatesCheck,
       isFirmwareUpdateSupported,
       startBootLoaderMode,

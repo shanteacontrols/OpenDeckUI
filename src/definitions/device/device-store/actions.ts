@@ -725,6 +725,7 @@ export const connectDeviceStoreToInput = async (
     deviceState.valuesPerMessageRequest = (null as unknown) as number;
     deviceState.boardId = [];
     deviceState.isKnownBoard = false;
+    deviceState.bootLoaderSupport = false;
     deviceState.firmwareVersion = (null as unknown) as string;
     deviceState.serialNumber = (null as unknown) as string;
     deviceState.dfuError = (null as unknown) as string;
@@ -775,6 +776,7 @@ export const connectDeviceStoreToInput = async (
   deviceState.valuesPerMessageRequest = null;
   deviceState.boardId = [];
   deviceState.isKnownBoard = false;
+  deviceState.bootLoaderSupport = false;
   deviceState.firmwareVersion = null;
   deviceState.serialNumber = null;
   deviceState.dfuError = (null as unknown) as string;
@@ -1339,6 +1341,11 @@ const loadDeviceInfoDetails = async (): Promise<void> => {
     command: Request.GetNumberOfSupportedPresets,
     handler: (supportedPresetsCount: number) =>
       setInfo({ supportedPresetsCount }),
+  });
+
+  await sendMessage({
+    command: Request.GetBootloaderSupport,
+    handler: (bootLoaderSupport: boolean) => setInfo({ bootLoaderSupport }),
   });
 };
 
