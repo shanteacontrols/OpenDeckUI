@@ -1,8 +1,8 @@
 import type { Input, Output } from "webmidi";
 import type { Block } from "../../interface";
 import type { IViewSettingState } from "./state";
-import type { ISysExTransport } from "./sysex-transport";
-import { SysExTransportType } from "./sysex-transport";
+import type { ISysExTransport, NetworkDfuTransport } from "./transports";
+import { SysExTransportType } from "./transports";
 
 export enum DeviceConnectionState {
   Closed = "closed",
@@ -47,6 +47,7 @@ export type IDeviceState = {
   input: Input;
   output: Output;
   transport: ISysExTransport;
+  networkDfuTransport: NetworkDfuTransport;
   transportType: SysExTransportType;
   isBootloaderMode: boolean;
   connectionState: DeviceConnectionState;

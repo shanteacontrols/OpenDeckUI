@@ -7,6 +7,9 @@
     <div class="grid gap-4 md:grid-cols-2 max-w-3xl mx-auto">
       <div class="surface-neutral border px-8 py-6 rounded text-center">
         <h2 class="font-bold mb-4">Connect via network</h2>
+        <p class="mb-4 text-sm leading-6">
+          Use this for configuration or DFU.
+        </p>
         <form
           class="flex flex-col items-center"
           @submit.prevent="connectNetwork"
@@ -19,19 +22,21 @@
               placeholder="Device IP address"
             />
           </label>
-          <button class="btn" type="submit">Connect</button>
+          <button class="btn" type="submit" :disabled="networkConnecting">
+            {{ networkConnecting ? "Connecting" : "Connect" }}
+          </button>
         </form>
       </div>
       <div class="surface-neutral border px-8 py-6 rounded text-center">
-        <h2 class="font-bold mb-4">Firmware update</h2>
+        <h2 class="font-bold mb-4">USB firmware update</h2>
         <p class="mb-4 text-sm leading-6">
-          Use this when the board is already in DFU mode.
+          Use this when the board is already in USB DFU mode.
         </p>
         <router-link
           :to="{ name: 'device-firmware-update', params: { outputId: webUsbDfuVirtualOutputId } }"
           class="btn"
         >
-          Open Firmware Update
+          Open USB Firmware Update
         </router-link>
       </div>
     </div>
@@ -52,7 +57,9 @@
               placeholder="Device IP address"
             />
         </label>
-        <button class="btn" type="submit">Connect</button>
+        <button class="btn" type="submit" :disabled="networkConnecting">
+          {{ networkConnecting ? "Connecting" : "Connect" }}
+        </button>
       </form>
     </div>
   </Hero>
@@ -85,7 +92,9 @@
               placeholder="Device IP address"
             />
         </label>
-        <button class="btn" type="submit">Connect</button>
+        <button class="btn" type="submit" :disabled="networkConnecting">
+          {{ networkConnecting ? "Connecting" : "Connect" }}
+        </button>
       </form>
     </div>
   </Hero>
@@ -96,7 +105,8 @@ import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import router from "../../router";
 import { midiStoreMapped, deviceStoreMapped } from "../../store";
 import {
-  getWebConfigOutputId,
+  connectOpenDeckNetworkEndpoint,
+  OpenDeckNetworkEndpoint,
   webUsbDfuVirtualOutputId,
 } from "./device-store";
 
@@ -110,6 +120,7 @@ export default defineComponent({
         localStorage.getItem(webConfigAddressStorageKey)) ||
         "",
     );
+    const networkConnecting = ref(false);
 
     onMounted(async () => {
       await midiStoreMapped.assignInputs();
@@ -123,25 +134,42 @@ export default defineComponent({
       midiStoreMapped.stopMidiConnectionWatcher();
     });
 
-    const connectNetwork = () => {
+    const connectNetwork = async () => {
       const address = networkAddress.value.trim();
-      if (!address) {
+      if (!address || networkConnecting.value) {
         return;
       }
 
-      if (typeof localStorage !== "undefined") {
-        localStorage.setItem(webConfigAddressStorageKey, address);
-      }
+      networkConnecting.value = true;
+      try {
+        const connection = await connectOpenDeckNetworkEndpoint(address);
 
-      router.push({
-        name: "device",
-        params: { outputId: getWebConfigOutputId(address) },
-      });
+        if (!connection) {
+          return;
+        }
+
+        if (typeof localStorage !== "undefined") {
+          localStorage.setItem(webConfigAddressStorageKey, address);
+        }
+
+        router.push({
+          name:
+            connection.endpoint === OpenDeckNetworkEndpoint.Dfu
+              ? "device-firmware-update"
+              : "device",
+          params: {
+            outputId: connection.outputId,
+          },
+        });
+      } finally {
+        networkConnecting.value = false;
+      }
     };
 
     return {
       outputs: midiStoreMapped.outputs,
       networkAddress,
+      networkConnecting,
       connectNetwork,
       webUsbDfuVirtualOutputId,
     };

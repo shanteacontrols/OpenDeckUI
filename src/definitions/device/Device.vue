@@ -125,8 +125,14 @@ export default defineComponent({
           });
         }
 
-        if (isBootloaderMode.value) {
-          return router.push({ name: "device-firmware-update" });
+        if (
+          isBootloaderMode.value &&
+          router.currentRoute.value.name !== "device-firmware-update"
+        ) {
+          return router.push({
+            name: "device-firmware-update",
+            params: { outputId },
+          });
         }
       } catch (err) {
         logger.error(err);

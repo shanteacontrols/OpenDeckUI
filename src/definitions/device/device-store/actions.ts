@@ -32,12 +32,17 @@ import {
   webUsbDfuVirtualOutputId,
 } from "./interface";
 import {
+  getNetworkDfuAddressFromOutputId,
   getWebConfigAddressFromOutputId,
+  getWebConfigOutputId,
+  isNetworkDfuOutputId,
   isWebConfigOutputId,
   MidiSysExTransport,
+  NetworkDfuTransport,
   SysExTransportType,
+  takeNetworkDfuTransport,
   WebConfigSysExTransport,
-} from "./sysex-transport";
+} from "./transports";
 import { deviceState, defaultState, IViewSettingState } from "./state";
 import { sendMessage, handleSysExEvent, resetQueue } from "./request-qeueue";
 import {
@@ -419,9 +424,14 @@ const disconnectCurrentMidiSession = (): void => {
     deviceState.transport.close();
   }
 
+  if (deviceState.networkDfuTransport) {
+    deviceState.networkDfuTransport.close();
+  }
+
   deviceState.input = (null as unknown) as Input;
   deviceState.output = (null as unknown) as Output;
   deviceState.transport = defaultState.transport;
+  deviceState.networkDfuTransport = defaultState.networkDfuTransport;
   deviceState.transportType = defaultState.transportType;
   deviceState.outputId = (null as unknown) as string;
   deviceState.connectionPromise = (null as unknown) as Promise<any>;
@@ -711,6 +721,39 @@ const waitForDfuTarget = async (): Promise<void> => {
 export const connectDeviceStoreToInput = async (
   outputId: string,
 ): Promise<any> => {
+  if (isNetworkDfuOutputId(outputId)) {
+    const address = getNetworkDfuAddressFromOutputId(outputId);
+    const transport =
+      takeNetworkDfuTransport(outputId) ||
+      (await NetworkDfuTransport.connect(address));
+
+    disconnectCurrentMidiSession();
+    deviceState.isBootloaderMode = true;
+    deviceState.outputId = outputId;
+    deviceState.input = (null as unknown) as Input;
+    deviceState.output = (null as unknown) as Output;
+    deviceState.transport = defaultState.transport;
+    deviceState.networkDfuTransport = transport;
+    deviceState.transportType = defaultState.transportType;
+    deviceState.valueSize = 2;
+    deviceState.valuesPerMessageRequest = (null as unknown) as number;
+    deviceState.boardId = [];
+    deviceState.isKnownBoard = false;
+    deviceState.bootLoaderSupport = false;
+    deviceState.firmwareVersion = (null as unknown) as string;
+    deviceState.serialNumber = (null as unknown) as string;
+    deviceState.dfuError = (null as unknown) as string;
+    resetBlessingState();
+    setDfuState(DfuState.DfuReady, {
+      dfuTransport: DfuTransport.Network,
+      dfuDeviceLabel: address,
+    });
+    deviceState.boardName = address;
+    deviceState.connectionState = DeviceConnectionState.Closed;
+    deviceState.connectionPromise = (null as unknown) as Promise<any>;
+    return;
+  }
+
   if (isWebConfigOutputId(outputId)) {
     const address = getWebConfigAddressFromOutputId(outputId);
     const transport = await WebConfigSysExTransport.connect(address);
@@ -982,7 +1025,10 @@ const startFirmwareUpdate = async (
     appendDfuStatus("Selected file does not look like a firmware binary");
   }
 
-  if (deviceState.transportType === SysExTransportType.WebConfig) {
+  if (
+    deviceState.networkDfuTransport ||
+    deviceState.transportType === SysExTransportType.WebConfig
+  ) {
     return startNetworkFirmwareUpdate(file);
   }
 
@@ -1112,7 +1158,13 @@ const startFirmwareUpdate = async (
 };
 
 const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
-  if (!deviceState.transport || !deviceState.transport.uploadFirmware) {
+  const uploadTransport =
+    deviceState.networkDfuTransport ||
+    (deviceState.transport && deviceState.transport.uploadFirmware
+      ? deviceState.transport
+      : null);
+
+  if (!uploadTransport || !uploadTransport.uploadFirmware) {
     setDfuState(DfuState.Error, {
       dfuTransport: DfuTransport.Network,
       dfuError: "Network firmware upload is not available for this connection.",
@@ -1121,6 +1173,13 @@ const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
   }
 
   const currentOutputId = deviceState.outputId;
+  const isRecoveryDfu = isNetworkDfuOutputId(currentOutputId);
+  const recoveryAddress = isRecoveryDfu
+    ? getNetworkDfuAddressFromOutputId(currentOutputId)
+    : null;
+  const reconnectOutputId = isRecoveryDfu
+    ? getWebConfigOutputId(recoveryAddress)
+    : currentOutputId;
   const payload = new Uint8Array(await file.arrayBuffer());
 
   stopDeviceConnectionWatcher();
@@ -1135,7 +1194,7 @@ const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
   appendDfuStatus(`File size: ${payload.length} bytes`);
 
   try {
-    await deviceState.transport.uploadFirmware(payload, (bytesWritten) => {
+    await uploadTransport.uploadFirmware(payload, (bytesWritten) => {
       deviceState.dfuProgress = Math.max(
         1,
         Math.min(100, Math.floor((bytesWritten / payload.length) * 100)),
@@ -1150,10 +1209,13 @@ const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
       dfuProgress: 100,
     });
 
-    await waitForApplicationDisconnect();
+    if (!isRecoveryDfu) {
+      await waitForApplicationDisconnect();
+    }
+
     disconnectCurrentMidiSession();
 
-    const reconnected = await waitForApplicationReconnect(currentOutputId);
+    const reconnected = await waitForApplicationReconnect(reconnectOutputId);
 
     if (!reconnected) {
       setDfuState(DfuState.Error, {
@@ -1168,7 +1230,7 @@ const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
     await router.replace({
       name: "device",
       params: {
-        outputId: currentOutputId,
+        outputId: reconnectOutputId,
       },
     });
   } catch (error) {

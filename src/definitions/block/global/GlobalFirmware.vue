@@ -76,8 +76,14 @@
           @change="onFirmwareFileSelected"
         />
         <p class="help-text">
-          Select a `dfu.bin` firmware file to stage it over the active network
-          connection. The board will reboot and apply the staged image.
+          <template v-if="isBootloaderMode">
+            Select a `dfu.bin` firmware file to upload it to the recovery
+            bootloader over the active network connection.
+          </template>
+          <template v-else>
+            Select a `dfu.bin` firmware file to stage it over the active network
+            connection. The board will reboot and apply the staged image.
+          </template>
         </p>
       </div>
 
@@ -187,9 +193,15 @@ export default defineComponent({
     );
     const showNetworkInterface = computed(
       () =>
-        transportType.value === SysExTransportType.WebConfig &&
-        dfuState.value === DfuState.Idle &&
-        !isBootloaderMode.value,
+        (transportType.value === SysExTransportType.WebConfig &&
+          dfuState.value === DfuState.Idle &&
+          !isBootloaderMode.value) ||
+        (dfuTransport.value === DfuTransport.Network &&
+          [
+            DfuState.DfuReady,
+            DfuState.Uploading,
+            DfuState.WaitingForApplication,
+          ].includes(dfuState.value)),
     );
     const showBootloaderModeButton = computed(
       () =>

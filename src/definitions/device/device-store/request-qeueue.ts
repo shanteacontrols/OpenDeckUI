@@ -2,7 +2,7 @@ import { Ref, ref } from "vue";
 import { deviceState } from "./state";
 import { ControlDisableType, IRequestConfig } from "./interface";
 import { disableControl } from "./actions";
-import { ISysExEvent } from "./sysex-transport";
+import { ISysExEvent } from "./transports";
 import {
   arrayEqual,
   convertDataValuesToSingleByte,

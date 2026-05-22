@@ -24,4 +24,4 @@ export const deviceStore: IDeviceStore = {
 export const deviceStoreMapped = mapStore(deviceStore) as IMappedDeviceStore;
 
 export * from "./interface";
-export * from "./sysex-transport";
+export * from "./transports";
