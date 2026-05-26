@@ -20,7 +20,7 @@ including:
 - configurable component settings
 - preset and system settings
 - firmware update checks
-- WebUSB bootloader firmware updates
+- WebUSB and network bootloader firmware updates
 - backup and restore
 
 The firmware, hardware targets, and main documentation live in the main
