@@ -28,6 +28,16 @@ const midiSectionGroup = {
 };
 
 const sections: Dictionary<ISectionDefinition> = {
+  OutputState: {
+    key: "outputState",
+    sectionGroup: commonSectionGroup,
+    type: SectionType.Value,
+    section: 0,
+    component: FormInputComponent.Toggle,
+    label: "Output state",
+    helpText: `Turns the output on or off.`,
+    block: Block.Output,
+  },
   // Settings definitions
   PulseWithMidiClock: {
     block: Block.Output,
@@ -60,16 +70,6 @@ const sections: Dictionary<ISectionDefinition> = {
     block: Block.Output,
   },
   // Component definitions
-  OutputState: {
-    key: "outputState",
-    sectionGroup: commonSectionGroup,
-    type: SectionType.Value,
-    section: 0,
-    component: FormInputComponent.Toggle,
-    label: "Output state",
-    helpText: `Turns the output on or off.`,
-    block: Block.Output,
-  },
   ActivationId: {
     showIf: (formState: FormState): boolean =>
       !HideOutputActivationIdOnControlTypes.includes(formState.controlType),
