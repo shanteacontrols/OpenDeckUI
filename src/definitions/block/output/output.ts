@@ -8,7 +8,6 @@ import {
   HideOutputActivationValueOnControlTypes,
   HideOutputActivationIdOnControlTypes,
   HideOutputMidiChannelOnControlTypes,
-  HideOutputRgbEnableOnControlTypes,
 } from "../../interface";
 
 import DeviceForm from "../../device/DeviceForm.vue";
@@ -30,15 +29,15 @@ const midiSectionGroup = {
 
 const sections: Dictionary<ISectionDefinition> = {
   // Settings definitions
-  BlinkWithMidiClock: {
+  PulseWithMidiClock: {
     block: Block.Output,
-    key: "blinkWithMidiClock",
+    key: "pulseWithMidiClock",
     type: SectionType.Setting,
     section: 2,
     settingIndex: 0,
     component: FormInputComponent.Toggle,
-    label: "Blink with MIDI clock",
-    helpText: `Enables or disables output blinking via MIDI clock. When enabled, MIDI clock is used to toggle output state. Otherwise, internal timer is used.`,
+    label: "Pulse with MIDI clock",
+    helpText: `Enables or disables output pulsing via MIDI clock. When enabled, MIDI clock is used to toggle output state. Otherwise, internal timer is used.`,
   },
   StartupAnimation: {
     key: "startupAnimation",
@@ -61,24 +60,14 @@ const sections: Dictionary<ISectionDefinition> = {
     block: Block.Output,
   },
   // Component definitions
-  OutputTesting: {
-    key: "outputTesting",
+  OutputState: {
+    key: "outputState",
     sectionGroup: commonSectionGroup,
     type: SectionType.Value,
     section: 0,
-    component: FormInputComponent.Select,
-    options: [
-      { value: 0, text: "Off" },
-      { value: 1, text: "Red" },
-      { value: 2, text: "Green" },
-      { value: 3, text: "Yellow" },
-      { value: 4, text: "Blue" },
-      { value: 5, text: "Magenta" },
-      { value: 6, text: "Cyan" },
-      { value: 7, text: "White" },
-    ],
-    label: "Output test",
-    helpText: ``,
+    component: FormInputComponent.Toggle,
+    label: "Output state",
+    helpText: `Turns the output on or off.`,
     block: Block.Output,
   },
   ActivationId: {
@@ -92,18 +81,6 @@ const sections: Dictionary<ISectionDefinition> = {
     min: 0,
     max: 127,
     label: "MIDI activation ID",
-    helpText: ``,
-    block: Block.Output,
-  },
-  RGBEnable: {
-    showIf: (formState: FormState): boolean =>
-      !HideOutputRgbEnableOnControlTypes.includes(formState.controlType),
-    key: "rgbEnable",
-    sectionGroup: midiSectionGroup,
-    type: SectionType.Value,
-    section: 4,
-    component: FormInputComponent.Toggle,
-    label: "MIDI RGB enable",
     helpText: ``,
     block: Block.Output,
   },
