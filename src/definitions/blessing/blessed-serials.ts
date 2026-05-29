@@ -134,4 +134,36 @@ export const blessedSerials: IBlessedSerialEntry[] = [
     signature:
       "CT+E5ABPxZk+IdbgkIZ7WmLNSYdi6PyRTOTMBQd+3jOlUtdv71gtHw5M8iHTWFurjTNqde2w2PbKyoBTbcYjAQ==",
   },
+  {
+    version: 1,
+    serialHash:
+      "664A30A54E99EFEEF5E13AFE46F5F72C6DA7654BD3615B39997E5D0988878502",
+    features: "config",
+    signature:
+      "PsRIdOQ6lVLthykluVCqowuD2Y4Hkn6N/9hzqWXZeCAF1DtEyZhQxT8vQT0e8A4wYpjvPNAkYv1/VVEkwB53Ag==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "3EC4EDB73CD8605A13D90748CCDF20C87220B68E10D73C34257473D057ABA329",
+    features: "config",
+    signature:
+      "AeQ+8rGQgT/W4qk3c7cIc+sIazAuevdLi1waHeowdUdX8cQZWh7bxTAU1TTNmE3RqRGMQ7vv6vltaBERHRv1BQ==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "A7EDCDE9741DE37701EE8C68C1E744C9F1B8D6DA9ED408DE5A09D31340B6119F",
+    features: "config",
+    signature:
+      "7liMQ735EOFFgc5UwQ6cb9j5UccEIFpbB06RzjcRfGJCKwawHjMQ/HenToaNGaib1D8EgJU8+9IQlgz1zT1NDg==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "4A4D6074A481059D2D83B584096698675B2CD9E9A0825476EB9155326FFEB5DD",
+    features: "config",
+    signature:
+      "q7B18aoOXovIXt4CfiypyWzTukeUNziS4Lo3hvWYB1qnUETxPl8q8CXw8oysoiIN87ztCgFcMyc6+67u8FWyDw==",
+  },
 ];

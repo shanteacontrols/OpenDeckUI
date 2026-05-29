@@ -170,6 +170,42 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "pico2.dfu.bin",
   },
   {
+    name: "W6100-EVB-Pico",
+    id: [20, 82, 123, 88],
+    oldId: [],
+    firmwareFileName: "w6100_evb_pico.dfu.bin",
+  },
+  {
+    name: "W6100-EVB-Pico2",
+    id: [58, 89, 106, 91],
+    oldId: [],
+    firmwareFileName: "w6100_evb_pico2.dfu.bin",
+  },
+  {
+    name: "W5500-EVB-Pico",
+    id: [94, 101, 119, 52],
+    oldId: [],
+    firmwareFileName: "w5500_evb_pico.dfu.bin",
+  },
+  {
+    name: "W5500-EVB-Pico2",
+    id: [97, 126, 46, 100],
+    oldId: [],
+    firmwareFileName: "w5500_evb_pico2.dfu.bin",
+  },
+  {
+    name: "Adafruit Metro RP2040",
+    id: [18, 65, 76, 89],
+    oldId: [],
+    firmwareFileName: "metro_rp2040.dfu.bin",
+  },
+  {
+    name: "Adafruit Metro ESP32-S3",
+    id: [126, 88, 106, 69],
+    oldId: [],
+    firmwareFileName: "metro_esp32s3.dfu.bin",
+  },
+  {
     name: "OpenDeck M v2.1",
     id: [78, 103, 95, 35],
     oldId: [],
