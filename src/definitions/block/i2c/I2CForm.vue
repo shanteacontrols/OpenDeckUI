@@ -40,6 +40,69 @@
           />
         </div>
       </Section>
+      <Section title="APDS-9960">
+        <div class="form-grid">
+          <FormField
+            :value="form.enableApds9960Proximity"
+            :field-definition="sections.EnableApds9960Proximity"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Apds9960ProximityGain)"
+            :value="form.apds9960ProximityGain"
+            :field-definition="sections.Apds9960ProximityGain"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableApds9960AmbientLight"
+            :field-definition="sections.EnableApds9960AmbientLight"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableApds9960Rgb"
+            :field-definition="sections.EnableApds9960Rgb"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Apds9960AlsGain)"
+            :value="form.apds9960AlsGain"
+            :field-definition="sections.Apds9960AlsGain"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableApds9960Gesture"
+            :field-definition="sections.EnableApds9960Gesture"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
+      <Section title="VL53L4CX">
+        <div class="form-grid">
+          <FormField
+            :value="form.enableVl53l4cxDistance"
+            :field-definition="sections.EnableVl53l4cxDistance"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Vl53l4cxTrackingArea)"
+            :value="form.vl53l4cxTrackingArea"
+            :field-definition="sections.Vl53l4cxTrackingArea"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Vl53l4cxResponse)"
+            :value="form.vl53l4cxResponse"
+            :field-definition="sections.Vl53l4cxResponse"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Vl53l4cxDistanceMode)"
+            :value="form.vl53l4cxDistanceMode"
+            :field-definition="sections.Vl53l4cxDistanceMode"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
     </template>
   </DeviceSettings>
 </template>
