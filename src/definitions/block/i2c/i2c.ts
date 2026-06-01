@@ -11,18 +11,7 @@ import I2CIcon from "./I2CIcon.vue";
 
 export const sections: Dictionary<ISectionDefinition> = {
   // Features
-  EnableDisplay: {
-    block: Block.Display,
-    key: "enableDisplay",
-    type: SectionType.Setting,
-    section: 0,
-    settingIndex: 6,
-    component: FormInputComponent.Toggle,
-    label: "Enable",
-    helpText: `Enables or disables the usage of small OLED/LCD displays.`,
-  },
   DeviceInfoOnStartup: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "deviceInfoStartup",
     type: SectionType.Setting,
@@ -33,7 +22,6 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: `Enable or disable device info message on startup (firmware version and board name).`,
   },
   DisplayController: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "displayController",
     type: SectionType.Setting,
@@ -54,7 +42,6 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
   },
   DisplayResolution: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "displayResolution",
     type: SectionType.Setting,
@@ -79,7 +66,6 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
   },
   MidiEventRetentionTime: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "midiEventRetentionTime",
     type: SectionType.Setting,
@@ -116,7 +102,6 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: `Timeout after which any message on display will be cleared. If set to 0, message stays on display until new event occurs.`,
   },
   AlternateMidiNoteDisplay: {
-    showIf: (formState: FormState): boolean => formState.enableDisplay,
     block: Block.Display,
     key: "alternateMidiNoteDisplay",
     type: SectionType.Setting,

@@ -4,11 +4,6 @@
       <Section title="Display">
         <div class="form-grid">
           <FormField
-            :value="form.enableDisplay"
-            :field-definition="sections.EnableDisplay"
-            @modified="onSettingChange"
-          />
-          <FormField
             v-if="showField(sections.DisplayController)"
             :value="form.displayController"
             :field-definition="sections.DisplayController"
