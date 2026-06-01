@@ -206,6 +206,12 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "metro_esp32s3.dfu.bin",
   },
   {
+    name: "LILYGO T-ETH Elite",
+    id: [109, 50, 40, 60],
+    oldId: [],
+    firmwareFileName: "lilygo_t_eth_elite.dfu.bin",
+  },
+  {
     name: "OpenDeck M v2.1",
     id: [78, 103, 95, 35],
     oldId: [],
