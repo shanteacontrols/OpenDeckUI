@@ -160,12 +160,6 @@
 
       <Section title="OSC">
         <div class="form-grid">
-          <FormField
-            v-if="showField(sections.OscState)"
-            :value="form.oscState"
-            :field-definition="sections.OscState"
-            @modified="onSettingChange"
-          />
           <div
             v-if="showField(sections.OscDestIpv4Octet0)"
             class="form-field lg:col-span-2"
