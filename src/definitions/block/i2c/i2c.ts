@@ -296,6 +296,30 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "Distance mode",
     helpText: `Medium is the normal range mode; Long is tuned for farther targets.`,
   },
+  Cap1188Sensitivity: {
+    block: Block.Display,
+    key: "cap1188Sensitivity",
+    type: SectionType.Setting,
+    section: 3,
+    settingIndex: 0,
+    component: FormInputComponent.Select,
+    options: [
+      {
+        value: 0,
+        text: "Low",
+      },
+      {
+        value: 1,
+        text: "Medium",
+      },
+      {
+        value: 2,
+        text: "High",
+      },
+    ],
+    label: "Sensitivity",
+    helpText: `Higher sensitivity detects lighter touches but can react more easily to noise.`,
+  },
 };
 
 export const DisplayBlock: IBlockDefinition = {

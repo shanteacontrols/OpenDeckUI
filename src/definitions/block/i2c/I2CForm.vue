@@ -98,6 +98,15 @@
           />
         </div>
       </Section>
+      <Section title="CAP1188">
+        <div class="form-grid">
+          <FormField
+            :value="form.cap1188Sensitivity"
+            :field-definition="sections.Cap1188Sensitivity"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
     </template>
   </DeviceSettings>
 </template>
