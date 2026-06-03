@@ -212,6 +212,12 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "lilygo_t_eth_elite.dfu.bin",
   },
   {
+    name: "Waveshare ESP32-S3-ETH",
+    id: [74, 114, 47, 99],
+    oldId: [],
+    firmwareFileName: "ws_esp32_s3_eth.dfu.bin",
+  },
+  {
     name: "OpenDeck M v2.1",
     id: [78, 103, 95, 35],
     oldId: [],
