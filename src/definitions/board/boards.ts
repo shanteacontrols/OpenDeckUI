@@ -4,7 +4,7 @@ export const Boards: IBoardDefinition[] = [
   {
     name: "Arduino Leonardo",
     id: [1, 58, 76, 24],
-    oldId: [1, 52, 50, 124],
+    oldId: [1, 1, 0, 0],
     firmwareFileName: null,
   },
   {
