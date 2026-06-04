@@ -159,86 +159,69 @@
       </Section>
 
       <Section title="OSC">
-        <div class="form-grid">
+        <div class="osc-destination-list">
           <div
-            v-if="showField(sections.OscDestIpv4Octet0)"
-            class="form-field lg:col-span-2"
+            v-for="destination in oscDestinations"
+            :key="destination.label"
+            v-show="showField(destination.octets[0])"
+            class="osc-destination-group"
           >
-            <label class="label">
-              Destination IPv4 address
-              <small class="instructions">0 - 255</small>
-            </label>
-            <div class="osc-ipv4-inputs">
-              <FormInput
-                :value="form.oscDestIpv4Octet0"
-                :min="0"
-                :max="255"
-                name="oscDestIpv4Octet0"
-                :disabled="!isConfigBlessed"
-                @changed="
-                  onOscSettingChange(
-                    $event,
-                    sections.OscDestIpv4Octet0,
-                    onSettingChange
-                  )
-                "
-              />
-              <span class="osc-ipv4-dot">.</span>
-              <FormInput
-                :value="form.oscDestIpv4Octet1"
-                :min="0"
-                :max="255"
-                name="oscDestIpv4Octet1"
-                :disabled="!isConfigBlessed"
-                @changed="
-                  onOscSettingChange(
-                    $event,
-                    sections.OscDestIpv4Octet1,
-                    onSettingChange
-                  )
-                "
-              />
-              <span class="osc-ipv4-dot">.</span>
-              <FormInput
-                :value="form.oscDestIpv4Octet2"
-                :min="0"
-                :max="255"
-                name="oscDestIpv4Octet2"
-                :disabled="!isConfigBlessed"
-                @changed="
-                  onOscSettingChange(
-                    $event,
-                    sections.OscDestIpv4Octet2,
-                    onSettingChange
-                  )
-                "
-              />
-              <span class="osc-ipv4-dot">.</span>
-              <FormInput
-                :value="form.oscDestIpv4Octet3"
-                :min="0"
-                :max="255"
-                name="oscDestIpv4Octet3"
-                :disabled="!isConfigBlessed"
-                @changed="
-                  onOscSettingChange(
-                    $event,
-                    sections.OscDestIpv4Octet3,
-                    onSettingChange
-                  )
-                "
-              />
+            <div class="osc-destination-ip">
+              <label class="label">
+                {{ destination.label }} IPv4 address
+                <small class="instructions">0 - 255</small>
+              </label>
+              <div class="osc-ipv4-inputs">
+                <template
+                  v-for="(octet, octetIndex) in destination.octets"
+                  :key="octet.key"
+                >
+                  <FormInput
+                    :value="form[octet.key]"
+                    :min="0"
+                    :max="255"
+                    :name="octet.key"
+                    :disabled="!isConfigBlessed"
+                    @changed="onOscSettingChange($event, octet, onSettingChange)"
+                  />
+                  <span
+                    v-if="octetIndex < destination.octets.length - 1"
+                    class="osc-ipv4-dot"
+                  >
+                    .
+                  </span>
+                </template>
+              </div>
+              <p class="help-text">
+                Leave 0.0.0.0 to disable this destination.
+              </p>
             </div>
-            <p class="help-text">
-              IPv4 address of the destination that receives OSC packets from OpenDeck.
-            </p>
+            <div
+              v-show="showField(destination.port)"
+              class="osc-destination-port"
+            >
+              <label class="label">
+                Port
+                <small class="instructions">
+                  {{ destination.port.min }} - {{ destination.port.max }}
+                </small>
+              </label>
+              <div class="osc-port-input">
+                <FormInput
+                  :value="form[destination.port.key]"
+                  :min="destination.port.min"
+                  :max="destination.port.max"
+                  :name="destination.port.key"
+                  :disabled="!isConfigBlessed"
+                  @changed="
+                    onOscSettingChange($event, destination.port, onSettingChange)
+                  "
+                />
+              </div>
+            </div>
           </div>
-          <FormField
-            v-if="showField(sections.OscDestPort)"
-            :value="form.oscDestPort"
-            :field-definition="sections.OscDestPort"
-            @modified="onSettingChange"
-          />
+        </div>
+        <div class="form-grid osc-settings-grid">
           <FormField
             v-if="showField(sections.OscListenPort)"
             :value="form.oscListenPort"
@@ -295,6 +278,16 @@ const validateMdnsHostname = (value: string): string => {
   return "";
 };
 
+const makeOscDestination = (
+  label: string,
+  octets: ISectionSetting[],
+  port: ISectionSetting,
+) => ({
+  label,
+  octets,
+  port,
+});
+
 export default defineComponent({
   name: "Global",
   components: {
@@ -305,6 +298,33 @@ export default defineComponent({
     const { sections } = GlobalBlock;
     const { supportedPresetsCount } = deviceStoreMapped;
     const { isConfigBlessed } = deviceStoreMapped;
+    const setting = (key: string): ISectionSetting => sections[key] as ISectionSetting;
+    const oscDestinations = [
+      makeOscDestination("Destination 1", [
+        setting("OscDest1Ipv4Octet0"),
+        setting("OscDest1Ipv4Octet1"),
+        setting("OscDest1Ipv4Octet2"),
+        setting("OscDest1Ipv4Octet3"),
+      ], setting("OscDest1Port")),
+      makeOscDestination("Destination 2", [
+        setting("OscDest2Ipv4Octet0"),
+        setting("OscDest2Ipv4Octet1"),
+        setting("OscDest2Ipv4Octet2"),
+        setting("OscDest2Ipv4Octet3"),
+      ], setting("OscDest2Port")),
+      makeOscDestination("Destination 3", [
+        setting("OscDest3Ipv4Octet0"),
+        setting("OscDest3Ipv4Octet1"),
+        setting("OscDest3Ipv4Octet2"),
+        setting("OscDest3Ipv4Octet3"),
+      ], setting("OscDest3Port")),
+      makeOscDestination("Destination 4", [
+        setting("OscDest4Ipv4Octet0"),
+        setting("OscDest4Ipv4Octet1"),
+        setting("OscDest4Ipv4Octet2"),
+        setting("OscDest4Ipv4Octet3"),
+      ], setting("OscDest4Port")),
+    ];
     const mdnsHostnameDraft = ref("");
     const mdnsHostnameSaved = ref("");
     const mdnsHostnameError = ref("");
@@ -399,6 +419,7 @@ export default defineComponent({
       Block,
       MDNS_HOSTNAME_MAX_LENGTH,
       sections,
+      oscDestinations,
       mdnsHostnameDraft,
       mdnsHostnameError,
       mdnsHostnameLoading,
@@ -412,8 +433,37 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.osc-destination-list {
+  @apply space-y-0;
+}
+
+.osc-destination-group {
+  @apply flex flex-wrap items-start border-t border-gray-700 py-5;
+  gap: 1rem 2rem;
+}
+
+.osc-destination-group:first-child {
+  @apply border-t-0 pt-0;
+}
+
+.osc-destination-ip {
+  flex: 0 1 auto;
+}
+
+.osc-destination-port {
+  flex: 0 0 9rem;
+}
+
 .osc-ipv4-inputs {
   @apply flex flex-wrap items-center gap-2;
+}
+
+.osc-port-input {
+  @apply mt-1;
+}
+
+.osc-settings-grid {
+  @apply mt-5 border-t border-gray-700 pt-5;
 }
 
 .osc-ipv4-dot {
