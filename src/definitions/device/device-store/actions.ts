@@ -1353,6 +1353,10 @@ const loadDeviceInfoDetails = async (): Promise<void> => {
       setInfo({ supportedPresetsCount }),
   });
 
+  if (!isBlessingRequiredForFirmware(deviceState.firmwareVersion)) {
+    return;
+  }
+
   await sendMessage({
     command: Request.GetBootloaderSupport,
     handler: (bootLoaderSupport: boolean) => setInfo({ bootLoaderSupport }),
