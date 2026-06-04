@@ -19,9 +19,9 @@
         </p>
       </div>
 
-      <div class="form-field">
+      <div v-if="showFirmwareSection" class="form-field">
         <ButtonLink
-          v-if="isFirmwareUpdateSupported && isConfigBlessed"
+          v-if="isConfigBlessed"
           :to="{ name: 'device-firmware-update' }"
         >
           Firmware section
@@ -29,12 +29,8 @@
         <Button v-else disabled>
           Firmware section
         </Button>
-        <p v-if="!isFirmwareUpdateSupported" class="error-message text-red-500">
-          Not supported on this firmware.
-        </p>
         <p class="help-text">
-          Section used to reboot the device into bootloader mode and update the
-          firmware.
+          Section used to update the device firmware.
         </p>
       </div>
     </div>
@@ -65,9 +61,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watchEffect } from "vue";
 import { deviceStoreMapped } from "../../../store";
 import { useConfirmPrompt } from "../../../composables";
+import { logger } from "../../../util";
 
 export default defineComponent({
   name: "GlobalHardware",
@@ -75,6 +72,9 @@ export default defineComponent({
     const {
       valueSize,
       isFirmwareUpdateSupported,
+      bootLoaderSupport,
+      stagedUpdateSupport,
+      transportType,
       startFactoryReset,
       startReboot,
       startBackup,
@@ -84,6 +84,21 @@ export default defineComponent({
     const modalVisible = ref(false);
     const modalTitle = ref("");
     const availableUpdates = ref([]);
+    const showFirmwareSection = computed(
+      () =>
+        isFirmwareUpdateSupported.value &&
+        bootLoaderSupport.value === true,
+    );
+
+    watchEffect(() => {
+      logger.log("Firmware section visibility:", {
+        isFirmwareUpdateSupported: isFirmwareUpdateSupported.value,
+        bootLoaderSupport: bootLoaderSupport.value,
+        stagedUpdateSupport: stagedUpdateSupport.value,
+        transportType: transportType.value,
+        showFirmwareSection: showFirmwareSection.value,
+      });
+    });
 
     const onFactoryResetClicked = useConfirmPrompt(
       "This will reset all the parameters on the board to their factory settings. All analog inputs will be disabled as well. Depending on the board, this can take up to 30 seconds. Proceed?",
@@ -106,6 +121,7 @@ export default defineComponent({
       modalVisible,
       modalTitle,
       availableUpdates,
+      showFirmwareSection,
       onFactoryResetClicked,
       valueSize,
       isFirmwareUpdateSupported,

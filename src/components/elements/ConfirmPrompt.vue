@@ -11,17 +11,17 @@
       <div class="confirm-prompt-backdrop" @click="cancelConfirmPrompt"></div>
       <div class="confirm-prompt-panel" tabindex="-1">
         <h2 id="confirm-prompt-title" class="confirm-prompt-title">
-          Confirm action
+          {{ state.title }}
         </h2>
         <p class="confirm-prompt-message">
           {{ state.message }}
         </p>
         <div class="confirm-prompt-actions">
-          <Button @click="cancelConfirmPrompt">
+          <Button v-if="state.showCancel" @click="cancelConfirmPrompt">
             Cancel
           </Button>
           <Button class="btn-primary" @click="acceptConfirmPrompt">
-            Continue
+            {{ state.confirmLabel }}
           </Button>
         </div>
       </div>
@@ -60,6 +60,7 @@ export default defineComponent({
 
 .confirm-prompt-panel {
   @apply relative w-full max-w-md rounded-lg bg-surface p-6 shadow-lg;
+  text-align: center;
 }
 
 .confirm-prompt-title {
@@ -68,9 +69,10 @@ export default defineComponent({
 
 .confirm-prompt-message {
   @apply text-gray-300;
+  line-height: 1.45;
 }
 
 .confirm-prompt-actions {
-  @apply mt-6 flex flex-wrap justify-end gap-3;
+  @apply mt-6 flex flex-wrap justify-center gap-3;
 }
 </style>

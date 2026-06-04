@@ -2,7 +2,7 @@ import semverGt from "semver/functions/gt";
 import semverClean from "semver/functions/clean";
 import semverGte from "semver/functions/gte";
 import marked from "marked";
-import WebMidi, { Input, Output } from "webmidi";
+import { Input, Output } from "webmidi";
 import FileSaver from "file-saver";
 import { logger, delay, arrayEqual, convertToHex } from "../../../util";
 import router from "../../../router";
@@ -22,6 +22,7 @@ import {
 } from "./actions-utility";
 import { midiStore } from "../../midi";
 import { requestLog } from "../../request-log";
+import { alertPrompt } from "../../../composables";
 import {
   IDeviceState,
   IRequestConfig,
@@ -34,7 +35,6 @@ import {
 import {
   getNetworkDfuAddressFromOutputId,
   getWebConfigAddressFromOutputId,
-  getWebConfigOutputId,
   isNetworkDfuOutputId,
   isWebConfigOutputId,
   MidiSysExTransport,
@@ -459,6 +459,30 @@ const hardReloadToRoute = (target: {
   return true;
 };
 
+const finishDfuAndReturnHome = async (
+  dfuTransport: DfuTransport,
+): Promise<void> => {
+  const completionMessage =
+    dfuTransport === DfuTransport.Network
+      ? "Firmware update is complete. The UI will now return to the home page. Connect to the device again using its IP address or default mDNS name."
+      : "Firmware update is complete. The UI will now return to the home page and scan for USB devices again.";
+
+  await alertPrompt("DFU complete", completionMessage, "Return home");
+
+  resetDfuState();
+
+  if (hardReloadToRoute({ name: "home" })) {
+    return;
+  }
+
+  await navigateHome();
+};
+
+const finishBootloaderEntryAndReturnHome = async (): Promise<void> => {
+  resetDfuState();
+  await navigateHome();
+};
+
 const waitForCondition = async (
   condition: () => Promise<boolean>,
   timeoutMs: number,
@@ -474,29 +498,6 @@ const waitForCondition = async (
   }
 
   return false;
-};
-
-const waitForMidiReconnect = async (): Promise<Output | null> => {
-  const reconnected = await waitForCondition(async () => {
-    await midiStore.actions.assignInputs();
-    return !!WebMidi.outputs.find(
-      (output: Output) =>
-        !output.name.includes("OpenDeck DFU") &&
-        output.name === deviceState.lastApplicationOutputName,
-    );
-  }, appReconnectTimeoutMs);
-
-  if (!reconnected) {
-    return null;
-  }
-
-  return (
-    WebMidi.outputs.find(
-      (output: Output) =>
-        !output.name.includes("OpenDeck DFU") &&
-        output.name === deviceState.lastApplicationOutputName,
-    ) || null
-  );
 };
 
 const waitForApplicationReconnect = async (
@@ -662,11 +663,18 @@ export const restoreCachedDfuSession = async (): Promise<boolean> => {
 };
 
 export const startDfuDiscovery = async (): Promise<void> => {
-  if (deviceState.dfuState !== DfuState.Idle || activeDfuDevice) {
+  if (activeDfuDevice) {
     return;
   }
 
-  await waitForDfuTarget();
+  if (deviceState.dfuState !== DfuState.Idle) {
+    setDfuState(deviceState.dfuState, {
+      dfuTransport: DfuTransport.WebUsb,
+    });
+    return;
+  }
+
+  await waitForDfuTarget(DfuTransport.WebUsb);
 };
 
 const requestWebUsbDfuDevice = async (): Promise<boolean> => {
@@ -706,9 +714,11 @@ const requestWebUsbDfuDevice = async (): Promise<boolean> => {
   }
 };
 
-const waitForDfuTarget = async (): Promise<void> => {
+const waitForDfuTarget = async (
+  dfuTransport = (null as unknown) as DfuTransport,
+): Promise<void> => {
   setDfuState(DfuState.WaitingForDfuDevice, {
-    dfuTransport: (null as unknown) as DfuTransport,
+    dfuTransport,
     dfuProgress: (null as unknown) as number,
     dfuError: (null as unknown) as string,
     dfuDeviceLabel: (null as unknown) as string,
@@ -740,6 +750,7 @@ export const connectDeviceStoreToInput = async (
     deviceState.boardId = [];
     deviceState.isKnownBoard = false;
     deviceState.bootLoaderSupport = false;
+    deviceState.stagedUpdateSupport = false;
     deviceState.firmwareVersion = (null as unknown) as string;
     deviceState.serialNumber = (null as unknown) as string;
     deviceState.dfuError = (null as unknown) as string;
@@ -769,6 +780,7 @@ export const connectDeviceStoreToInput = async (
     deviceState.boardId = [];
     deviceState.isKnownBoard = false;
     deviceState.bootLoaderSupport = false;
+    deviceState.stagedUpdateSupport = false;
     deviceState.firmwareVersion = (null as unknown) as string;
     deviceState.serialNumber = (null as unknown) as string;
     deviceState.dfuError = (null as unknown) as string;
@@ -820,6 +832,7 @@ export const connectDeviceStoreToInput = async (
   deviceState.boardId = [];
   deviceState.isKnownBoard = false;
   deviceState.bootLoaderSupport = false;
+  deviceState.stagedUpdateSupport = false;
   deviceState.firmwareVersion = null;
   deviceState.serialNumber = null;
   deviceState.dfuError = (null as unknown) as string;
@@ -948,26 +961,7 @@ const sendRebootRequest = async (
   disconnectCurrentMidiSession();
 
   if (targetState === DfuState.RebootingToBootloader) {
-    router.replace({
-      name: "device-firmware-update",
-      params: {
-        outputId: currentOutputId,
-      },
-    });
-    await waitForDfuTarget();
-
-    if (
-      ![
-        DfuState.DfuReady,
-        DfuState.Uploading,
-        DfuState.WaitingForApplication,
-      ].includes(deviceState.dfuState)
-    ) {
-      setDfuState(DfuState.Error, {
-        dfuError: "No DFU device was detected after the reboot request.",
-      });
-    }
-
+    await finishBootloaderEntryAndReturnHome();
     return;
   }
 
@@ -1029,6 +1023,14 @@ const startFirmwareUpdate = async (
     deviceState.networkDfuTransport ||
     deviceState.transportType === SysExTransportType.WebConfig
   ) {
+    if (
+      !deviceState.networkDfuTransport &&
+      deviceState.transportType === SysExTransportType.WebConfig &&
+      !deviceState.stagedUpdateSupport
+    ) {
+      return startBootLoaderMode();
+    }
+
     return startNetworkFirmwareUpdate(file);
   }
 
@@ -1087,37 +1089,7 @@ const startFirmwareUpdate = async (
       dfuProgress: 100,
     });
     await closeDfuDevice();
-
-    const output = await waitForMidiReconnect();
-
-    if (!output) {
-      setDfuState(DfuState.Error, {
-        dfuTransport: DfuTransport.WebUsb,
-        dfuError: "Firmware uploaded, but the application did not reconnect.",
-      });
-      return;
-    }
-    resetDfuState();
-
-    if (
-      hardReloadToRoute({
-        name: "device",
-        params: {
-          outputId: output.id,
-        },
-      })
-    ) {
-      return;
-    }
-
-    await router.replace({
-      name: "device",
-      params: {
-        outputId: output.id,
-      },
-    });
-
-    await connectDevice(output.id);
+    await finishDfuAndReturnHome(DfuTransport.WebUsb);
   } catch (error) {
     logger.error("WebUSB firmware upload failed", error);
     appendDfuStatus(
@@ -1174,12 +1146,6 @@ const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
 
   const currentOutputId = deviceState.outputId;
   const isRecoveryDfu = isNetworkDfuOutputId(currentOutputId);
-  const recoveryAddress = isRecoveryDfu
-    ? getNetworkDfuAddressFromOutputId(currentOutputId)
-    : null;
-  const reconnectOutputId = isRecoveryDfu
-    ? getWebConfigOutputId(recoveryAddress)
-    : currentOutputId;
   const payload = new Uint8Array(await file.arrayBuffer());
 
   stopDeviceConnectionWatcher();
@@ -1214,25 +1180,7 @@ const startNetworkFirmwareUpdate = async (file: File): Promise<void> => {
     }
 
     disconnectCurrentMidiSession();
-
-    const reconnected = await waitForApplicationReconnect(reconnectOutputId);
-
-    if (!reconnected) {
-      setDfuState(DfuState.Error, {
-        dfuTransport: DfuTransport.Network,
-        dfuError: "Firmware uploaded, but the application did not reconnect.",
-      });
-      return;
-    }
-
-    resetDfuState();
-
-    await router.replace({
-      name: "device",
-      params: {
-        outputId: reconnectOutputId,
-      },
-    });
+    await finishDfuAndReturnHome(DfuTransport.Network);
   } catch (error) {
     logger.error("Network firmware upload failed", error);
     appendDfuStatus(
@@ -1409,6 +1357,19 @@ const loadDeviceInfoDetails = async (): Promise<void> => {
     command: Request.GetBootloaderSupport,
     handler: (bootLoaderSupport: boolean) => setInfo({ bootLoaderSupport }),
   });
+
+  try {
+    await sendMessage({
+      command: Request.GetStagedUpdateSupport,
+      handler: (stagedUpdateSupport: boolean) => {
+        logger.log("Staged update support:", stagedUpdateSupport);
+        setInfo({ stagedUpdateSupport });
+      },
+    });
+  } catch (error) {
+    logger.warn("Failed to read staged update support", error);
+    setInfo({ stagedUpdateSupport: false });
+  }
 };
 
 // Section / Component values

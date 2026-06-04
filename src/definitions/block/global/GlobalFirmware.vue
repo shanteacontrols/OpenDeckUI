@@ -34,8 +34,12 @@
           Bootloader mode
         </Button>
         <p class="help-text">
-          Reboots the board into WebUSB firmware update mode. The configurator
-          will wait for the WebUSB DFU device to appear.
+          <template v-if="transportType === SysExTransportType.WebConfig">
+            Reboots the board into network firmware update mode.
+          </template>
+          <template v-else>
+            Reboots the board into WebUSB firmware update mode.
+          </template>
         </p>
       </div>
 
@@ -44,9 +48,7 @@
           Connect DFU device
         </Button>
         <p class="help-text">
-          Waiting for the WebUSB DFU device. Previously paired DFU devices are
-          connected automatically. Use this button only when the browser needs
-          a first-time WebUSB pairing.
+          Use this button to connect to the device.
         </p>
       </div>
 
@@ -149,6 +151,12 @@ import { computed, defineComponent, ref } from "vue";
 import { deviceStoreMapped } from "../../../store";
 import { IOpenDeckRelease } from "../../interface";
 import { DfuState, DfuTransport, SysExTransportType } from "../../device";
+import { confirmPrompt } from "../../../composables";
+
+const NETWORK_BOOTLOADER_MODE_PROMPT =
+  "The board will reboot into network bootloader mode. Connect using its IP address or default mDNS name. Do not use a custom app mDNS hostname.";
+const WEBUSB_BOOTLOADER_MODE_PROMPT =
+  "The board will reboot into WebUSB bootloader mode. The UI will return to the home page. Open USB firmware update and connect the DFU device when ready.";
 
 export default defineComponent({
   name: "GlobalFirmware",
@@ -157,6 +165,7 @@ export default defineComponent({
       firmwareFileName,
       isBootloaderMode,
       bootLoaderSupport,
+      stagedUpdateSupport,
       startUpdatesCheck,
       isFirmwareUpdateSupported,
       startBootLoaderMode,
@@ -180,6 +189,7 @@ export default defineComponent({
     );
     const showWebUsbConnectButton = computed(
       () =>
+        dfuTransport.value === DfuTransport.WebUsb &&
         [DfuState.WaitingForDfuDevice, DfuState.Error].includes(dfuState.value),
     );
     const showWebUsbInterface = computed(
@@ -195,7 +205,8 @@ export default defineComponent({
       () =>
         (transportType.value === SysExTransportType.WebConfig &&
           dfuState.value === DfuState.Idle &&
-          !isBootloaderMode.value) ||
+          !isBootloaderMode.value &&
+          stagedUpdateSupport.value) ||
         (dfuTransport.value === DfuTransport.Network &&
           [
             DfuState.DfuReady,
@@ -207,7 +218,8 @@ export default defineComponent({
       () =>
         showNormalControls.value &&
         bootLoaderSupport.value &&
-        transportType.value !== SysExTransportType.WebConfig,
+        (transportType.value !== SysExTransportType.WebConfig ||
+          !stagedUpdateSupport.value),
     );
     const isWebUsbBusy = computed(() =>
       [
@@ -237,6 +249,15 @@ export default defineComponent({
         return;
       }
 
+      const prompt =
+        transportType.value === SysExTransportType.WebConfig
+          ? NETWORK_BOOTLOADER_MODE_PROMPT
+          : WEBUSB_BOOTLOADER_MODE_PROMPT;
+
+      if (!(await confirmPrompt(prompt))) {
+        return;
+      }
+
       loading.value = true;
       try {
         await startBootLoaderMode();
@@ -263,6 +284,7 @@ export default defineComponent({
       loading,
       isBootloaderMode,
       bootLoaderSupport,
+      stagedUpdateSupport,
       transportType,
       updatesChecked,
       availableUpdates,

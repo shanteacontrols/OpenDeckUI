@@ -222,7 +222,10 @@ const uploadFirmwareOverSocket = async (
     );
   } catch (error) {
     try {
-      await sendFirmwareCommand(webConfigFirmwareCommandAbort, new Uint8Array());
+      await sendFirmwareCommand(
+        webConfigFirmwareCommandAbort,
+        new Uint8Array(),
+      );
     } catch {
       // Preserve the original upload failure.
     }
@@ -391,7 +394,9 @@ export class NetworkDfuTransport {
       };
       socket.onerror = () => {
         if (!opened) {
-          reject(new Error(`Failed to open Network DFU connection to ${address}`));
+          reject(
+            new Error(`Failed to open Network DFU connection to ${address}`),
+          );
         }
       };
       socket.onclose = () => {

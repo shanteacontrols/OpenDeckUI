@@ -50,6 +50,7 @@ export const defaultState: IDeviceState = {
   boardId: [] as number[],
   isKnownBoard: false,
   bootLoaderSupport: false,
+  stagedUpdateSupport: false,
   firmwareFileName: (null as unknown) as string,
   firmwareVersion: (null as unknown) as string,
   serialNumber: (null as unknown) as string,
