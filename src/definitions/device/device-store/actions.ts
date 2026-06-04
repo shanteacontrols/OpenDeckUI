@@ -113,6 +113,13 @@ const isBlessingRequiredForFirmware = (firmwareVersion: string): boolean => {
   return !!version && semverGte(version, blessingMinimumFirmwareVersion);
 };
 
+const supportsPresetCountRequest = (firmwareVersion: string): boolean => {
+  const version =
+    typeof firmwareVersion === "string" ? semverClean(firmwareVersion) : null;
+
+  return !!version && semverGte(version, "3.1.0");
+};
+
 const isBlessingRequired = (isKnownBoard: boolean): boolean =>
   isBlessingRequiredForFirmware(deviceState.firmwareVersion) || !isKnownBoard;
 
@@ -1347,11 +1354,15 @@ const loadDeviceInfoDetails = async (): Promise<void> => {
     handler: (numberOfComponents: array[]) => setInfo({ numberOfComponents }),
   });
 
-  await sendMessage({
-    command: Request.GetNumberOfSupportedPresets,
-    handler: (supportedPresetsCount: number) =>
-      setInfo({ supportedPresetsCount }),
-  });
+  if (supportsPresetCountRequest(deviceState.firmwareVersion)) {
+    await sendMessage({
+      command: Request.GetNumberOfSupportedPresets,
+      handler: (supportedPresetsCount: number) =>
+        setInfo({ supportedPresetsCount }),
+    });
+  } else {
+    setInfo({ supportedPresetsCount: 1 });
+  }
 
   if (!isBlessingRequiredForFirmware(deviceState.firmwareVersion)) {
     return;
