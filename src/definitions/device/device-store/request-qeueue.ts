@@ -340,11 +340,7 @@ const processEventData = (
   const data = eventDataArray.slice(6, -1);
   const { specialRequestId } = getDefinition(request.command);
 
-  // Trim specialRequestId from data for 2 byte protocol
-  if (
-    ([1, 2].includes(specialRequestId) && data.length) ||
-    (specialRequestId && deviceState.valueSize === 2)
-  ) {
+  if (specialRequestId && data.length) {
     data.shift();
   }
 
