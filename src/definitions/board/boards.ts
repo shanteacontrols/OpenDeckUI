@@ -200,10 +200,34 @@ export const Boards: IBoardDefinition[] = [
     firmwareFileName: "metro_rp2040.dfu.bin",
   },
   {
+    name: "Adafruit Metro RP2040 + W5500 Ethernet Shield",
+    id: [66, 86, 3, 48],
+    oldId: [],
+    firmwareFileName: "metro_rp2040_w5500.dfu.bin",
+  },
+  {
+    name: "Adafruit Metro RP2040 + W6100 Ethernet Shield",
+    id: [125, 78, 107, 44],
+    oldId: [],
+    firmwareFileName: "metro_rp2040_w6100.dfu.bin",
+  },
+  {
     name: "Adafruit Metro ESP32-S3",
     id: [126, 88, 106, 69],
     oldId: [],
     firmwareFileName: "metro_esp32s3.dfu.bin",
+  },
+  {
+    name: "Adafruit Metro ESP32-S3 + W5500 Ethernet Shield",
+    id: [19, 66, 76, 115],
+    oldId: [],
+    firmwareFileName: "metro_esp32s3_w5500.dfu.bin",
+  },
+  {
+    name: "Adafruit Metro ESP32-S3 + W6100 Ethernet Shield",
+    id: [41, 54, 17, 17],
+    oldId: [],
+    firmwareFileName: "metro_esp32s3_w6100.dfu.bin",
   },
   {
     name: "LILYGO T-ETH Elite",
