@@ -7,7 +7,6 @@
 @import "./elements/link";
 @import "./elements/toggle";
 @import "./elements/form-field";
-@import "./elements/scrollbar";
 @import "./components/app";
 @import "./components/device-nav";
 @import "./components/device-blessing-status";

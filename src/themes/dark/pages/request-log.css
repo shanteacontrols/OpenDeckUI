@@ -7,10 +7,16 @@
 /* main */
 
 .request-log-main {
-  @apply overflow-y-scroll;
+  @apply overflow-y-auto border-accent border-b;
   font-size: 1.08rem;
   line-height: 1.45;
   max-height: 500px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.request-log-main::-webkit-scrollbar {
+  display: none;
 }
 
 /* table */
