@@ -340,7 +340,12 @@ const processEventData = (
   const data = eventDataArray.slice(6, -1);
   const { specialRequestId } = getDefinition(request.command);
 
-  if (specialRequestId && data.length) {
+  // Modern 2-byte custom responses embed the special request ID before the
+  // payload. Legacy 1-byte custom responses return only payload bytes.
+  if (
+    ([1, 2].includes(specialRequestId) && data.length) ||
+    (specialRequestId && deviceState.valueSize === 2)
+  ) {
     data.shift();
   }
 

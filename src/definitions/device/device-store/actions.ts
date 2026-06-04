@@ -1531,12 +1531,21 @@ export const getSectionValues = async (
     (sectionDef) => {
       const { key, section } = sectionDef;
 
-      const handler = (res: number[]): void => {
+      const handler = (res: number[]): boolean => {
         if (!settings[key]) {
           settings[key] = [];
         }
         settings[key].push(...res);
-        return false;
+
+        // Modern 2-byte section reads finish on the extra 0x7E ACK handled by
+        // the request queue. Legacy 1-byte reads only stream data parts, so
+        // finish once all expected component values are collected.
+        if (deviceState.valueSize !== 1) {
+          return false;
+        }
+
+        const expectedValues = deviceState.numberOfComponents[block];
+        return expectedValues > 0 && settings[key].length >= expectedValues;
       };
 
       return sendMessage({

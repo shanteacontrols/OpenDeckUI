@@ -273,9 +273,12 @@ export const requestDefinitions: Dictionary<IRequestDefinition> = {
     responseEmbedsRequest: true,
     hasMultiPartResponse: true,
     getPayload: (config: IRequestConfig, state: IDeviceState): number[] => {
+      // Legacy 1-byte protocol uses 0x7F to ask the board to stream all
+      // message parts. Modern 2-byte protocol reserves 0x7E so it can append
+      // an extra ACK response containing the original request.
       const payload = [
         MessageStatus.Request,
-        126, // one extra message containing the copy of the original request will be sent with the status byte ACK
+        state.valueSize === 1 ? 127 : 126,
         Wish.Get,
         Amount.All,
         config.block,

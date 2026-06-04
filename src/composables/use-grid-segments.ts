@@ -47,6 +47,14 @@ export const useGridSegments = (
   numberOfComponents: Ref<Array<number>>,
   block: Ref<number>,
 ): Computed<GridSegment[]> => {
+  // Legacy protocol parsing can temporarily leave firmwareVersion unset or
+  // malformed; semver comparison helpers throw unless the value is valid.
+  const firmwareVersion = computed(() =>
+    typeof deviceState.firmwareVersion === "string"
+      ? semverClean(deviceState.firmwareVersion)
+      : null,
+  );
+
   const switchCount = computed(
     () => numberOfComponents.value[Block.Switch] || 0,
   );
@@ -71,8 +79,9 @@ export const useGridSegments = (
         {
           // Segmentation to digital switches, analog inputs and touchscreen.
           if (
-            semverLt(semverClean(deviceState.firmwareVersion), "5.4.0") ||
-            semverGt(semverClean(deviceState.firmwareVersion), "6.5.0")
+            firmwareVersion.value &&
+            (semverLt(firmwareVersion.value, "5.4.0") ||
+              semverGt(firmwareVersion.value, "6.5.0"))
           ) {
             addSegment(
               segments,
