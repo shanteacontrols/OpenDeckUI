@@ -181,7 +181,7 @@
                     :min="0"
                     :max="255"
                     :name="octet.key"
-                    :disabled="!isConfigBlessed"
+                    :disabled="!isConfigBlessed || isOscFieldDisabled(octet)"
                     @changed="onOscSettingChange($event, octet, onSettingChange)"
                   />
                   <span
@@ -194,6 +194,12 @@
               </div>
               <p class="help-text">
                 Leave 0.0.0.0 to disable this destination.
+              </p>
+              <p
+                v-if="isOscDestinationIpDisabled(destination)"
+                class="error-message text-red-500"
+              >
+                Not supported on this device.
               </p>
             </div>
             <div
@@ -212,12 +218,18 @@
                   :min="destination.port.min"
                   :max="destination.port.max"
                   :name="destination.port.key"
-                  :disabled="!isConfigBlessed"
+                  :disabled="!isConfigBlessed || isOscFieldDisabled(destination.port)"
                   @changed="
                     onOscSettingChange($event, destination.port, onSettingChange)
                   "
                 />
               </div>
+              <p
+                v-if="isOscFieldDisabled(destination.port)"
+                class="error-message text-red-500"
+              >
+                Not supported on this device.
+              </p>
             </div>
           </div>
         </div>
@@ -330,6 +342,13 @@ export default defineComponent({
     const mdnsHostnameError = ref("");
     const mdnsHostnameLoading = ref(false);
 
+    const isOscFieldDisabled = (section: ISectionSetting) =>
+      !!deviceStore.actions.isControlDisabled(section);
+
+    const isOscDestinationIpDisabled = (
+      destination: ReturnType<typeof makeOscDestination>,
+    ) => destination.octets.some(isOscFieldDisabled);
+
     const loadMdnsHostname = async () => {
       mdnsHostnameLoading.value = true;
       mdnsHostnameError.value = "";
@@ -423,6 +442,8 @@ export default defineComponent({
       mdnsHostnameDraft,
       mdnsHostnameError,
       mdnsHostnameLoading,
+      isOscDestinationIpDisabled,
+      isOscFieldDisabled,
       onMdnsHostnameChange,
       onOscSettingChange,
       isConfigBlessed,
