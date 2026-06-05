@@ -63,9 +63,9 @@ export const Boards: IBoardDefinition[] = [
   },
   {
     name: "STM32F4 Discovery",
-    id: [43, 19, 68, 122],
-    oldId: [],
-    firmwareFileName: "discovery.dfu.bin",
+    id: [87, 76, 64, 125],
+    oldId: [43, 19, 68, 122],
+    firmwareFileName: "discovery_f407g.dfu.bin",
   },
   {
     name: "Jamiel",
