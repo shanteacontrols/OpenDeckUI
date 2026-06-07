@@ -21,13 +21,13 @@
             >{{ board.descriptionLinkText }}</a>{{ board.descriptionAfterLink || "" }}
           </p>
 
-          <a
-            v-if="board.action === FlashAction.Download && board.artifactFileName"
-            class="btn mt-6"
-            :href="artifactDownloadUrl(board.artifactFileName)"
-          >
-            Download {{ board.artifactFileName }}
-          </a>
+    <a
+      v-if="board.action === FlashAction.Download && board.artifactFileName"
+      class="btn mt-6"
+      :href="artifactDownloadUrl(board.artifactFileName)"
+    >
+      Download latest firmware
+    </a>
 
           <Button
             v-else-if="isDirectFlashBoard"
@@ -43,12 +43,12 @@
               Download or select the firmware file.
             </p>
             <div class="flash-action-row">
-              <a
-                class="btn btn-sm"
-                :href="artifactDownloadUrl(board.artifactFileName)"
-              >
-                Download latest binary
-              </a>
+          <a
+            class="btn btn-sm"
+            :href="artifactDownloadUrl(board.artifactFileName)"
+          >
+            Download latest firmware
+          </a>
               <label class="btn btn-sm">
                 Select file
                 <input
