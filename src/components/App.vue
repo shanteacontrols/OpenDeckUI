@@ -175,8 +175,10 @@ export default defineComponent({
       transportType,
     } = deviceStoreMapped;
 
-    const isHomePage = computed(
-      () => router.currentRoute.value.name === "home",
+    const isHomePage = computed(() =>
+      ["home", "device-flashing", "device-flashing-board"].includes(
+        router.currentRoute.value.name as string,
+      ),
     );
     const isDeviceRoute = computed(
       () => router.currentRoute.value.name !== "home",

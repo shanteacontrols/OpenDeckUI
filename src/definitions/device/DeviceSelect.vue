@@ -4,40 +4,61 @@
     custom="py-12 flex-col"
   >
     <h3 class="mb-8">No OpenDeck USB MIDI device found.</h3>
-    <div class="grid gap-4 md:grid-cols-2 max-w-3xl mx-auto">
-      <div class="surface-neutral border px-8 py-6 rounded text-center">
+    <div class="grid gap-4 md:grid-cols-3 max-w-5xl mx-auto">
+      <div class="surface-neutral device-select-card">
         <h2 class="font-bold mb-4">Connect via network</h2>
-        <p class="mb-4 text-sm leading-6">
-          Use this for configuration or DFU.
-        </p>
         <form
-          class="flex flex-col items-center"
+          class="device-select-card-form"
           @submit.prevent="connectNetwork"
         >
-          <label class="block text-center mb-4">
-            <span class="block text-sm mb-2">Network address</span>
-            <input
-              v-model="networkAddress"
-              class="form-input py-1 text-sm block w-48 text-center"
-              placeholder="Device IP address"
-            />
-          </label>
-          <button class="btn" type="submit" :disabled="networkConnecting">
-            {{ networkConnecting ? "Connecting" : "Connect" }}
-          </button>
+          <div class="device-select-card-body">
+            <p class="mb-4 text-sm leading-6">
+              Use this for configuration or DFU.
+            </p>
+            <label class="block text-center">
+              <span class="block text-sm mb-2">Network address</span>
+              <input
+                v-model="networkAddress"
+                class="form-input py-1 text-sm block w-48 text-center"
+                placeholder="Device IP address"
+              />
+            </label>
+          </div>
+          <div class="device-select-card-action">
+            <button class="btn" type="submit" :disabled="networkConnecting">
+              {{ networkConnecting ? "Connecting" : "Connect" }}
+            </button>
+          </div>
         </form>
       </div>
-      <div class="surface-neutral border px-8 py-6 rounded text-center">
+      <div class="surface-neutral device-select-card">
         <h2 class="font-bold mb-4">USB firmware update</h2>
-        <p class="mb-4 text-sm leading-6">
-          Use this when the board is already in USB DFU mode.
-        </p>
-        <router-link
-          :to="{ name: 'device-firmware-update', params: { outputId: webUsbDfuVirtualOutputId } }"
-          class="btn"
-        >
-          Open USB Firmware Update
-        </router-link>
+        <div class="device-select-card-body">
+          <p class="text-sm leading-6">
+            Use this when the board is already in USB DFU mode.
+          </p>
+        </div>
+        <div class="device-select-card-action">
+          <router-link
+            :to="{ name: 'device-firmware-update', params: { outputId: webUsbDfuVirtualOutputId } }"
+            class="btn"
+          >
+            Open USB Firmware Update
+          </router-link>
+        </div>
+      </div>
+      <div class="surface-neutral device-select-card">
+        <h2 class="font-bold mb-4">Device flashing</h2>
+        <div class="device-select-card-body">
+          <p class="text-sm leading-6">
+            Use this when the board is not running OpenDeck firmware yet.
+          </p>
+        </div>
+        <div class="device-select-card-action">
+          <router-link :to="{ name: 'device-flashing' }" class="btn">
+            Open board picker
+          </router-link>
+        </div>
       </div>
     </div>
   </Hero>
@@ -176,3 +197,22 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.device-select-card {
+  @apply border px-8 py-6 rounded text-center flex flex-col;
+  min-height: 17rem;
+}
+
+.device-select-card-form {
+  @apply flex flex-col items-center flex-1;
+}
+
+.device-select-card-body {
+  @apply flex flex-col items-center justify-center flex-1;
+}
+
+.device-select-card-action {
+  @apply mt-auto flex justify-center;
+}
+</style>
