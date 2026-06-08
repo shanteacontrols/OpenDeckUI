@@ -64,13 +64,30 @@
   </Hero>
   <Hero
     v-else-if="outputs.length > 1"
-    custom="h-64"
-    title="Multiple OpenDeck boards detected. Please connect one board at the time in
-      order to use configurator, or enter a network address."
+    custom="py-24"
+    title="Multiple OpenDeck MIDI devices found."
   >
-    <div class="surface-neutral border px-8 py-6 rounded inline-block">
-      <form class="flex items-end gap-3" @submit.prevent="connectNetwork">
-        <label class="block text-left">
+    <div class="surface-neutral border px-8 pt-6 rounded inline-block">
+      <router-link
+        v-for="(output, idx) in outputs"
+        :key="output.id"
+        :to="{ name: 'device', params: { outputId: output.id } }"
+        class="block mb-6 cursor-pointer"
+        :class="{
+          'rounded-t': idx === 0,
+          'rounded-b': idx === outputs.length - 1,
+          'border-gray-400 border-b': idx < outputs.length - 1,
+        }"
+      >
+        <span>{{ output.manufacturer || "unknown manufacturer" }}</span>
+        <br />
+        <strong>{{ output.name }}</strong>
+      </router-link>
+      <form
+        class="border-gray-400 border-t pt-6 pb-6 flex items-end gap-3"
+        @submit.prevent="connectNetwork"
+      >
+        <label class="block">
           <span class="block text-sm mb-2">Network address</span>
             <input
               v-model="networkAddress"
