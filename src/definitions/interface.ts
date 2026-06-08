@@ -265,8 +265,7 @@ export interface IRequestDefinition {
 
 export interface IBoardDefinition {
   name: string;
-  id: number[];
-  oldId?: number[];
+  ids: number[][];
   firmwareFileName?: string;
 }
 

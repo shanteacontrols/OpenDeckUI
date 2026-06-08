@@ -1,10 +1,10 @@
 import { Boards } from "./boards";
 import { arrayEqual } from "../../util";
+import { IBoardDefinition } from "../interface";
 
 export const getBoardDefinition = (value: number[]): IBoardDefinition => {
-  const board = Boards.find(
-    (b: any) =>
-      arrayEqual(b.id, value) || (b.oldId && arrayEqual(b.oldId, value)),
+  const board = Boards.find((b: any) =>
+    b.ids.some((id: number[]) => arrayEqual(id, value)),
   );
 
   return board;
