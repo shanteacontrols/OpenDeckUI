@@ -111,15 +111,29 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "Alternate MIDI note Display",
     helpText: `If enabled, MIDI note data will be displayed in note-key format (ie. C#4). If disabled, MIDI note number will be displayed instead.`,
   },
-  EnableApds9960Proximity: {
+  Apds9960ProximityGestureMode: {
     block: Block.Display,
-    key: "enableApds9960Proximity",
+    key: "apds9960ProximityGestureMode",
     type: SectionType.Setting,
     section: 1,
     settingIndex: 0,
-    component: FormInputComponent.Toggle,
-    label: "Proximity",
-    helpText: `Enables or disables APDS9960 proximity OSC output.`,
+    component: FormInputComponent.Select,
+    options: [
+      {
+        value: 0,
+        text: "Disabled",
+      },
+      {
+        value: 1,
+        text: "Proximity",
+      },
+      {
+        value: 2,
+        text: "Gesture",
+      },
+    ],
+    label: "Proximity/gesture mode",
+    helpText: `Selects the APDS9960 proximity or gesture OSC output mode. These modes cannot be active at the same time.`,
   },
   EnableApds9960AmbientLight: {
     block: Block.Display,
@@ -141,24 +155,14 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "RGB",
     helpText: `Enables or disables APDS9960 RGB OSC output.`,
   },
-  EnableApds9960Gesture: {
-    block: Block.Display,
-    key: "enableApds9960Gesture",
-    type: SectionType.Setting,
-    section: 1,
-    settingIndex: 3,
-    component: FormInputComponent.Toggle,
-    label: "Gesture",
-    helpText: `Enables or disables APDS9960 gesture OSC output.`,
-  },
   Apds9960ProximityGain: {
     showIf: (formState: FormState): boolean =>
-      formState.enableApds9960Proximity || formState.enableApds9960Gesture,
+      formState.apds9960ProximityGestureMode !== 0,
     block: Block.Display,
     key: "apds9960ProximityGain",
     type: SectionType.Setting,
     section: 1,
-    settingIndex: 4,
+    settingIndex: 3,
     component: FormInputComponent.Select,
     options: [
       {
@@ -188,7 +192,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "apds9960AlsGain",
     type: SectionType.Setting,
     section: 1,
-    settingIndex: 5,
+    settingIndex: 4,
     component: FormInputComponent.Select,
     options: [
       {
@@ -211,23 +215,62 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "Ambient/RGB gain",
     helpText: `Higher gain makes ambient light and RGB values larger; lower gain keeps bright readings from maxing out.`,
   },
-  EnableVl53l4cxDistance: {
+  Apds9960ProximityLowerValue: {
+    showIf: (formState: FormState): boolean =>
+      formState.apds9960ProximityGestureMode !== 0,
     block: Block.Display,
-    key: "enableVl53l4cxDistance",
+    key: "apds9960ProximityLowerValue",
+    type: SectionType.Setting,
+    section: 1,
+    settingIndex: 5,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 255,
+    label: "Lower proximity value",
+    helpText: `Raw APDS9960 proximity value that maps to OSC value 0.`,
+  },
+  Apds9960ProximityUpperValue: {
+    showIf: (formState: FormState): boolean =>
+      formState.apds9960ProximityGestureMode !== 0,
+    block: Block.Display,
+    key: "apds9960ProximityUpperValue",
+    type: SectionType.Setting,
+    section: 1,
+    settingIndex: 6,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 255,
+    label: "Upper proximity value",
+    helpText: `Raw APDS9960 proximity value that maps to OSC value 255.`,
+  },
+  EnableVl53l4cxDistanceMm: {
+    block: Block.Display,
+    key: "enableVl53l4cxDistanceMm",
     type: SectionType.Setting,
     section: 2,
     settingIndex: 0,
     component: FormInputComponent.Toggle,
-    label: "Distance",
-    helpText: `Enables or disables VL53L4CX distance output.`,
+    label: "Distance mm",
+    helpText: `Publishes raw VL53L4CX distance readings in millimeters.`,
+  },
+  EnableVl53l4cxDistanceNorm: {
+    block: Block.Display,
+    key: "enableVl53l4cxDistanceNorm",
+    type: SectionType.Setting,
+    section: 2,
+    settingIndex: 1,
+    component: FormInputComponent.Toggle,
+    label: "Distance normalized",
+    helpText: `Publishes calibrated VL53L4CX distance readings as normalized OSC values.`,
   },
   Vl53l4cxTrackingArea: {
-    showIf: (formState: FormState): boolean => formState.enableVl53l4cxDistance,
+    showIf: (formState: FormState): boolean =>
+      formState.enableVl53l4cxDistanceMm || formState.enableVl53l4cxDistanceNorm,
     block: Block.Display,
     key: "vl53l4cxTrackingArea",
     type: SectionType.Setting,
     section: 2,
-    settingIndex: 1,
+    settingIndex: 2,
     component: FormInputComponent.Select,
     options: [
       {
@@ -251,12 +294,13 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: `Smaller areas focus on the center; larger areas watch more of the sensor view.`,
   },
   Vl53l4cxResponse: {
-    showIf: (formState: FormState): boolean => formState.enableVl53l4cxDistance,
+    showIf: (formState: FormState): boolean =>
+      formState.enableVl53l4cxDistanceMm || formState.enableVl53l4cxDistanceNorm,
     block: Block.Display,
     key: "vl53l4cxResponse",
     type: SectionType.Setting,
     section: 2,
-    settingIndex: 2,
+    settingIndex: 3,
     component: FormInputComponent.Select,
     options: [
       {
@@ -276,12 +320,13 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: `Fast updates more often; Stable spends longer measuring before each distance value.`,
   },
   Vl53l4cxDistanceMode: {
-    showIf: (formState: FormState): boolean => formState.enableVl53l4cxDistance,
+    showIf: (formState: FormState): boolean =>
+      formState.enableVl53l4cxDistanceMm || formState.enableVl53l4cxDistanceNorm,
     block: Block.Display,
     key: "vl53l4cxDistanceMode",
     type: SectionType.Setting,
     section: 2,
-    settingIndex: 3,
+    settingIndex: 4,
     component: FormInputComponent.Select,
     options: [
       {
@@ -295,6 +340,32 @@ export const sections: Dictionary<ISectionDefinition> = {
     ],
     label: "Distance mode",
     helpText: `Medium is the normal range mode; Long is tuned for farther targets.`,
+  },
+  Vl53l4cxDistanceLowerValue: {
+    showIf: (formState: FormState): boolean => formState.enableVl53l4cxDistanceNorm,
+    block: Block.Display,
+    key: "vl53l4cxDistanceLowerValue",
+    type: SectionType.Setting,
+    section: 2,
+    settingIndex: 5,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 6000,
+    label: "Distance normalized input min",
+    helpText: `VL53L4CX reading in millimeters that maps to normalized OSC value 0.`,
+  },
+  Vl53l4cxDistanceUpperValue: {
+    showIf: (formState: FormState): boolean => formState.enableVl53l4cxDistanceNorm,
+    block: Block.Display,
+    key: "vl53l4cxDistanceUpperValue",
+    type: SectionType.Setting,
+    section: 2,
+    settingIndex: 6,
+    component: FormInputComponent.Input,
+    min: 0,
+    max: 6000,
+    label: "Distance normalized input max",
+    helpText: `VL53L4CX reading in millimeters that maps to normalized OSC value 1.`,
   },
   Cap1188Sensitivity: {
     block: Block.Display,

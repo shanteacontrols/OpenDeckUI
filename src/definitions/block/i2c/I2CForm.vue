@@ -38,8 +38,8 @@
       <Section title="APDS-9960">
         <div class="form-grid">
           <FormField
-            :value="form.enableApds9960Proximity"
-            :field-definition="sections.EnableApds9960Proximity"
+            :value="form.apds9960ProximityGestureMode"
+            :field-definition="sections.Apds9960ProximityGestureMode"
             @modified="onSettingChange"
           />
           <FormField
@@ -65,8 +65,15 @@
             @modified="onSettingChange"
           />
           <FormField
-            :value="form.enableApds9960Gesture"
-            :field-definition="sections.EnableApds9960Gesture"
+            v-if="showField(sections.Apds9960ProximityLowerValue)"
+            :value="form.apds9960ProximityLowerValue"
+            :field-definition="sections.Apds9960ProximityLowerValue"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Apds9960ProximityUpperValue)"
+            :value="form.apds9960ProximityUpperValue"
+            :field-definition="sections.Apds9960ProximityUpperValue"
             @modified="onSettingChange"
           />
         </div>
@@ -74,8 +81,13 @@
       <Section title="VL53L4CX">
         <div class="form-grid">
           <FormField
-            :value="form.enableVl53l4cxDistance"
-            :field-definition="sections.EnableVl53l4cxDistance"
+            :value="form.enableVl53l4cxDistanceMm"
+            :field-definition="sections.EnableVl53l4cxDistanceMm"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableVl53l4cxDistanceNorm"
+            :field-definition="sections.EnableVl53l4cxDistanceNorm"
             @modified="onSettingChange"
           />
           <FormField
@@ -94,6 +106,18 @@
             v-if="showField(sections.Vl53l4cxDistanceMode)"
             :value="form.vl53l4cxDistanceMode"
             :field-definition="sections.Vl53l4cxDistanceMode"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Vl53l4cxDistanceLowerValue)"
+            :value="form.vl53l4cxDistanceLowerValue"
+            :field-definition="sections.Vl53l4cxDistanceLowerValue"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Vl53l4cxDistanceUpperValue)"
+            :value="form.vl53l4cxDistanceUpperValue"
+            :field-definition="sections.Vl53l4cxDistanceUpperValue"
             @modified="onSettingChange"
           />
         </div>
