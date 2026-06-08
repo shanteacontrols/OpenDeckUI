@@ -96,6 +96,7 @@ export const Boards: IBoardDefinition[] = [
     name: "OpenDeck M v1",
     ids: [
       [1, 112, 51, 106],
+      [1, 91, 42, 85],
       [0, 1, 2, 0],
     ],
     firmwareFileName: null,
