@@ -75,10 +75,35 @@ const getOpenDeckOutputs = (): Array<Output> =>
       output.name.includes("OpenDeck") && !output.name.includes("OpenDeck DFU"),
   );
 
+const normalizedOpenDeckEndpointName = (name: string): string =>
+  name
+    .replace(/\s+MIDI 2\.0$/i, "")
+    .replace(/\s+Block \d+$/i, "")
+    .trim();
+
+const isMidi2Endpoint = (output: Output): boolean =>
+  /(^|\s)MIDI 2\.0$/i.test(output.name);
+
+const dedupeOpenDeckOutputs = (outputs: Array<Output>): Array<Output> => {
+  const nonMidi2Names = new Set(
+    outputs
+      .filter((output: Output) => !isMidi2Endpoint(output))
+      .map((output: Output) => normalizedOpenDeckEndpointName(output.name)),
+  );
+
+  return outputs.filter((output: Output) => {
+    if (!isMidi2Endpoint(output)) {
+      return true;
+    }
+
+    return !nonMidi2Names.has(normalizedOpenDeckEndpointName(output.name));
+  });
+};
+
 export const assignInputs = async (): Promise<void> => {
   const inputs = getOpenDeckInputs();
   const outputs = getOpenDeckOutputs();
-  const availableOutputs = [];
+  const availableOutputs = [] as Array<Output>;
 
   for (const output of outputs) {
     const matchingInputs = inputs.filter(
@@ -98,7 +123,7 @@ export const assignInputs = async (): Promise<void> => {
   }
 
   midiState.inputs = inputs;
-  midiState.outputs = availableOutputs;
+  midiState.outputs = dedupeOpenDeckOutputs(availableOutputs);
 };
 
 // Actions
