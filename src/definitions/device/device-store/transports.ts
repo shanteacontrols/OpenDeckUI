@@ -1,4 +1,13 @@
 import { Input, InputEventBase, Output } from "webmidi";
+import {
+  buildFirmwareUploadFrame,
+  firmwareUploadAck,
+  firmwareUploadCommandAbort,
+  firmwareUploadCommandBegin,
+  firmwareUploadCommandChunk,
+  firmwareUploadCommandFinish,
+  firmwareUploadStatusOk,
+} from "./firmware-upload";
 
 export enum SysExTransportType {
   Midi = "midi",
@@ -123,12 +132,6 @@ const probeWebSocket = (url: string): Promise<boolean> =>
   });
 
 const webConfigFirmwareChunkSize = 2048;
-const webConfigNativeResponseFirmwareAck = 0x81;
-const webConfigFirmwareCommandBegin = 0x01;
-const webConfigFirmwareCommandChunk = 0x02;
-const webConfigFirmwareCommandFinish = 0x03;
-const webConfigFirmwareCommandAbort = 0x04;
-const webConfigFirmwareStatusOk = 0x00;
 const webConfigFirmwareAckTimeoutMs = 30000;
 
 const bytesToUint32 = (data: Uint8Array, offset: number): number =>
@@ -160,7 +163,7 @@ const uploadFirmwareOverSocket = async (
       setAckHandler((response: Uint8Array) => {
         if (
           response.length < 7 ||
-          response[0] !== webConfigNativeResponseFirmwareAck ||
+          response[0] !== firmwareUploadAck ||
           response[1] !== command
         ) {
           return;
@@ -172,7 +175,7 @@ const uploadFirmwareOverSocket = async (
         const status = response[2];
         const bytesWritten = bytesToUint32(response, 3);
 
-        if (status !== webConfigFirmwareStatusOk) {
+        if (status !== firmwareUploadStatusOk) {
           reject(
             new Error(
               `${errorPrefix} firmware command 0x${command.toString(
@@ -190,15 +193,12 @@ const uploadFirmwareOverSocket = async (
         resolve();
       });
 
-      const frame = new Uint8Array(1 + commandPayload.length);
-      frame[0] = command;
-      frame.set(commandPayload, 1);
-      socket.send(frame);
+      socket.send(buildFirmwareUploadFrame(command, commandPayload));
     });
 
   try {
     await sendFirmwareCommand(
-      webConfigFirmwareCommandBegin,
+      firmwareUploadCommandBegin,
       new Uint8Array(),
       onProgress,
     );
@@ -209,23 +209,20 @@ const uploadFirmwareOverSocket = async (
       offset += webConfigFirmwareChunkSize
     ) {
       await sendFirmwareCommand(
-        webConfigFirmwareCommandChunk,
+        firmwareUploadCommandChunk,
         payload.subarray(offset, offset + webConfigFirmwareChunkSize),
         onProgress,
       );
     }
 
     await sendFirmwareCommand(
-      webConfigFirmwareCommandFinish,
+      firmwareUploadCommandFinish,
       new Uint8Array(),
       onProgress,
     );
   } catch (error) {
     try {
-      await sendFirmwareCommand(
-        webConfigFirmwareCommandAbort,
-        new Uint8Array(),
-      );
+      await sendFirmwareCommand(firmwareUploadCommandAbort, new Uint8Array());
     } catch {
       // Preserve the original upload failure.
     }

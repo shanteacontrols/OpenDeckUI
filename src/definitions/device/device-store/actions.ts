@@ -50,6 +50,13 @@ import {
   detachMidiEventHandlers,
 } from "./midi-event-handlers";
 import {
+  buildFirmwareUploadFrame,
+  firmwareUploadCommandBegin,
+  firmwareUploadCommandChunk,
+  firmwareUploadCommandFinish,
+  firmwareUploadChunkFrameOverhead,
+} from "./firmware-upload";
+import {
   BLESSING_ACCESS_CONTACT_MESSAGE,
   BLESSING_CONFIG_FEATURE,
   buildConfigUnlockToken,
@@ -71,6 +78,8 @@ const devicePollIntervalMs = 250;
 const heartbeatIntervalMs = 2000;
 const heartbeatTimeoutMs = 2500;
 const dfuChunkSize = 64;
+const webUsbFirmwareChunkPayloadSize =
+  dfuChunkSize - firmwareUploadChunkFrameOverhead;
 const webUsbFinalizeTimeoutMs = 5000;
 const opendeckUsbVendorId = 0x1209;
 const opendeckWebUsbDfuProductId = 0x8474;
@@ -1064,14 +1073,36 @@ const startFirmwareUpdate = async (
   appendDfuStatus(`File size: ${payload.length} bytes`);
 
   try {
-    for (let offset = 0; offset < payload.length; offset += dfuChunkSize) {
-      const chunk = payload.slice(offset, offset + dfuChunkSize);
+    await activeDfuDevice.transferOut(
+      activeDfuOutEndpoint,
+      buildFirmwareUploadFrame(firmwareUploadCommandBegin),
+    );
+
+    for (
+      let offset = 0;
+      offset < payload.length;
+      offset += webUsbFirmwareChunkPayloadSize
+    ) {
+      const chunkPayload = payload.slice(
+        offset,
+        offset + webUsbFirmwareChunkPayloadSize,
+      );
+      const chunk = buildFirmwareUploadFrame(
+        firmwareUploadCommandChunk,
+        chunkPayload,
+      );
+
       await activeDfuDevice.transferOut(activeDfuOutEndpoint, chunk);
       deviceState.dfuProgress = Math.max(
         1,
-        Math.floor(((offset + chunk.length) / payload.length) * 100),
+        Math.floor(((offset + chunkPayload.length) / payload.length) * 100),
       );
     }
+
+    await activeDfuDevice.transferOut(
+      activeDfuOutEndpoint,
+      buildFirmwareUploadFrame(firmwareUploadCommandFinish),
+    );
 
     appendDfuStatus("Upload transfer complete");
     appendDfuStatus("Waiting for device-side finalize messages");
