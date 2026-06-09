@@ -131,6 +131,35 @@
           />
         </div>
       </Section>
+      <Section title="BNO085">
+        <div class="form-grid">
+          <FormField
+            :value="form.enableBno085Quaternion"
+            :field-definition="sections.EnableBno085Quaternion"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085Euler"
+            :field-definition="sections.EnableBno085Euler"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085Gyroscope"
+            :field-definition="sections.EnableBno085Gyroscope"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085LinearAcceleration"
+            :field-definition="sections.EnableBno085LinearAcceleration"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085Gravity"
+            :field-definition="sections.EnableBno085Gravity"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
     </template>
   </DeviceSettings>
 </template>
