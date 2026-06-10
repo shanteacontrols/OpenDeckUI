@@ -18,10 +18,6 @@ export interface ISysExEvent {
   data: Uint8Array;
 }
 
-export interface IOscEvent {
-  data: Uint8Array;
-}
-
 export type FirmwareProgressHandler = (bytesWritten: number) => void;
 
 export interface ISysExTransport {
@@ -29,7 +25,6 @@ export interface ISysExTransport {
   name: string;
   type: SysExTransportType;
   onSysEx(handler: (event: ISysExEvent) => void): void;
-  onOsc?(handler: (event: IOscEvent) => void): void;
   uploadFirmware?(
     payload: Uint8Array,
     onProgress?: FirmwareProgressHandler,
@@ -65,9 +60,12 @@ const normalizeWebSocketUrl = (address: string, path: string): string => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
   if (isExplicitWebSocketUrl) {
-    return trimmed.endsWith(normalizedPath)
-      ? trimmed
-      : `${trimmed.replace(/\/$/, "")}${normalizedPath}`;
+    const url = new URL(trimmed);
+    url.pathname = normalizedPath;
+    url.search = "";
+    url.hash = "";
+
+    return url.toString();
   }
 
   const host = trimmed.includes(":") ? trimmed : `${trimmed}:80`;
@@ -267,13 +265,14 @@ export class WebConfigSysExTransport implements ISysExTransport {
   public readonly name: string;
   public readonly type = SysExTransportType.WebConfig;
 
+  private readonly address: string;
   private readonly socket: WebSocket;
-  private oscHandler: (event: IOscEvent) => void = null;
   private nativeHandler: (data: Uint8Array) => void = null;
 
   private constructor(address: string, socket: WebSocket) {
     this.id = getWebConfigOutputId(address);
     this.name = `WebConfig ${address}`;
+    this.address = address;
     this.socket = socket;
   }
 
@@ -318,15 +317,7 @@ export class WebConfigSysExTransport implements ISysExTransport {
         }
         return;
       }
-
-      if (this.oscHandler) {
-        this.oscHandler({ data });
-      }
     };
-  }
-
-  public onOsc(handler: (event: IOscEvent) => void): void {
-    this.oscHandler = handler;
   }
 
   public sendSysex(manufacturerId: number[], payload: number[]): void {

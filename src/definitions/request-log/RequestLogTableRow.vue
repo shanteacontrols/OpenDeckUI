@@ -25,10 +25,6 @@
         v-else-if="logEntry.type === LogType.Midi"
         :log-entry="logEntry"
       />
-      <LogOsc
-        v-else-if="logEntry.type === LogType.Osc"
-        :log-entry="logEntry"
-      />
     </td>
   </tr>
 </template>
@@ -37,7 +33,6 @@
 import { defineComponent } from "vue";
 import { LogType, ILogEntry } from "./request-log-store";
 import LogMidi from "./LogMidi.vue";
-import LogOsc from "./LogOsc.vue";
 import LogRequest from "./LogRequest.vue";
 import LogInfo from "./LogInfo.vue";
 import LogError from "./LogError.vue";
@@ -47,7 +42,6 @@ export default defineComponent({
   name: "RequestLogTableRow",
   components: {
     LogMidi,
-    LogOsc,
     LogRequest,
     LogInfo,
     LogError,

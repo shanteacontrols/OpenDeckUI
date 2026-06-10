@@ -2,7 +2,6 @@ import { reactive } from "vue";
 import { ILogEntryError } from "./log-type-error";
 import { ILogEntryRequest } from "./log-type-request";
 import { ILogEntryMidi } from "./log-type-midi";
-import { ILogEntryOsc } from "./log-type-osc";
 import { ILogEntryInfo } from "./log-type-info";
 import { ILogEntrySystem } from "./log-type-system";
 import { Block } from "../../interface";
@@ -12,14 +11,12 @@ export enum LogType {
   System = "system",
   Info = "info",
   Midi = "midi",
-  Osc = "osc",
   Request = "request",
   Error = "error",
 }
 
 export enum LogFilter {
   Midi = "midi",
-  Osc = "osc",
   System = "system",
 }
 
@@ -35,7 +32,6 @@ export type ILogEntry =
   | ILogEntrySystem
   | ILogEntryError
   | ILogEntryMidi
-  | ILogEntryOsc
   | ILogEntryInfo
   | ILogEntryRequest;
 
@@ -45,7 +41,6 @@ type blockHighlights = Record<number, number>;
 
 const defaultLogFilter: Record<string, boolean> = {
   [LogFilter.Midi]: true,
-  [LogFilter.Osc]: true,
 };
 
 const highlights: Record<Block, blockHighlights> = {};

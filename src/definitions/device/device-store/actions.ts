@@ -803,7 +803,6 @@ export const connectDeviceStoreToInput = async (
     resetBlessingState();
 
     transport.onSysEx(handleSysExEvent);
-    transport.onOsc(requestLog.actions.addOsc);
     resetDfuState();
     deviceState.lastApplicationOutputName = transport.name;
 

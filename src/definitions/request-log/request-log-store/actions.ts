@@ -2,7 +2,6 @@ import { state, ILogEntry, LogType, LogFilter } from "./state";
 import { addError } from "./log-type-error";
 import { addRequest } from "./log-type-request";
 import { addMidi } from "./log-type-midi";
-import { addOsc } from "./log-type-osc";
 import { addInfo } from "./log-type-info";
 import { addSystem } from "./log-type-system";
 import { saveToStorage, formatDate } from "../../../util";
@@ -84,8 +83,6 @@ export const addBuffered = (logEntry: ILogEntry): void => {
   const skipLogging =
     type === LogType.Midi
       ? !state.logFilter[LogFilter.Midi]
-      : type === LogType.Osc
-      ? !state.logFilter[LogFilter.Osc]
       : !state.logFilter[LogFilter.System];
 
   if (!state.showRequestLog || skipLogging) {
@@ -123,7 +120,6 @@ export const requestLogActions = {
   addInfo,
   addError,
   addMidi,
-  addOsc,
   toggleLogFilter,
   toggleLog,
   toggleHexValues,
