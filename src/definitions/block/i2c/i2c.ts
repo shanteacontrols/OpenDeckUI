@@ -395,6 +395,37 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "Distance normalized",
     helpText: `Publishes calibrated VL53L4CX distance readings as normalized OSC values.`,
   },
+  Vl53l4cxSmoothing: {
+    showIf: (formState: FormState): boolean =>
+      formState.enableVl53l4cxDistanceMm ||
+      formState.enableVl53l4cxDistanceNorm,
+    block: Block.Display,
+    key: "vl53l4cxSmoothing",
+    type: SectionType.Setting,
+    section: 4,
+    settingIndex: 2,
+    component: FormInputComponent.Select,
+    options: [
+      {
+        value: 0,
+        text: "Off",
+      },
+      {
+        value: 1,
+        text: "Light",
+      },
+      {
+        value: 2,
+        text: "Medium",
+      },
+      {
+        value: 3,
+        text: "Heavy",
+      },
+    ],
+    label: "Smoothing",
+    helpText: `Applies distance smoothing before VL53L4CX OSC values are published.`,
+  },
   Vl53l4cxTrackingArea: {
     showIf: (formState: FormState): boolean =>
       formState.enableVl53l4cxDistanceMm ||
@@ -403,7 +434,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxTrackingArea",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 2,
+    settingIndex: 3,
     component: FormInputComponent.Select,
     options: [
       {
@@ -434,7 +465,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxResponse",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 3,
+    settingIndex: 4,
     component: FormInputComponent.Select,
     options: [
       {
@@ -461,7 +492,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxDistanceMode",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 4,
+    settingIndex: 5,
     component: FormInputComponent.Select,
     options: [
       {
@@ -483,7 +514,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxDistanceLowerValue",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 5,
+    settingIndex: 6,
     component: FormInputComponent.Input,
     min: 0,
     max: 6000,
@@ -497,7 +528,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxDistanceUpperValue",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 6,
+    settingIndex: 7,
     component: FormInputComponent.Input,
     min: 0,
     max: 6000,

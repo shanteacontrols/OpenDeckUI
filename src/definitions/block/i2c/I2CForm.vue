@@ -147,6 +147,12 @@
             @modified="onSettingChange"
           />
           <FormField
+            v-if="showField(sections.Vl53l4cxSmoothing)"
+            :value="form.vl53l4cxSmoothing"
+            :field-definition="sections.Vl53l4cxSmoothing"
+            @modified="onSettingChange"
+          />
+          <FormField
             v-if="showField(sections.Vl53l4cxTrackingArea)"
             :value="form.vl53l4cxTrackingArea"
             :field-definition="sections.Vl53l4cxTrackingArea"
