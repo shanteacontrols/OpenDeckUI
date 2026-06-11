@@ -159,12 +159,6 @@
             @modified="onSettingChange"
           />
           <FormField
-            v-if="showField(sections.Vl53l4cxResponse)"
-            :value="form.vl53l4cxResponse"
-            :field-definition="sections.Vl53l4cxResponse"
-            @modified="onSettingChange"
-          />
-          <FormField
             v-if="showField(sections.Vl53l4cxDistanceMode)"
             :value="form.vl53l4cxDistanceMode"
             :field-definition="sections.Vl53l4cxDistanceMode"

@@ -457,33 +457,6 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "Tracking area",
     helpText: `Smaller areas focus on the center; larger areas watch more of the sensor view.`,
   },
-  Vl53l4cxResponse: {
-    showIf: (formState: FormState): boolean =>
-      formState.enableVl53l4cxDistanceMm ||
-      formState.enableVl53l4cxDistanceNorm,
-    block: Block.Display,
-    key: "vl53l4cxResponse",
-    type: SectionType.Setting,
-    section: 4,
-    settingIndex: 4,
-    component: FormInputComponent.Select,
-    options: [
-      {
-        value: 0,
-        text: "Fast",
-      },
-      {
-        value: 1,
-        text: "Balanced",
-      },
-      {
-        value: 2,
-        text: "Stable",
-      },
-    ],
-    label: "Response",
-    helpText: `Fast updates more often; Stable spends longer measuring before each distance value.`,
-  },
   Vl53l4cxDistanceMode: {
     showIf: (formState: FormState): boolean =>
       formState.enableVl53l4cxDistanceMm ||
@@ -492,7 +465,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxDistanceMode",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 5,
+    settingIndex: 4,
     component: FormInputComponent.Select,
     options: [
       {
@@ -514,7 +487,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxDistanceLowerValue",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 6,
+    settingIndex: 5,
     component: FormInputComponent.Input,
     min: 0,
     max: 6000,
@@ -528,7 +501,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     key: "vl53l4cxDistanceUpperValue",
     type: SectionType.Setting,
     section: 4,
-    settingIndex: 7,
+    settingIndex: 6,
     component: FormInputComponent.Input,
     min: 0,
     max: 6000,
