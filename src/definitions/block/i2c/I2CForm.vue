@@ -43,9 +43,15 @@
             @modified="onSettingChange"
           />
           <FormField
-            v-if="showField(sections.Apds9960ProximityGain)"
-            :value="form.apds9960ProximityGain"
-            :field-definition="sections.Apds9960ProximityGain"
+            v-if="showField(sections.InvertApds9960GestureX)"
+            :value="form.invertApds9960GestureX"
+            :field-definition="sections.InvertApds9960GestureX"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.InvertApds9960GestureY)"
+            :value="form.invertApds9960GestureY"
+            :field-definition="sections.InvertApds9960GestureY"
             @modified="onSettingChange"
           />
           <FormField
@@ -56,6 +62,12 @@
           <FormField
             :value="form.enableApds9960Rgb"
             :field-definition="sections.EnableApds9960Rgb"
+            @modified="onSettingChange"
+          />
+          <FormField
+            v-if="showField(sections.Apds9960ProximityGain)"
+            :value="form.apds9960ProximityGain"
+            :field-definition="sections.Apds9960ProximityGain"
             @modified="onSettingChange"
           />
           <FormField
