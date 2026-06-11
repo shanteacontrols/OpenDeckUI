@@ -78,6 +78,44 @@
           />
         </div>
       </Section>
+      <Section title="BNO085">
+        <div class="form-grid">
+          <FormField
+            :value="form.enableBno085Quaternion"
+            :field-definition="sections.EnableBno085Quaternion"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085Euler"
+            :field-definition="sections.EnableBno085Euler"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085Gyroscope"
+            :field-definition="sections.EnableBno085Gyroscope"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085LinearAcceleration"
+            :field-definition="sections.EnableBno085LinearAcceleration"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.enableBno085Gravity"
+            :field-definition="sections.EnableBno085Gravity"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
+      <Section title="CAP1188">
+        <div class="form-grid">
+          <FormField
+            :value="form.cap1188Sensitivity"
+            :field-definition="sections.Cap1188Sensitivity"
+            @modified="onSettingChange"
+          />
+        </div>
+      </Section>
       <Section title="VL53L4CX">
         <div class="form-grid">
           <FormField
@@ -122,40 +160,51 @@
           />
         </div>
       </Section>
-      <Section title="CAP1188">
+      <Section title="VL53L5CX">
         <div class="form-grid">
           <FormField
-            :value="form.cap1188Sensitivity"
-            :field-definition="sections.Cap1188Sensitivity"
-            @modified="onSettingChange"
-          />
-        </div>
-      </Section>
-      <Section title="BNO085">
-        <div class="form-grid">
-          <FormField
-            :value="form.enableBno085Quaternion"
-            :field-definition="sections.EnableBno085Quaternion"
+            :value="form.vl53l5cxOutputMode"
+            :field-definition="sections.Vl53l5cxOutputMode"
             @modified="onSettingChange"
           />
           <FormField
-            :value="form.enableBno085Euler"
-            :field-definition="sections.EnableBno085Euler"
+            :value="form.vl53l5cxResolution"
+            :field-definition="sections.Vl53l5cxResolution"
             @modified="onSettingChange"
           />
           <FormField
-            :value="form.enableBno085Gyroscope"
-            :field-definition="sections.EnableBno085Gyroscope"
+            :value="form.vl53l5cxOutputRate"
+            :field-definition="sections.Vl53l5cxOutputRate"
             @modified="onSettingChange"
           />
           <FormField
-            :value="form.enableBno085LinearAcceleration"
-            :field-definition="sections.EnableBno085LinearAcceleration"
+            :value="form.vl53l5cxSmoothing"
+            :field-definition="sections.Vl53l5cxSmoothing"
             @modified="onSettingChange"
           />
           <FormField
-            :value="form.enableBno085Gravity"
-            :field-definition="sections.EnableBno085Gravity"
+            :value="form.vl53l5cxDistanceLowerValue"
+            :field-definition="sections.Vl53l5cxDistanceLowerValue"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.vl53l5cxDistanceUpperValue"
+            :field-definition="sections.Vl53l5cxDistanceUpperValue"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.vl53l5cxRotation"
+            :field-definition="sections.Vl53l5cxRotation"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.vl53l5cxInvertX"
+            :field-definition="sections.Vl53l5cxInvertX"
+            @modified="onSettingChange"
+          />
+          <FormField
+            :value="form.vl53l5cxInvertY"
+            :field-definition="sections.Vl53l5cxInvertY"
             @modified="onSettingChange"
           />
         </div>
