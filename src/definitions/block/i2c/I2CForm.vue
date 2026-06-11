@@ -105,6 +105,12 @@
             :field-definition="sections.EnableBno085Gravity"
             @modified="onSettingChange"
           />
+          <FormField
+            v-if="showField(sections.Bno085Smoothing)"
+            :value="form.bno085Smoothing"
+            :field-definition="sections.Bno085Smoothing"
+            @modified="onSettingChange"
+          />
         </div>
       </Section>
       <Section title="CAP1188">

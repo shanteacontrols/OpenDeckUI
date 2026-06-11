@@ -293,6 +293,40 @@ export const sections: Dictionary<ISectionDefinition> = {
     label: "Gravity",
     helpText: `Enables or disables BNO085 gravity OSC output.`,
   },
+  Bno085Smoothing: {
+    showIf: (formState: FormState): boolean =>
+      formState.enableBno085Quaternion ||
+      formState.enableBno085Euler ||
+      formState.enableBno085Gyroscope ||
+      formState.enableBno085LinearAcceleration ||
+      formState.enableBno085Gravity,
+    block: Block.Display,
+    key: "bno085Smoothing",
+    type: SectionType.Setting,
+    section: 2,
+    settingIndex: 5,
+    component: FormInputComponent.Select,
+    options: [
+      {
+        value: 0,
+        text: "Off",
+      },
+      {
+        value: 1,
+        text: "Light",
+      },
+      {
+        value: 2,
+        text: "Medium",
+      },
+      {
+        value: 3,
+        text: "Heavy",
+      },
+    ],
+    label: "Smoothing",
+    helpText: `Applies IMU output smoothing before OSC values are published.`,
+  },
   Cap1188Sensitivity: {
     block: Block.Display,
     key: "cap1188Sensitivity",
