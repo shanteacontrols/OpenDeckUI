@@ -238,4 +238,12 @@ export const blessedSerials: IBlessedSerialEntry[] = [
     signature:
       "J83XvF+R4KFz2VdBU1O7kkqlJ7yYLGfYdcYR/nu71EqHIlmGPr+SDIQ3HaouTX8ylNpGDc3mNROphqJJ7jHNAA==",
   },
+  {
+    version: 1,
+    serialHash:
+      "A1CF957EBDDFE773A68DDFAB32D8521E65F50EBC598436B408E426008A5761AF",
+    features: "config",
+    signature:
+      "02N7J++Ik3b5/L8Mtj0tnSnDfojiAGD7IuSUM1STZ5cZEXTy3nJTptNM3D/PZaG8+Cr9oLSOz5gLyB5vA8AVAg==",
+  },
 ];
