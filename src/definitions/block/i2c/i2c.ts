@@ -349,7 +349,7 @@ export const sections: Dictionary<ISectionDefinition> = {
       },
     ],
     label: "Smoothing",
-    helpText: `Applies IMU output smoothing before OSC values are published.`,
+    helpText: `Applies IMU output smoothing to gyroscope, linear acceleration, and gravity OSC values. Quaternion and Euler orientation outputs are not smoothed.`,
   },
   Cap1188Sensitivity: {
     block: Block.Display,
