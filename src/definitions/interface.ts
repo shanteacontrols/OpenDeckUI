@@ -301,6 +301,7 @@ interface ISectionBase {
   helpText: string;
   options?: Array<IFormSelectOption> | genericMethod;
   showIf: (formState: Dictionary<number>) => boolean;
+  isAvailable?: () => boolean;
   onLoad?: genericMethod;
   min?: number;
   max?: number;

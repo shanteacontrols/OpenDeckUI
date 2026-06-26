@@ -1,17 +1,45 @@
 import { markRaw } from "vue";
+import semverClean from "semver/functions/clean";
+import semverLt from "semver/functions/lt";
 import {
   ISectionDefinition,
   FormInputComponent,
   SectionType,
   Block,
 } from "../../interface";
+import { deviceState } from "../../device/device-store/state";
 
 import I2CForm from "./I2CForm.vue";
 import I2CIcon from "./I2CIcon.vue";
 
+const supportsDisplayEnableSetting = (): boolean => {
+  const firmwareVersion =
+    typeof deviceState.firmwareVersion === "string"
+      ? semverClean(deviceState.firmwareVersion)
+      : null;
+
+  return !!firmwareVersion && semverLt(firmwareVersion, "8.0.0");
+};
+
+const showDisplaySetting = (formState: FormState): boolean =>
+  !supportsDisplayEnableSetting() || !!formState.enableDisplay;
+
 export const sections: Dictionary<ISectionDefinition> = {
   // Features
+  EnableDisplay: {
+    showIf: (): boolean => supportsDisplayEnableSetting(),
+    isAvailable: supportsDisplayEnableSetting,
+    block: Block.Display,
+    key: "enableDisplay",
+    type: SectionType.Setting,
+    section: 0,
+    settingIndex: 6,
+    component: FormInputComponent.Toggle,
+    label: "Enable",
+    helpText: `Enables or disables the usage of small OLED/LCD displays.`,
+  },
   DeviceInfoOnStartup: {
+    showIf: showDisplaySetting,
     block: Block.Display,
     key: "deviceInfoStartup",
     type: SectionType.Setting,
@@ -22,6 +50,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: `Enable or disable device info message on startup (firmware version and board name).`,
   },
   DisplayController: {
+    showIf: showDisplaySetting,
     block: Block.Display,
     key: "displayController",
     type: SectionType.Setting,
@@ -42,6 +71,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
   },
   DisplayResolution: {
+    showIf: showDisplaySetting,
     block: Block.Display,
     key: "displayResolution",
     type: SectionType.Setting,
@@ -66,6 +96,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: ``,
   },
   MidiEventRetentionTime: {
+    showIf: showDisplaySetting,
     block: Block.Display,
     key: "midiEventRetentionTime",
     type: SectionType.Setting,
@@ -102,6 +133,7 @@ export const sections: Dictionary<ISectionDefinition> = {
     helpText: `Timeout after which any message on display will be cleared. If set to 0, message stays on display until new event occurs.`,
   },
   AlternateMidiNoteDisplay: {
+    showIf: showDisplaySetting,
     block: Block.Display,
     key: "alternateMidiNoteDisplay",
     type: SectionType.Setting,

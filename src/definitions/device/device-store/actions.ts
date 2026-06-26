@@ -1430,6 +1430,9 @@ const filterOutDisabledSections = (sectionDef: ISectionDefinition) =>
 const filterOutMsbSections = (sectionDef: ISectionDefinition) =>
   deviceState.valueSize === 1 || !sectionDef.isMsb;
 
+const filterAvailableSections = (sectionDef: ISectionDefinition) =>
+  !sectionDef.isAvailable || sectionDef.isAvailable();
+
 export const getFilteredSectionsForBlock = (
   block: Block,
   sectionType: SectionType,
@@ -1442,6 +1445,7 @@ export const getFilteredSectionsForBlock = (
 
   return Object.values(sections)
     .filter((sectionDef) => filterSectionsByType(sectionDef, sectionType))
+    .filter(filterAvailableSections)
     .filter(filterOutDisabledSections)
     .filter(filterOutMsbSections);
 };
