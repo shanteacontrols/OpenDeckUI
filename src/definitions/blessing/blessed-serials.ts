@@ -246,4 +246,84 @@ export const blessedSerials: IBlessedSerialEntry[] = [
     signature:
       "02N7J++Ik3b5/L8Mtj0tnSnDfojiAGD7IuSUM1STZ5cZEXTy3nJTptNM3D/PZaG8+Cr9oLSOz5gLyB5vA8AVAg==",
   },
+  {
+    version: 1,
+    serialHash:
+      "B7DF65EEAE54B51DEA1DE2A52004176A810CB34A2F7157DB5763F052A9C5846A",
+    features: "config",
+    signature:
+      "bL3OLEfnavARIt8+wMi/7yHjkuiI3acMZ3yne9+04/k5RlmIyxf968ivNLv5GMVuaB8rZpf+PqXlZjWsrJ93Cw==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "A9CA5B335E734ECD19F316460E9045E301C48BD939CA98B5E52C7B8B7B538A24",
+    features: "config",
+    signature:
+      "nmvpR32y41vfEN/5KDNSOPA6Lef+52iIfZ+o3yKOlf12Ue9y2OH96WGP2GtvWRIYvDTRqBafSxxlf0PcD7dpDw==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "E83F297947CE03052987543582FADD6E9098CB139E80E7D74CCBF6A9B6367E56",
+    features: "config",
+    signature:
+      "87i2whB9l9gzwfCrnou3b1KfsRNXgkCzwZxouPsZuxCHoMv7QqGgWSN7I8IZ7DI2yD+ma/Ce0UKE55HoNyS7Cw==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "155969AA087CB3B9FF458F0B03A1BE7AD787999337617E9D4187D709018DA923",
+    features: "config",
+    signature:
+      "yXRYjdZjjOdszgplqCixZYfWvNSuwqyrkz/XvIuB5AOilCMh2wLdUM4WEkG73PQJRjxNxr3B0xyLv/5i1N/kDw==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "874F276F2CC84E76F14195FECCD490901421E3826C44FD5A6A01E0C0EE11E16D",
+    features: "config",
+    signature:
+      "+2EQ1m8mb1A6wGyGSww9O3Aqyaua+rR/AsHNfk8piU4TDtbJ+KwBrwvPplAF89dHvPeOOioMCQ5gW9xx6FTcCw==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "D02D85C62D132F8D54232270EEF4B1A576C6A5E73B19C03BC8F5C8FF8B888D18",
+    features: "config",
+    signature:
+      "68RIm6DYk/StD7el6mXwWjaLK9PWx1D8O0+6e4pv6jb0Yuh+CN4MLPcH+KqohfG5vHd+B6G4gosVP0yxduo8Dw==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "FF051597FC28AB2783D8F85EE6A76A79ADDF69DE08E8DA536C6BC946BCDA43A8",
+    features: "config",
+    signature:
+      "HxLzSi8zX8HD1FvqQ8aIQ04v7f5ktv9V35QhX4/udTkGFWcrfc9yHuFbtDd605T1j2RcnhycEElNJTRbi6bBAA==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "B6D26959E6A1326473064CEE088EF9E7FB67FE082597ABD240AAADD2714A9CE0",
+    features: "config",
+    signature:
+      "LnHJF8koVNLI6XM7RN1Y64Lzu8uc533IOvmi0be4ZgyZ46bWFoewl0Sccp6kZfaBHykkBE0UL7vVzVFNJl6KCQ==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "A49E2ADB9998B7CFA1DE5EC875C5B03DBACC64F1DB14B204447256870BDE57DE",
+    features: "config",
+    signature:
+      "+A4P28CTy9O1IKEfvXuw8Q9pGe4+EOMj1iEIYvR4xBPuYV6QgVmssWVrcsiHgQuU/tBuSL/sYo6Iz/nwUT4UBQ==",
+  },
+  {
+    version: 1,
+    serialHash:
+      "40F2B9312BC7ADACDEA646D6B3A492891FB68A449A5CE764187B16FDBF6B48D3",
+    features: "config",
+    signature:
+      "ty6YPm9qLfYPhHnIuY3g04llWrPRXLtNaChobRsa6fMYzTpGoILbA5zVF2UC2Ub+nFJ1iHfqwQ+Qr4rs/xwRBw==",
+  },
 ];
