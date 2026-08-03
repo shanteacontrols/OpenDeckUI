@@ -1,7 +1,7 @@
 import { state, ILogEntry, LogType, LogFilter } from "./state";
 import { addError } from "./log-type-error";
 import { addRequest } from "./log-type-request";
-import { addMidi } from "./log-type-midi";
+import { addMidi, clearPendingMidi } from "./log-type-midi";
 import { addInfo } from "./log-type-info";
 import { addSystem } from "./log-type-system";
 import { saveToStorage, formatDate } from "../../../util";
@@ -25,6 +25,10 @@ export const toggleLog = (): void => {
 
 export const setSuspendMidi = (value: boolean): void => {
   state.suspendMidiLogs = value;
+  if (value) {
+    // Do not let a pending sequence appear after logging is resumed.
+    clearPendingMidi();
+  }
 };
 
 export const toggleHexValues = (): void => {
@@ -33,6 +37,8 @@ export const toggleHexValues = (): void => {
 };
 
 export const clearRequestLog = (): void => {
+  // A pending timeout must not repopulate a log the user just cleared.
+  clearPendingMidi();
   state.stack = [];
 };
 

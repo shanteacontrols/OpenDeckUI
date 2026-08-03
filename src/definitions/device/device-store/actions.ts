@@ -15,13 +15,18 @@ import {
   GitHubReleasesUrl,
   getBoardDefinition,
 } from "../../../definitions";
-import { Block } from "../../interface";
+import { AnalogType, Block, EncodingMode } from "../../interface";
 import {
   sendMessagesFromFileWithDelay,
   newLineCharacter,
 } from "./actions-utility";
 import { midiStore } from "../../midi";
-import { requestLog } from "../../request-log";
+import {
+  requestLog,
+  MidiSequenceType,
+  setMidiSequenceComponents,
+} from "../../request-log";
+import type { MidiSequenceComponent } from "../../request-log";
 import { alertPrompt } from "../../../composables";
 import {
   IDeviceState,
@@ -98,6 +103,7 @@ export const disableControl = (
 
 const resetDeviceStore = async (): void => {
   resetQueue();
+  setMidiSequenceComponents([]);
 
   if (deviceState.input) {
     deviceState.input.removeListener("sysex", "all"); // make sure we don't duplicate listeners
@@ -127,6 +133,15 @@ const supportsPresetCountRequest = (firmwareVersion: string): boolean => {
     typeof firmwareVersion === "string" ? semverClean(firmwareVersion) : null;
 
   return !!version && semverGte(version, "3.1.0");
+};
+
+const supportsGlobalChannelSettings = (): boolean => {
+  const version =
+    typeof deviceState.firmwareVersion === "string"
+      ? semverClean(deviceState.firmwareVersion)
+      : null;
+
+  return !!version && semverGte(version, "7.0.0");
 };
 
 const isBlessingRequired = (isKnownBoard: boolean): boolean =>
@@ -1394,6 +1409,12 @@ const loadDeviceInfoDetails = async (): Promise<void> => {
     setInfo({ supportedPresetsCount: 1 });
   }
 
+  if (deviceState.transportType === SysExTransportType.Midi) {
+    await loadMidiSequenceComponentConfig();
+  } else {
+    setMidiSequenceComponents([]);
+  }
+
   if (!isBlessingRequiredForFirmware(deviceState.firmwareVersion)) {
     return;
   }
@@ -1418,6 +1439,238 @@ const loadDeviceInfoDetails = async (): Promise<void> => {
 };
 
 // Section / Component values
+
+interface MidiSequenceBlockDefinition {
+  block: Block;
+  enabledSection: string;
+  modeSection: string;
+  idSection: string;
+  idMSBSection: string;
+  channelSection: string;
+  types: Record<number, MidiSequenceType>;
+}
+
+interface MidiSequenceConfigCache {
+  useGlobalChannel: number;
+  globalChannel: number;
+  blocks: Record<number, Record<string, number[]>>;
+}
+
+// Sequence recognition is configuration-driven so identical MIDI messages from
+// unrelated components remain ordinary Control Change log entries.
+let midiSequenceConfigCache: MidiSequenceConfigCache;
+
+const getMidiSequenceBlockDefinitions = (): MidiSequenceBlockDefinition[] => [
+  {
+    block: Block.Encoder,
+    enabledSection: "Enabled",
+    modeSection: "EncodingMode",
+    idSection: "MidiIdLSB",
+    idMSBSection: "MidiIdMSB",
+    channelSection: "MidiChannel",
+    types: {
+      [EncodingMode.CC14bit]: MidiSequenceType.CC14,
+      [EncodingMode.NRPN7bit]: MidiSequenceType.Nrpn7Bit,
+      [EncodingMode.NRPN14bit]: MidiSequenceType.Nrpn14Bit,
+    },
+  },
+  {
+    block: Block.Analog,
+    enabledSection: "Enabled",
+    modeSection: "Type",
+    idSection: "MidiIdLSB",
+    idMSBSection: "MidiIdMSB",
+    channelSection: "MidiChannel",
+    types: {
+      [AnalogType.ControlChange14Bit]: MidiSequenceType.CC14,
+      [AnalogType.NRPN7bit]: MidiSequenceType.Nrpn7Bit,
+      [AnalogType.NRPN14bit]: MidiSequenceType.Nrpn14Bit,
+    },
+  },
+];
+
+const getComponentCount = (block: Block): number => {
+  // The component-count response order does not match the Block enum values.
+  const responseIndex = BlockMap[block].componentCountResponseIndex;
+  return deviceState.numberOfComponents[responseIndex] || 0;
+};
+
+const readSettingValue = async (
+  section: number,
+  index: number,
+): Promise<number> => {
+  let value: number;
+
+  await sendMessage({
+    command: Request.GetValue,
+    handler: (response: number[]): void => {
+      value = response[0];
+    },
+    config: { block: Block.Global, section, index },
+  });
+
+  return value;
+};
+
+const publishMidiSequenceComponents = (): void => {
+  if (!midiSequenceConfigCache) {
+    setMidiSequenceComponents([]);
+    return;
+  }
+
+  const components: MidiSequenceComponent[] = [];
+  const useGlobalChannel = !!midiSequenceConfigCache.useGlobalChannel;
+
+  getMidiSequenceBlockDefinitions().forEach((definition) => {
+    const config = midiSequenceConfigCache.blocks[definition.block];
+    const sections = BlockMap[definition.block].sections;
+    const componentCount = getComponentCount(definition.block);
+
+    for (let index = 0; index < componentCount; index++) {
+      const enabled = config[sections[definition.enabledSection].key];
+      const modes = config[sections[definition.modeSection].key];
+      const ids = config[sections[definition.idSection].key];
+      const idsMSB = config[sections[definition.idMSBSection].key];
+      const channels = config[sections[definition.channelSection].key];
+      const controllerLSB = ids[index];
+      const controllerMSB = idsMSB && idsMSB[index];
+      // Legacy configuration stores 14-bit IDs in separate sections. Modern
+      // firmware returns the complete ID from the LSB section definition.
+      const controller =
+        deviceState.valueSize === 1
+          ? controllerMSB * 128 + controllerLSB
+          : controllerLSB;
+      const type = definition.types[modes[index]];
+      const channel = useGlobalChannel
+        ? midiSequenceConfigCache.globalChannel
+        : channels[index];
+
+      if (
+        enabled[index] &&
+        type !== undefined &&
+        controller >= 0 &&
+        controller <= (type === MidiSequenceType.CC14 ? 95 : 16383) &&
+        channel >= 1 &&
+        channel <= 17
+      ) {
+        components.push({
+          block: definition.block,
+          index,
+          channel,
+          controller,
+          type,
+        });
+      }
+    }
+  });
+
+  setMidiSequenceComponents(components);
+};
+
+const loadMidiSequenceComponentConfig = async (): Promise<void> => {
+  const globalSections = BlockMap[Block.Global].sections;
+  const blockDefinitions = getMidiSequenceBlockDefinitions();
+
+  try {
+    // Pre-v7 firmware has no global-channel settings and always uses each
+    // component's configured channel. The fallback channel is never used.
+    const [useGlobalChannel, globalChannel] = supportsGlobalChannelSettings()
+      ? await Promise.all([
+          readSettingValue(
+            globalSections.UseGlobalChannel.section,
+            globalSections.UseGlobalChannel.settingIndex,
+          ),
+          readSettingValue(
+            globalSections.GlobalChannel.section,
+            globalSections.GlobalChannel.settingIndex,
+          ),
+        ])
+      : [0, 1];
+    const blockConfigs = await Promise.all(
+      blockDefinitions.map((definition) => {
+        const sections = BlockMap[definition.block].sections;
+        const keys = [
+          definition.enabledSection,
+          definition.modeSection,
+          definition.idSection,
+          definition.idMSBSection,
+          definition.channelSection,
+        ].map((section) => sections[section].key);
+        return getSectionValues(definition.block, keys);
+      }),
+    );
+    const blocks = {} as Record<number, Record<string, number[]>>;
+    blockDefinitions.forEach((definition, index) => {
+      blocks[definition.block] = blockConfigs[index];
+    });
+
+    midiSequenceConfigCache = {
+      useGlobalChannel,
+      globalChannel,
+      blocks,
+    };
+
+    publishMidiSequenceComponents();
+  } catch (error) {
+    midiSequenceConfigCache = undefined;
+    setMidiSequenceComponents([]);
+    logger.warn("Failed to load MIDI sequence component config", error);
+  }
+};
+
+const updateMidiSequenceComponentConfig = (config: IRequestConfig): void => {
+  if (!midiSequenceConfigCache || typeof config.value !== "number") {
+    return;
+  }
+
+  const globalSections = BlockMap[Block.Global].sections;
+  if (
+    config.block === Block.Global &&
+    config.section === globalSections.UseGlobalChannel.section &&
+    config.index === globalSections.UseGlobalChannel.settingIndex
+  ) {
+    midiSequenceConfigCache.useGlobalChannel = config.value;
+    publishMidiSequenceComponents();
+    return;
+  }
+
+  if (
+    config.block === Block.Global &&
+    config.section === globalSections.GlobalChannel.section &&
+    config.index === globalSections.GlobalChannel.settingIndex
+  ) {
+    midiSequenceConfigCache.globalChannel = config.value;
+    publishMidiSequenceComponents();
+    return;
+  }
+
+  const definition = getMidiSequenceBlockDefinitions().find(
+    (candidate) => candidate.block === config.block,
+  );
+  if (!definition) {
+    return;
+  }
+
+  const sections = BlockMap[definition.block].sections;
+  const fields = [
+    ["enabled", definition.enabledSection],
+    ["modes", definition.modeSection],
+    ["ids", definition.idSection],
+    ["idsMSB", definition.idMSBSection],
+    ["channels", definition.channelSection],
+  ];
+  const field = fields.find(
+    ([, section]) => sections[section].section === config.section,
+  );
+  if (!field) {
+    return;
+  }
+
+  const cacheKey = sections[field[1]].key;
+  midiSequenceConfigCache.blocks[definition.block][cacheKey][config.index] =
+    config.value;
+  publishMidiSequenceComponents();
+};
 
 const filterSectionsByType = (
   sectionDef: ISectionDefinition,
@@ -1553,11 +1806,22 @@ export const setComponentSectionValue = async (
   }
 
   try {
-    return await sendMessage({
+    await sendMessage({
       command: Request.SetValue,
       handler,
       config,
     });
+
+    // Preset changes replace all component values; ordinary writes can update
+    // the matching cached value directly.
+    if (
+      isActivePresetChange &&
+      deviceState.transportType === SysExTransportType.Midi
+    ) {
+      await loadMidiSequenceComponentConfig();
+    } else {
+      updateMidiSequenceComponentConfig(config);
+    }
   } finally {
     if (isActivePresetChange) {
       deviceState.isSystemOperationRunning = false;
@@ -1568,40 +1832,44 @@ export const setComponentSectionValue = async (
 
 export const getSectionValues = async (
   block: Block,
+  keys?: string[],
 ): Promise<Record<string, number[]>> => {
   await ensureConnection();
   const settings = {} as any;
+  const componentCount = getComponentCount(block);
 
-  const tasks = getFilteredSectionsForBlock(block, SectionType.Value).map(
-    (sectionDef) => {
-      const { key, section } = sectionDef;
+  if (!componentCount) {
+    return settings;
+  }
 
-      const handler = (res: number[]): boolean => {
-        if (!settings[key]) {
-          settings[key] = [];
-        }
-        settings[key].push(...res);
-
-        // Modern 2-byte section reads finish on the extra 0x7E ACK handled by
-        // the request queue. Legacy 1-byte reads only stream data parts, so
-        // finish once all expected component values are collected.
-        if (deviceState.valueSize !== 1) {
-          return false;
-        }
-
-        const expectedValues = deviceState.numberOfComponents[block];
-        return expectedValues > 0 && settings[key].length >= expectedValues;
-      };
-
-      return sendMessage({
-        command: Request.GetSectionValues,
-        handler,
-        config: { block, section },
-      }).catch((error) =>
-        logger.error("Failed to read component config", error),
-      );
-    },
+  const sections = getFilteredSectionsForBlock(block, SectionType.Value).filter(
+    (sectionDef) => !keys || keys.includes(sectionDef.key),
   );
+  const tasks = sections.map((sectionDef) => {
+    const { key, section } = sectionDef;
+
+    const handler = (res: number[]): boolean => {
+      if (!settings[key]) {
+        settings[key] = [];
+      }
+      settings[key].push(...res);
+
+      // Modern 2-byte section reads finish on the extra 0x7E ACK handled by
+      // the request queue. Legacy 1-byte reads only stream data parts, so
+      // finish once all expected component values are collected.
+      if (deviceState.valueSize !== 1) {
+        return false;
+      }
+
+      return settings[key].length >= componentCount;
+    };
+
+    return sendMessage({
+      command: Request.GetSectionValues,
+      handler,
+      config: { block, section },
+    }).catch((error) => logger.error("Failed to read component config", error));
+  });
 
   await Promise.all(tasks);
 

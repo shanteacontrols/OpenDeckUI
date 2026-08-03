@@ -14,7 +14,12 @@
     </span>
     <span v-if="logEntry.controllerNumber !== undefined" class="mr-2">
       <span class="faded">controller</span> {{ logEntry.controllerNumber }}
-      <span class="faded">value</span> {{ logEntry.velocity }}
+      <template v-if="logEntry.velocity !== undefined">
+        <span class="faded">value</span> {{ logEntry.velocity }}
+      </template>
+    </span>
+    <span v-if="logEntry.parameterNumber !== undefined" class="mr-2">
+      <span class="faded">parameter</span> {{ logEntry.parameterNumber }}
     </span>
     <span v-if="logEntry.note !== undefined" class="mr-2">
       <span class="faded">velocity</span> {{ logEntry.velocity }}
