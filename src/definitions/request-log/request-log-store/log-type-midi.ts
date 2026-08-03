@@ -128,6 +128,12 @@ const getControllerNumber = (params: MidiEventParams): number => {
 const getControlChangeValue = (params: MidiEventParams): number =>
   params.data && params.data.length > 2 ? params.data[2] : params.value;
 
+// Web MIDI normalizes pitch bend; the raw LSB/MSB bytes retain its 14-bit value.
+const getPitchBendValue = (params: MidiEventParams): number =>
+  params.data && params.data.length > 2
+    ? (params.data[2] << 7) | params.data[1]
+    : params.value;
+
 const addMidiEntry = (
   params: MidiEventParams,
   overrides: Partial<ILogEntryMidi> = {},
@@ -135,10 +141,20 @@ const addMidiEntry = (
   const { type, channel, data } = params;
   const dataArray = data ? Array.from(data) : [];
   const value =
-    params.value && type !== "controlchange" ? params.value : undefined;
+    type === "pitchbend"
+      ? getPitchBendValue(params)
+      : params.value !== undefined && type !== "controlchange"
+      ? params.value
+      : undefined;
   const note = ["noteon", "noteoff"].includes(type) ? data[1] : undefined;
-  const controllerNumber = getControllerNumber(params);
-  const velocity = data && data.length > 2 ? data[2] : undefined;
+  const controllerNumber =
+    type === "controlchange" ? getControllerNumber(params) : undefined;
+  const velocity =
+    data &&
+    data.length > 2 &&
+    ["noteon", "noteoff", "controlchange"].includes(type)
+      ? data[2]
+      : undefined;
   const label =
     type == "noteoff"
       ? data[0] >= 144
