@@ -14,6 +14,7 @@ export const Boards: IBoardDefinition[] = [
     ids: [
       [9, 16, 0, 18],
       [1, 16, 0, 18],
+      [1, 117, 127, 95],
     ],
     firmwareFileName: null,
   },
