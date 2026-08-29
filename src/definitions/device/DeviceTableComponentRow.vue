@@ -7,7 +7,7 @@
           'btn-highlight': isHighlighted,
         }"
       >
-        {{ index }}
+        {{ label || index }}
       </span>
     </div>
     <template v-for="section in sections">
@@ -45,6 +45,10 @@ export default defineComponent({
     index: {
       required: true,
       type: Number,
+    },
+    label: {
+      default: "",
+      type: String,
     },
     sections: {
       required: true,

@@ -70,6 +70,7 @@
           v-for="index in indexRange"
           :key="`table-form-${index}`"
           :index="index"
+          :label="getComponentLabel(block, index)"
           :form-data="columnViewData[index]"
           :show-field="showField"
           :sections="sections"
@@ -87,7 +88,7 @@
         :index="index - 1"
         :highlight="highlights[block][index - 1]"
       >
-        <span class="text-xl font-bold">{{ index - 1 }}</span>
+        <span class="text-xl font-bold">{{ getComponentLabel(block, index - 1) }}</span>
       </DeviceGridButton>
     </div>
     <template v-else-if="segments && segments.length">
@@ -111,7 +112,7 @@
             :index="index"
             :highlight="highlights[block][index]"
           >
-            <span class="text-xl font-bold">{{ index }}</span>
+            <span class="text-xl font-bold">{{ getComponentLabel(block, index) }}</span>
           </DeviceGridButton>
         </div>
       </div>
@@ -128,6 +129,7 @@ import {
   useViewSettings,
   useGridSegments,
 } from "../../composables";
+import { getComponentLabel } from "../../composables/use-component-label";
 import DeviceGridButton from "./DeviceGridButton.vue";
 import DeviceTableComponentRow from "./DeviceTableComponentRow.vue";
 
@@ -200,6 +202,7 @@ export default defineComponent({
       sections,
       showMsbControls,
       segments,
+      getComponentLabel,
     };
   },
 });
