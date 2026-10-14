@@ -9,7 +9,7 @@
         <div class="mr-6 text-foreground">
           {{ blockDefinition.title }}
           <strong>
-            {{ index }}
+            {{ componentLabel }}
           </strong>
         </div>
         <div class="hidden md:block md:flex-grow text-right">
@@ -61,6 +61,7 @@ import { SectionType, Block, ISectionDefinition } from "../../definitions";
 import { deviceStoreMapped } from "../../store";
 import router from "../../router";
 import { useDeviceForm } from "../../composables";
+import { getComponentLabel } from "../../composables/use-component-label";
 
 interface ISectionGroup {
   key: string;
@@ -112,6 +113,7 @@ export default defineComponent({
       outputId,
       numberOfComponents,
       index,
+      componentLabel: computed(() => getComponentLabel(props.block, index.value)),
       ...form,
       sectionGroups,
     };
